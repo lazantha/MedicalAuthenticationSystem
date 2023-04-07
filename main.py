@@ -1,5 +1,5 @@
 from flask import Flask,render_template,url_for,request,redirect,flash
-from allForms import UserLog
+from allForms import UserLog,AdminSignUp,UserSignUp
 app=Flask(__name__)
 app.config['SECRET_KEY']="kEY"
 
@@ -44,11 +44,13 @@ def contact():
 #user Sign
 @app.route('/userSign')
 def userSign():
-    return render_template('signup/user.html')
+    new_user=UserSignUp()
+    return render_template('signup/user.html',form=new_user)
 
 #admin Sign
 @app.route('/adminSign')
 def adminSign():
-    return render_template('signup/admin.html')
+    new_admin=AdminSignUp()
+    return render_template('signup/admin.html',form=new_admin)
 
 

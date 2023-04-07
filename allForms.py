@@ -44,7 +44,7 @@ class UserSignUp(FlaskForm):
     last_name=StringField("Last Name: ")
     department=SelectField("Department: ",choices=['IT','ACCOUNTANCY','MANAGEMENT','TOURISM'])
     email=StringField("Email: ")
-    passoword=StringField("Password: ")
+    password=StringField("Password: ")
     confirm=StringField("Confirm Password: ")
     submit=SubmitField("Submit")
 

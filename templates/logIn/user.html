@@ -19,7 +19,10 @@
       {{form.password(class='form-control')}}
     </div>
     <span><a href="{{url_for('userSign')}}">Not have an Account !</a></span>
-    {{form.submit(class="btn btn-primary")}}
+    <div class="mb-3">
+      {{form.submit(class="btn btn-outline-primary")}}
+      <input type="reset" value="Reset" class="btn btn-outline-warning">
+    </div>
   </form>
 
 {% endblock %}
