@@ -1,16 +1,28 @@
 {% extends 'base.html' %}
 {% block head %}
-<title>User Login</title>
- 
+
+<title>Log In</title>
 {% endblock %}
 
-{% block content %}
 
-    <h2>Log in </h2>
-    <form action="" method="POST">
+{% block content%}
+<form action="/" method="POST" class="container">
+    {{form.hidden_tag()}}
 
-        
-
-    </form>
+    <div class="mb-3">
+      <label for="exampleInputEmail1" class="form-label">{{form.user_name.label}}</label>
+      {{form.user_name(class='form-control')}}
+      <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+    </div>
+    <div class="mb-3">
+      <label for="exampleInputPassword1" class="form-label">{{form.password.label}}</label>
+      {{form.password(class='form-control')}}
+    </div>
+    <span><a href="{{url_for('userSign')}}">Not have an Account !</a></span>
+    {{form.submit(class="btn btn-primary")}}
+  </form>
 
 {% endblock %}
+
+
+

@@ -1,4 +1,5 @@
-from flask import Flask,render_template,url_for,request,redirect,Flask
+from flask import Flask,render_template,url_for,request,redirect,flash
+from allForms import UserLog
 app=Flask(__name__)
 app.config['SECRET_KEY']="kEY"
 
@@ -22,18 +23,15 @@ def index():
     #user login Page
 @app.route('/userlog')
 def userlog():
-    # if request.method=='POST':
-    #     user_name=request.form['user_name']
-    #     password=request.form['password']
-
-
-     return render_template('login/user.html')
+    new_user=UserLog()
+    return render_template('logIn/user.html',form=new_user)
 
 
 #admin login page
 @app.route('/adminlog')
 def adminlog():
-    return render_template('login/admin.html')
+    new_user=UserLog()
+    return render_template('login/admin.html',form=new_user)
 #about page
 @app.route('/about')
 def about():
@@ -43,13 +41,14 @@ def about():
 def contact():
     return render_template('contact.html')
 
+#user Sign
+@app.route('/userSign')
+def userSign():
+    return render_template('signup/user.html')
 
-@app.route('/user')
-def user():
-    # form=UserForm()
-    # if form.method==['POST']:
-    #     if form.validate_on_submit():
-    #         name=form.userName.data
+#admin Sign
+@app.route('/adminSign')
+def adminSign():
+    return render_template('signup/admin.html')
 
-    return render_template('users/frmUser.html')
 
