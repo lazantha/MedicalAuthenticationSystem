@@ -58,3 +58,13 @@ def adminSign():
 def request():
     new_req_form=UserForm()
     return render_template('mainForm/mainform.html',form=new_req_form)
+
+#adminPanel
+@app.route('/adminPanel')
+def adminPanel():
+    return render_template('interfaces/admin/admin.html')
+
+#superAdmin
+@app.route('/superAdminPanel')
+def superAdminPanel():
+    return render_template('interfaces/superAdmin/superAdmin.html')

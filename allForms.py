@@ -49,7 +49,13 @@ class UserSignUp(FlaskForm):
     submit=SubmitField("Submit")
 
     
-    
+#Admin Interface
+class AdminInterface(FlaskForm):
+    edit_time_table=SubmitField("Click To Edit Time Tables:")
+    dipsplay=SubmitField("Display Requests") 
     
 
+#Super Admin Interface
+class SuperAdminInterface(FlaskForm):
+    pass
 
