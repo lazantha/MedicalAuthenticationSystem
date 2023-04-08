@@ -5,7 +5,9 @@
 {% block content %}
 
 
-<form action="/" method="POST" class="container">
+<fieldset class="container p-3 mb-2 bg-light text-dark pt-5 mt-5">
+  <legend><span><i>Request</i></span></legend>
+  <form action="/" method="POST" class="container pt-5">
     {{form.hidden_tag()}}
     <div class="form-group">
       <label for="first_name">{{form.userName.label}}</label>
@@ -74,5 +76,6 @@
        
   </form>
   
+</fieldset>
 
 {% endblock %}

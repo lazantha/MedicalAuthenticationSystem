@@ -7,7 +7,9 @@
 
 {% block content %}
 
-<form action="/" method="POST" class="container">
+<fieldset class="container p-3 mb-2 bg-light text-dark pt-5 mt-5">
+  <legend><span><i>Register</i></span></legend>
+  <form action="/" method="POST" class="container pt-5 " >
     {{form.hidden_tag()}}
     <div class="form-group">
       <label for="first_name">{{form.first_name.label}}</label>
@@ -42,12 +44,15 @@
           <option value="2">HOD</option> 
         </select>
       </div>
-      <span><a href="{{url_for('adminlog')}}">Have an Account ?</a></span>
       <div class="form-group">
         {{form.submit(class='btn btn-outline-primary')}}
         <input type="reset" value="Reset" class="btn btn-outline-warning">
+      </div>
+      <p><span><a href="{{url_for('adminlog')}}"><span><i>Have an Account ?</i></span></a></span></p>
        
   </form>
+  
+</fieldset>
   
 
 

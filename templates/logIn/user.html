@@ -6,24 +6,29 @@
 
 
 {% block content%}
-<form action="/" method="POST" class="container">
+<fieldset class="container p-3 mb-2 bg-light text-dark pt-5 mt-5">
+  <legend><span><i>Log In</i></span></legend>
+  <form action="/" method="POST" class="container pt-5 ">
     {{form.hidden_tag()}}
 
     <div class="mb-3">
       <label for="exampleInputEmail1" class="form-label">{{form.user_name.label}}</label>
-      {{form.user_name(class='form-control')}}
+      {{form.user_name(class='form-control ')}}
       <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
     </div>
     <div class="mb-3">
       <label for="exampleInputPassword1" class="form-label">{{form.password.label}}</label>
       {{form.password(class='form-control')}}
     </div>
-    <span><a href="{{url_for('userSign')}}">Not have an Account !</a></span>
     <div class="mb-3">
       {{form.submit(class="btn btn-outline-primary")}}
       <input type="reset" value="Reset" class="btn btn-outline-warning">
     </div>
+    <p><span><a href="{{url_for('userSign')}}"><span><i>Not have an Account !</i></span></a></span></p>
   </form>
+  
+</fieldset>
+
 
 {% endblock %}
 
