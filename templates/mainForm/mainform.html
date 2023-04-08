@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block head %}
+<title>Request</title>
+{% endblock %}
+{% block content %}
+
+
+<form action="/" method="POST" class="container">
+    {{form.hidden_tag()}}
+    <div class="form-group">
+      <label for="first_name">{{form.userName.label}}</label>
+      {{form.userName(class='form-control')}}
+    </div>
+
+    <div class="form-group">
+      <label for="course">{{form.course.label}}</label>
+      {{form.course(class='form-control')}}
+    </div>
+    
+    <div class="form-group">
+      <label for="year">{{form.year.label}}</label>
+      {{form.year(class='form-control')}}
+    </div>
+    
+    <div class="form-group">
+      <label for="semester">{{form.semeseter.label}}</label>
+      {{form.semeseter(class='form-control')}}
+    </div>
+
+    <div class="form-group">
+      <label for="attempt">{{form.attempt.label}}</label>
+      {{form.attempt(class='form-control')}}
+    </div>
+    <!-- textArea -->
+    <div class="form-group">
+      <label for="comment">{{form.comment.label}}</label>
+      {{form.comment(class='form-control')}}
+    </div>
+    
+    <!-- date -->
+    <div class="form-group">
+      <label for="sdate">{{form.start_date.label}}</label>
+      {{form.start_date(class='form-control')}}
+    </div>
+
+    <div class="form-group">
+      <label for="edate">{{form.end_date.label}}</label>
+      {{form.end_date(class='form-control')}}
+    </div>
+
+    <div class="form-group">
+      <label for="doc_name">{{form.doc_name.label}}</label>
+      {{form.doc_name(class='form-control')}}
+    </div>
+    <!-- radio -->
+    <div class="form-group">
+      <label for="type">{{form.type.label}}</label>
+      {{form.type(class='form-control')}}
+    </div>
+    <div class="form-group">
+      <label for="med_pic">{{form.med_pic.label}}</label>
+      {{form.med_pic(class='form-control')}}
+    </div>
+
+    <div class="form-group">
+      <label for="date_issued">{{form.date_issued.label}}</label>
+      {{form.date_issued(class='form-control')}}
+    </div>
+    
+      <!-- geting with jinja  selection/date time radio and checkboxes-->
+        <div class="form-group">
+        {{form.submit(class='btn btn-outline-primary')}}
+        <input type="reset" value="Reset" class="btn btn-outline-warning">
+       
+  </form>
+  
+
+{% endblock %}
