@@ -52,7 +52,13 @@ class UserSignUp(FlaskForm):
 #Admin Interface
 class AdminInterface(FlaskForm):
     edit_time_table=SubmitField("Click To Edit Time Tables:")
-    dipsplay=SubmitField("Display Requests") 
+    display=SubmitField("Display Requests") 
+    accept=SubmitField("Accept")
+    all_accept=SubmitField("ALL Accept")
+    reject=SubmitField("Reject")
+    all_reject=SubmitField("ALL Reject")
+    
+    
     
 
 #Super Admin Interface

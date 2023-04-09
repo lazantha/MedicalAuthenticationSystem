@@ -7,10 +7,70 @@
 
 {% block content %}
 
+<div class=" row" >
+    {{form.hidden_tag()}}
+    <div class="col-3">.g-col-2</div>
+    <div class="col">
+
+    
+        <div class="bg-success p-2 text-dark bg-opacity-10 text-center w-50 rounded-5 rounded-top-0 border border-warning">
 
 
+            <h3><span><strong>You Have Request !</strong></span></h3>
+            {{form.display(class='btn btn-dark')}}
+        </div>
+        <br>
+        <div class="p-3 mb-2 bg-transparent text-body ms-5">
+            
+            <table class="table table-hover w-50 me-5" >
+                <thead class=" text-dark thead-dark">
+                  <tr>
+                    <th scope="col">Index</th>
+                    <th scope="col">Appllications</th>
+                    <th scope="col">Confirmations</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>Application_1.pdf</td>
+                    <td>{{form.accept(class='btn btn-success btn-sm')}} {{form.reject(class='btn btn-danger btn-sm')}}</td>
+
+                    
+                  </tr>
+                  <tr>
+                    <td>2</td>
+                    <td>Application_2.pdf</td>
+                    <td>{{form.accept(class='btn btn-success btn-sm')}} {{form.reject(class='btn btn-danger btn-sm')}}</td>
+                    
+                    
+                    
+                  </tr>
+                  <tr>
+                    <td>3</td>
+                    <td>Application_3.pdf</td>
+                    <td>{{form.accept(class='btn btn-success btn-sm')}} {{form.reject(class='btn btn-danger btn-sm')}}</td>
+                    
+                       
+                  </tr>
+                </tbody>
+              </table>
+              
+              <div class="d-flex flex justify-content-center me-5 pe-5" >
+                <div class="p-2">{{form.all_accept(class='btn btn-success btn-sm')}}
+                </div>
+                <div class="p-2">{{form.all_reject(class='btn btn-danger btn-sm')}}</div>
+                
+              </div>
+              
+
+              
+    
+        </div>
 
 
+    </div>
+  </div>
 
 
 {% endblock %}
