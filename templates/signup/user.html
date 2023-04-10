@@ -6,54 +6,59 @@
 
 
 {% block content %}
+
+
 <fieldset class="container p-3 mb-2 bg-light text-dark pt-5 mt-5">
-  <legend><span><i>Sign Up</i></span></legend>
-  <form action="/" method="POST" class="container pt-5">
+  <legend><span><i>Sign Up !</i></span></legend>
+  <form action="" method="POST">
     {{form.hidden_tag()}}
-    <div class="form-group">
-      <label for="first_name">{{form.first_name.label}}</label>
-      {{form.first_name(class='form-control')}}
+    <div class="form-floating mb-3">
+      <!-- <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com"> -->
+      {{form.first_name(class="form-control",id="floatingInput",placeholder="Kevin")}}
+      <label for="floatingInput">{{form.first_name.label}}</label>
+    </div>
+    <div class="form-floating">
+      <!-- <input type="password" class="form-control" id="floatingPassword" placeholder="Password"> -->
+      {{form.last_name(class="form-control",id="floatingInput",placeholder="Re")}}
+      <label for="floatingInput">{{form.last_name.label}}</label>
+    </div>
+    <div class="form-floating">
+      <select class="form-select" id="floatingSelect" aria-label="Floating label select example">
+        <option value="0" selected>Information Technology</option>
+        <option value="1">Management</option>
+        <option value="2">Accountency</option>
+        <option value="3">Tourism and Management</option>
+        <option value="3">English</option>
+      </select>
+      <label for="floatingSelect">Department</label>
+    </div>
+    <div class="form-floating mb-3">
+      <!-- <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com"> -->
+      {{form.email(class="form-control",id="floatingInput",placeholder="name@example.com")}}
+      <label for="floatingInput">{{form.email.label}}</label>
+      <!-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> -->
+    </div>
+    <div class="form-floating">
+      <!-- <input type="password" class="form-control" id="floatingPassword" placeholder="Password"> -->
+      {{form.password(class="form-control",id="floatingPassword",placeholder="Password")}}
+      <label for="floatingPassword">{{form.password.label}}</label>
+    </div>
+    <div class="form-floating">
+      <!-- <input type="password" class="form-control" id="floatingPassword" placeholder="Password"> -->
+      {{form.confirm(class="form-control",id="floatingPassword",placeholder="Password")}}
+      <label for="floatingPassword">{{form.confirm.label}}</label>
     </div>
     <div class="form-group">
-      <label for="last_name">{{form.last_name.label}}</label>
-      {{form.last_name(class='form-control')}}
-    </div>
-    <div class="col-auto my-1">
-        <label class="mr-sm-2" for="inlineFormCustomSelect">Department</label>
-        <select class="custom-select mr-sm-2" id="inlineFormCustomSelect">
-          <option value="1">IT</option>
-          <option value="2">ENGLISH</option> 
-          <option value="3">MANAGEMENT</option> 
-          <option value="4">ACCOUNTENCY</option> 
-          <option value="5">TOURISM</option>     
-          
-        </select>
-
-      <div class="form-group">
-        <label for="email">{{form.email.label}}</label>
-        {{form.email(class='form-control')}}
-        <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
-      </div>
-
-      <div class="form-group">
-        <label for="password">{{form.password.label}}</label>
-        {{form.password(class='form-control')}}
-      </div>
-
-      <div class="form-group">
-        <label for="con_pass">{{form.confirm.label}}</label>
-        {{form.confirm(class='form-control')}}
-      </div>
-
-      <div class="form-group">
-        {{form.submit(class='btn btn-outline-primary')}}
-        <input type="reset" value="Reset" class="btn btn-outline-warning">
-        
-      </div>
-      <p><span><a href="{{url_for('adminlog')}}"><span><i>Have an Account ?</i></span></a></span></p>
+      {{form.submit(class='btn btn-outline-primary')}}
+      <input type="reset" value="Reset" class="btn btn-outline-warning">
       
+    </div>
+    
+    <p><span><a href="{{url_for('userlog')}}"><span><i>Have an Account ?</i></span></a></span></p>
+    
+    
+    
   </form>
-  
 </fieldset>
 
 
