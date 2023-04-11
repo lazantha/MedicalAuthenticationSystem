@@ -1,5 +1,5 @@
 from flask import Flask,render_template,url_for,request,redirect,flash
-from allForms import UserLog,AdminSignUp,UserSignUp,UserForm,AdminInterface,SuperAdminInterface
+from allForms import UserLog,AdminSignUp,UserSignUp,UserForm,AdminInterface,SuperAdminInterface,TimeSchedule
 app=Flask(__name__)
 app.config['SECRET_KEY']="kEY"
 
@@ -72,3 +72,8 @@ def adminPanel():
 def superAdminPanel():
     new_super=SuperAdminInterface()
     return render_template('interfaces/superAdmin/superAdmin.html',form=new_super)
+
+@app.route('/timetable')
+def timeTable():
+    new_time_table=TimeSchedule()
+    return render_template('interfaces/admin/timetable.html',form=new_time_table)

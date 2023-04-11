@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% block head %}
+
+{% endblock %}
+
+{% block content %}
+
+<div class=" row" >
+    <div class="col-3 border-top border-end rounded-end" style="background-color: #344ba0;height: 100vh;">
+
+      <div class="mt-5 ps-3">
+          <ul class="">
+            
+            <li class="pb-5" style="list-style: none;">
+              <i class="fa-solid fa-gears" style="color: #f0c76f;"></i>
+            <a href="/adminPanel" class="link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" style="text-decoration: none;">Admin(Office)</a>
+            
+            </li>
+            <hr>
+            <li class="pb-5" style="list-style: none;">
+              <i class="fa-solid fa-calendar-plus" style="color: #f0c76f;"></i>
+            <a href="/timetable" class="link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" style="text-decoration: none;">Update Time Tables</a>
+            
+            </li>
+            <hr>
+            <li class="" style="list-style: none;">
+              <i class="fa-solid fa-file-export" style="color: #f0c76f;"></i>
+            <a href="#" class="link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" style="text-decoration: none;">Reports</a>
+            
+            </li>
+               
+          </ul>
+
+      </div>
+    </div> 
+    <!-- End of First Column -->
+
+    <div class="col">
+
+    
+        <div class="card w-75 mb-3">
+            <div class="card-body">
+              <h5 class="card-title">Select</h5>
+              <div class="row g-2">
+                <div class="col-md">
+                  <div class="form-floating">
+                    {{form.department(class="form-select" ,id="floatingSelectGrid")}}
+                    <label for="floatingSelectGrid">{{form.department.label}}</label>
+                  </div>
+
+                </div>
+                <div class="col-md">
+                  <div class="form-floating">
+                    {{form.semester(class="form-select" ,id="floatingSelectGrid")}}
+                    
+                    <label for="floatingSelectGrid">{{form.semester.label}}</label>
+                  </div>
+                </div>
+              </div>
+              {{form.submit(class='btn btn-info btn-sm')}}
+            </div>
+          </div>
+          
+
+
+
+      <!-- first Card -->
+      <div class="card text-center">
+        <div class="card-header">
+            <h5 class="card-title">Set up Schedules and Time tables</h5>
+        </div>
+        <div class="card-body">
+          
+          
+
+            <form action="/" method="POST">
+
+                <table class="table">
+                    <thead>
+                      <tr>
+                        <th scope="col">Date</th>
+                        <th scope="col">Start Time</th>
+                        <th scope="col">End TIme</th>
+                        <th scope="col">Subject Code</th>
+                        <th scope="col">Subject Name</th>
+                        
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <th scope="row">{{form.date()}}<br>{{form.newSlot(class='btn btn-warning btn-sm')}}</th>
+                        <td>{{form.start_time()}}</td>
+                        <td>{{form.end_time()}}</td>
+                        <td>{{form.subject_code()}}</td>
+                        <td>{{form.subject_name()}}</td>
+
+                        
+                      </tr>
+                      <tr>
+                        <th scope="row">{{form.date()}}<br>{{form.newSlot(class='btn btn-warning btn-sm')}}</th>
+                        <td>{{form.start_time()}}</td>
+                        <td>{{form.end_time()}}</td>
+                        <td>{{form.subject_code()}}</td>
+                        <td>{{form.subject_name()}}</td>
+                        
+
+                      </tr>
+                     
+                    </tbody>
+                  </table>
+
+            </form>
+
+
+
+
+
+
+          
+        </div>
+        <div class="card-footer text-body-secondary">
+          2 days ago
+        </div>
+      </div>
+       
+
+      
+      
+      
+    </div>
+    
+    
+  </div>
+
+{% endblock %}
+

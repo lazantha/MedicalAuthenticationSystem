@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField,validators,SelectField,TextAreaField,DateTimeField,DateField,RadioField,FileField,SubmitField,PasswordField
+from wtforms import StringField,validators,SelectField,TextAreaField,DateTimeField,DateField,RadioField,FileField,SubmitField,PasswordField,TimeField
 # from wtforms.validators import DataRequired,Length,Email,EqualTo
 
 
@@ -74,3 +74,15 @@ class SuperAdminInterface(FlaskForm):
     all_reject=SubmitField("ALL Reject")
     
 
+#timetable
+
+class TimeSchedule(FlaskForm):
+    department=SelectField("Department",choices=['HNDIT','HNDTHM','HNDM','HNDE'])
+    semester=SelectField("Semester",choices=[1,2,3,4])
+    date=DateField()
+    start_time=TimeField("Start Time")
+    end_time=TimeField("End Time")
+    subject_code=SelectField("Subject Code",choices=['From Db'])
+    subject_name=SelectField('Subject Name',choices=['From DB'])
+    newSlot=SubmitField('New Slot')
+    submit=SubmitField('Update')
