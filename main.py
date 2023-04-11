@@ -1,5 +1,5 @@
 from flask import Flask,render_template,url_for,request,redirect,flash
-from allForms import UserLog,AdminSignUp,UserSignUp,UserForm,AdminInterface
+from allForms import UserLog,AdminSignUp,UserSignUp,UserForm,AdminInterface,SuperAdminInterface
 app=Flask(__name__)
 app.config['SECRET_KEY']="kEY"
 
@@ -57,7 +57,7 @@ def adminSign():
 @app.route('/request')
 def request():
     new_req_form=UserForm()
-    return render_template('mainForm/mainform.html',form=new_req_form)
+    return render_template('interfaces/user/mainform.html',form=new_req_form)
 
 
 
@@ -70,4 +70,5 @@ def adminPanel():
 #superAdmin
 @app.route('/superAdminPanel')
 def superAdminPanel():
-    return render_template('interfaces/superAdmin/superAdmin.html')
+    new_super=SuperAdminInterface()
+    return render_template('interfaces/superAdmin/superAdmin.html',form=new_super)

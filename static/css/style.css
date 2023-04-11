@@ -3,7 +3,12 @@
     color: black;
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif
 }
+a{
+    text-decoration: none;
+    
 
+
+}
 
 *{
     margin: 0;

@@ -57,11 +57,20 @@ class AdminInterface(FlaskForm):
     all_accept=SubmitField("ALL Accept")
     reject=SubmitField("Reject")
     all_reject=SubmitField("ALL Reject")
+    submit=SubmitField("Submit To HOD")
+    abort=SubmitField("Abort")
+    download=SubmitField("Download List")
     
     
     
 
 #Super Admin Interface
 class SuperAdminInterface(FlaskForm):
-    pass
+    edit_time_table=SubmitField("Click To Edit Time Tables:")
+    display=SubmitField("Display Requests") 
+    authenticate=SubmitField("Authenticate")
+    all_authenticate=SubmitField("ALL Authenticate")
+    reject=SubmitField("Reject")
+    all_reject=SubmitField("ALL Reject")
+    
 
