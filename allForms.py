@@ -6,10 +6,16 @@ from wtforms import StringField,validators,SelectField,TextAreaField,DateTimeFie
 
 
 #user/admin Log in form
+class AdminLog(FlaskForm):
+    user_name=StringField("User Name: ")
+    password=PasswordField("Password: ")
+    possition=SelectField("Possition",choices=['OFFICE','HOD'])
+    submit=SubmitField("Log In")
+
+#user Log in form
 class UserLog(FlaskForm):
     user_name=StringField("User Name: ")
     password=PasswordField("Password: ")
-    possition=SelectField("Possition",choices=['Office','HOD'])
     submit=SubmitField("Log In")
 
 

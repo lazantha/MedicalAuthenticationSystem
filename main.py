@@ -1,6 +1,6 @@
 from flask import Flask,render_template,url_for,redirect,flash
 from flask import request
-from allForms import UserLog,AdminSignUp,UserSignUp,UserForm,AdminInterface,SuperAdminInterface,TimeSchedule
+from allForms import UserLog,AdminLog,AdminSignUp,UserSignUp,UserForm,AdminInterface,SuperAdminInterface,TimeSchedule
 from flask_bcrypt import Bcrypt
 from database import MySql,host,database,user
 
@@ -14,7 +14,7 @@ def page_not_found(e):
 #error handling 500
 def internal_server_error(e):
   return render_template('errorhandler/500.html'), 500
-
+#...............................................................
 
 
 
@@ -31,25 +31,26 @@ def userlog():
     if new_user.validate_on_submit():
         user_name=new_user.user_name.data
         password=new_user.password.data
-        if user_name=='lasantha' and password=='lasa123':
+        if user_name=="lasantha" and password=="lasa123":
             return redirect('request')
         else:
             return redirect('userlog')
+        
 
-    return render_template('logIn/user.html',form=new_user)
+    return render_template('login/user.html',form=new_user)
 
 
 #admin login page
 @app.route('/adminlog',methods=['GET','POST'])
 def adminlog():
-    new_admin=UserLog()
+    new_admin=AdminLog()
     if new_admin.validate_on_submit():
         user_name=new_admin.user_name.data
         password=new_admin.password.data
         possition=new_admin.possition.data
         if user_name == 'sansa' and password=='sansa123':
-            if possition=='office':
-                return redirect('adminpanel')
+            if possition=="OFFICE":
+                return redirect('adminPanel')
             else:
                 return redirect('superAdminPanel')
             
@@ -59,6 +60,9 @@ def adminlog():
     
         
     return render_template('login/admin.html',form=new_admin)
+
+
+#..............................................................................
 #about page
 @app.route('/about')
 def about():
@@ -67,6 +71,8 @@ def about():
 @app.route('/contact')
 def contact():
     return render_template('contact.html')
+#..............................................................................
+
 
 #user Sign
 @app.route('/userSign',methods=['GET','POST'])
@@ -122,6 +128,35 @@ def adminSign():
 @app.route('/request',methods=['GET','POST'])
 def request():
     new_req_form=UserForm()
+    new_data=MySql()
+    if new_req_form.validate_on_submit():
+        user_name=new_req_form.userName.data
+        course=new_req_form.course.data
+        year=new_req_form.year.data
+        semeseter=new_req_form.semeseter.data
+        attempt=new_req_form.attempt.data
+        comment=new_req_form.comment.data
+        start_date=new_req_form.start_date.data
+        end_date=new_req_form.end_date.data
+        doc_name=new_req_form.doc_name.data
+        type=new_req_form.type.data
+        med_pic=new_req_form.med_pic.data
+        date_issued=new_req_form.date_issued.data
+        data=(user_name,course,year,semeseter,attempt,start_date,end_date,type,med_pic,date_issued)
+        query="INSERT INTO medical_infor(name,course,year,semester,attempt,date_begin,date_end,method,image,date_issued) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"
+        new_data.table(query,data,host,database,user)
+        return redirect('/request')
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+
     return render_template('interfaces/user/mainform.html',form=new_req_form)
 
 
