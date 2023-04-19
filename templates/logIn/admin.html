@@ -9,7 +9,7 @@
 
 <fieldset  class="container p-3 mb-2 bg-light text-dark pt-5 mt-5">
   <legend><span><i>Log In</i></span></legend>
-  <form action="/" method="POST" class="container pt-5">
+  <form action="/adminlog" method="POST" class="container pt-5">
     {{form.hidden_tag()}}
     <div class="form-floating mb-3">
       <!-- <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com"> -->
@@ -21,6 +21,12 @@
        -->
        {{form.password(class="form-control", id="floatingPassword", placeholder="Password")}}
       <label for="floatingPassword">{{form.password.label}}</label>
+    </div>
+
+    <div class="form-floating">
+      <!-- <input type="password" class="form-control" id="floatingPassword" placeholder="Password"> -->
+      {{form.possition(class="form-control", id="floatingInput" )}}
+      <label for="floatingInput">{{form.possition.label}}</label>
     </div>
     <div class="mb-3">
       {{form.submit(class="btn btn-outline-primary")}}

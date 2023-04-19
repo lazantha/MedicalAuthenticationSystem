@@ -2,7 +2,7 @@ from flask import Flask,render_template,url_for,redirect,flash
 from flask import request
 from allForms import UserLog,AdminSignUp,UserSignUp,UserForm,AdminInterface,SuperAdminInterface,TimeSchedule
 from flask_bcrypt import Bcrypt
-from database import MySql,host,database,user,password
+from database import MySql,host,database,user
 
 app=Flask(__name__)
 app.config['SECRET_KEY']="kEY"
@@ -28,6 +28,14 @@ def index():
 @app.route('/userlog',methods=['GET','POST'])
 def userlog():
     new_user=UserLog()
+    if new_user.validate_on_submit():
+        user_name=new_user.user_name.data
+        password=new_user.password.data
+        if user_name=='lasantha' and password=='lasa123':
+            return redirect('request')
+        else:
+            return redirect('userlog')
+
     return render_template('logIn/user.html',form=new_user)
 
 
@@ -35,6 +43,21 @@ def userlog():
 @app.route('/adminlog',methods=['GET','POST'])
 def adminlog():
     new_admin=UserLog()
+    if new_admin.validate_on_submit():
+        user_name=new_admin.user_name.data
+        password=new_admin.password.data
+        possition=new_admin.possition.data
+        if user_name == 'sansa' and password=='sansa123':
+            if possition=='office':
+                return redirect('adminpanel')
+            else:
+                return redirect('superAdminPanel')
+            
+        else:
+            return redirect('adminlog')
+            
+    
+        
     return render_template('login/admin.html',form=new_admin)
 #about page
 @app.route('/about')
@@ -59,8 +82,9 @@ def userSign():
         confirm=new_user.confirm.data
         query="INSERT INTO user (first_name,last_name,department,email,password,confirm_password)VALUES(%s,%s,%s,%s,%s,%s)"
         data=(first_name,last_name,department,email,password,confirm)
-        new_data.table(query,data,host,database,user,password)
-        # return redirect(url_for('adminlog'))
+        new_data.table(query,data,host,database,user)
+        return redirect(url_for('userlog'))
+        
         
         
         
@@ -74,6 +98,7 @@ def userSign():
 def adminSign():
     new_admin=AdminSignUp()
     new_data=MySql()
+
     if new_admin.validate_on_submit():
         first_name=new_admin.first_name.data
         last_name=new_admin.last_name.data

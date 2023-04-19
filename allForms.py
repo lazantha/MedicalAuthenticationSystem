@@ -9,6 +9,7 @@ from wtforms import StringField,validators,SelectField,TextAreaField,DateTimeFie
 class UserLog(FlaskForm):
     user_name=StringField("User Name: ")
     password=PasswordField("Password: ")
+    possition=SelectField("Possition",choices=['Office','HOD'])
     submit=SubmitField("Log In")
 
 

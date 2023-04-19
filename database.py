@@ -6,7 +6,7 @@ user='root'
 
 
 class MySql:
-	def table(self,query,data,host,database,user,password):
+	def table(self,query,data,host,database,user):
 		try:
 			connection=None
 			connection=mysql.connector.connect(host=host,database=database,user=user,password=None)
