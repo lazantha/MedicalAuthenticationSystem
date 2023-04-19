@@ -5,7 +5,7 @@ from wtforms import StringField,validators,SelectField,TextAreaField,DateTimeFie
 
 
 
-#user/admin Log in form
+#admin Log in form
 class AdminLog(FlaskForm):
     user_name=StringField("User Name: ")
     password=PasswordField("Password: ")
@@ -52,8 +52,8 @@ class UserSignUp(FlaskForm):
     last_name=StringField("Last Name: ")
     department=SelectField("Department: ",choices=['IT','ACCOUNTANCY','MANAGEMENT','TOURISM'])
     email=StringField("Email: ")
-    password=StringField("Password: ")
-    confirm=StringField("Confirm Password: ")
+    password=PasswordField("Password: ")
+    confirm_password=PasswordField("Confirm Password: ")
     submit=SubmitField("Submit")
 
     
