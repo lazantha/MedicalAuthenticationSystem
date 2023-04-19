@@ -59,7 +59,9 @@ def userSign():
         confirm=new_user.confirm.data
         query="INSERT INTO user (first_name,last_name,department,email,password,confirm_password)VALUES(%s,%s,%s,%s,%s,%s)"
         data=(first_name,last_name,department,email,password,confirm)
-        new_data.setData(query,data,host,database,user,password)
+        new_data.table(query,data,host,database,user,password)
+        # return redirect(url_for('adminlog'))
+        
         
         
         
@@ -82,7 +84,8 @@ def adminSign():
         possition=new_admin.possition.data
         query=" INSERT INTO admin (first_name,last_name,email,password,confirm_possword,ati,possition) VALUES(%s,%s,%s,%s,%s,%s,%s) "
         data=(first_name,last_name,email,password,confirm_password,ati,possition)
-        new_data.table(query,data,host,database,user,password)
+        new_data.table(query,data,host,database,user)
+        return redirect(url_for('adminlog'))
         
         
         
