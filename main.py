@@ -3,6 +3,7 @@ from flask import request
 from allForms import UserLog,AdminLog,AdminSignUp,UserSignUp,UserForm,AdminInterface,SuperAdminInterface,TimeSchedule
 from flask_bcrypt import Bcrypt
 from database import MySql,host,database,user
+from datetime import datetime
 
 app=Flask(__name__)
 app.config['SECRET_KEY']="kEY"
@@ -27,13 +28,25 @@ def index():
 @app.route('/userlog',methods=['GET','POST'])
 def userlog():
     new_user=UserLog()
+    new_row=MySql()
     if new_user.validate_on_submit():
         user_name=new_user.user_name.data
         password=new_user.password.data
-        if user_name=="lasantha" and password=="lasa123":
+        data_name=(user_name)
+        data_password=(password)
+        query_1="SELECT first_name FROM user WHERE first_name=%s"
+        query_2="SELECT passowrd FROM user WHERE first_name=%s"
+        
+        name=new_row.getData(query_1,data_name,host,database,user)
+        print(name)
+        
+        password=new_row.getData(query_2,data_password,host,database,user)
+        print(password)
+        if user_name==name and password==password:
             return redirect('request')
         else:
             return redirect('userlog')
+        
         
 
     return render_template('login/user.html',form=new_user)
@@ -134,19 +147,20 @@ def request():
         user_name=new_req_form.userName.data
         course=new_req_form.course.data
         year=new_req_form.year.data
-        semeseter=new_req_form.semeseter.data
+        semester=new_req_form.semester.data
         attempt=new_req_form.attempt.data
-        comment=new_req_form.comment.data
         start_date=new_req_form.start_date.data
         end_date=new_req_form.end_date.data
-        doc_name=new_req_form.doc_name.data
+        date_issued=new_req_form.date_issued.data
         type=new_req_form.type.data
         med_pic=new_req_form.med_pic.data
-        date_issued=new_req_form.date_issued.data
-        data=(user_name,course,year,semeseter,attempt,start_date,end_date,type,med_pic,date_issued)
-        query="INSERT INTO medical_infor(name,course,year,semester,attempt,date_begin,date_end,method,image,date_issued) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"
+        query="INSERT INTO medical_infor (name,course,year,semester,attempt,date_begin,date_end,method,image,date_issued)VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"
+        data=(user_name,course,year,semester,attempt,start_date,end_date,type ,med_pic,date_issued)
         new_data.table(query,data,host,database,user)
-        return redirect('/request')
+        return redirect('request')
+        
+        
+        
         
         
         
@@ -162,17 +176,39 @@ def request():
 
 
 
-#adminPanel
-@app.route('/adminPanel',methods=['GET','POST'])
-def adminPanel():
-    new_admin_panel=AdminInterface()
-    return render_template('interfaces/admin/admin.html',form=new_admin_panel)
+
+#superAdminIt
+@app.route('/superAdminPanelIt',methods=['GET','POST'])
+def superAdminPanelIt():
+    new_super=SuperAdminInterface()
+    return render_template('interfaces/superAdmin/it.html',form=new_super)
+
+#superAdminAccount
+@app.route('/superAdminPanelAccount',methods=['GET','POST'])
+def superAdminPanelAccount():
+    new_super=SuperAdminInterface()
+    return render_template('interfaces/superAdmin/account.html',form=new_super)
+
+
+#superAdmManagement
+@app.route('/superAdminPanelManagement',methods=['GET','POST'])
+def superAdminPanelManagement():
+    new_super=SuperAdminInterface()
+    return render_template('interfaces/superAdmin/management.html',form=new_super)
+
+#superAdminEnglish
+@app.route('/superAdminPanelEnglish',methods=['GET','POST'])
+def superAdminPanelEnglish():
+    new_super=SuperAdminInterface()
+    return render_template('interfaces/superAdmin/english.html',form=new_super)
 
 #superAdmin
-@app.route('/superAdminPanel',methods=['GET','POST'])
-def superAdminPanel():
+@app.route('/superAdminPanelThm',methods=['GET','POST'])
+def superAdminPanelThm():
     new_super=SuperAdminInterface()
-    return render_template('interfaces/superAdmin/superAdmin.html',form=new_super)
+    return render_template('interfaces/superAdmin/thm.html',form=new_super)
+
+
 #time schedule
 @app.route('/timetable',methods=['GET','POST'])
 def timeTable():

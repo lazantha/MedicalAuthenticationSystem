@@ -4,137 +4,95 @@
 {% endblock %}
 {% block content %}
 
-<!-- 
-<fieldset class="container p-3 mb-2 bg-light text-dark pt-5 mt-5">
-  <legend><span><i>Request</i></span></legend>
-  <form action="/" method="POST" class="container pt-5">
-    {{form.hidden_tag()}}
-
-    <div class="form-group">
-      <label for="first_name">{{form.userName.label}}</label>
-      {{form.userName(class='form-control')}}
-    </div>
-........................................................................
-    <div class="form-group">
-      <label for="course">{{form.course.label}}</label>
-      {{form.course(class='form-control')}}
-    </div>
-........................................................................    
-    <div class="form-group">
-      <label for="year">{{form.year.label}}</label>
-      {{form.year(class='form-control')}}
-    </div>
-........................................................................    
-    <div class="form-group">
-      <label for="semester">{{form.semeseter.label}}</label>
-      {{form.semeseter(class='form-control')}}
-    </div>
-........................................................................  
-    <div class="form-group">
-      <label for="attempt">{{form.attempt.label}}</label>
-      {{form.attempt(class='form-control')}}
-    </div>
-........................................................................  
-    textArea
-    <div class="form-group">
-      <label for="comment">{{form.comment.label}}</label>
-      {{form.comment(class='form-control')}}
-    </div>
-....................................................................... 
-    date
-    <div class="form-group">
-      <label for="sdate">{{form.start_date.label}}</label>
-      {{form.start_date(class='form-control')}}
-    </div>
-
-....................................................................... 
-    <div class="form-group">
-      <label for="edate">{{form.end_date.label}}</label>
-      {{form.end_date(class='form-control')}}
-    </div>
-....................................................................... 
-    <div class="form-group">
-      <label for="doc_name">{{form.doc_name.label}}</label>
-      {{form.doc_name(class='form-control')}}
-    </div>
-.......................................................................  
-    radio
-    <div class="form-group">
-      <label for="type">{{form.type.label}}</label>
-      {{form.type(class='form-control')}}
-    </div>
-.......................................................................  
-    <div class="form-group">
-      <label for="med_pic">{{form.med_pic.label}}</label>
-      {{form.med_pic(class='form-control')}}
-    </div>
-
-    <div class="form-group">
-      <label for="date_issued">{{form.date_issued.label}}</label>
-      {{form.date_issued(class='form-control')}}
-    </div>
-    
-      geting with jinja  selection/date time radio and checkboxes
-        <div class="form-group">
-        {{form.submit(class='btn btn-outline-primary')}}
-        <input type="reset" value="Reset" class="btn btn-outline-warning">
-       
-  </form>
-  
-  
-</fieldset> -->
 
 <fieldset class="container p-3 mb-2 bg-light text-dark pt-5 mt-5">
   <legend><span><i>Request Medical</i></span></legend>
   <form action="/request" method="POST" class="container pt-5">
     {{form.hidden_tag()}}
-    <div class="form-floating mb-3">
-      <!-- <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com"> -->
+    <div class="form-floating mb-3"> 
       {{form.userName(class="form-control" ,id="floatingInput")}}
       <label for="floatingInput">{{form.userName.label}}</label>
     </div>
 
     <div class="form-floating">
-      <!-- <input type="password" class="form-control" id="floatingPassword" placeholder="Password"> -->
       {{form.course(class="form-control", id="floatingInput")}}
       <label for="floatingInput">{{form.course.label}}</label>
     </div>
     
     <div class="form-floating">
-      <!-- <input type="password" class="form-control" id="floatingPassword" placeholder="Password"> -->
       {{form.year(class="form-control", id="floatingInput")}}
       <label for="floatingInput">{{form.year.label}}</label>
     </div>
+
     <div class="form-floating">
-      <!-- <input type="password" class="form-control" id="floatingPassword" placeholder="Password"> -->
-      {{form.semeseter(class="form-control", id="floatingPassword" )}}
-      <label for="floatingInput">{{form.semeseter.label}}</label>
+      {{form.semester(class="form-control", id="floatingPassword" )}}
+      <label for="floatingInput">{{form.semester.label}}</label>
     </div>
+
     <div class="form-floating">
-      <!-- <input type="password" class="form-control" id="floatingPassword" placeholder="Password"> -->
       {{form.attempt(class="form-control", id="floatingInput" )}}
       <label for="floatingInput">{{form.attempt.label}}</label>
     </div>
     
+    <div class="row">
+  <div class="col-sm-6 mb-3 mb-sm-0">
+    <div class="card">
+      <div class="card-body">
+        
 
-    <div class="form-floating">
-      <!-- <input type="password" class="form-control" id="floatingPassword" placeholder="Password"> -->
-      {{form.start_date(class="form-control",id="floatingInput")}}
-      <label for="floatingInput">{{form.start_date.label}}</label>
+        <div id="date-picker-example" class="md-form md-outline input-with-post-icon datepicker" inline="true">
+          
+          <label for="example">{{form.start_date.label}}</label>
+          {{form.start_date(class="form-control",id="floatingInput")}}
+          <i class="fas fa-calendar input-prefix"></i>
+        </div>
+
+      </div>
     </div>
-    <div class="form-floating">
-      <!-- <input type="password" class="form-control" id="floatingPassword" placeholder="Password"> -->
-      {{form.end_date(class="form-control",id="floatingInput")}}
-      <label for="floatingInput">{{form.end_date.label}}</label>
+  </div>
+  <div class="col-sm-6">
+    <div class="card">
+      <div class="card-body">
+        
+        <div id="date-picker-example" class="md-form md-outline input-with-post-icon datepicker" inline="true">
+          
+          <label for="example">{{form.end_date.label}}</label>
+          {{form.end_date(class="form-control",id="floatingInput")}}
+          <i class="fas fa-calendar input-prefix"></i>
+        </div>
+
+
+      </div>
     </div>
-    <div class="form-group">
-      <label for="type">{{form.type.label}}</label>
-      {{form.type(class='form-control')}}
+  </div>
+</div>
+
+<div class="card" style="width: 18rem;">
+  <div class="card-body">
+    <div id="date-picker-example" class="md-form md-outline input-with-post-icon datepicker" inline="true">
+          
+      <label for="example">{{form.date_issued.label}}</label>
+      {{form.date_issued(class="form-control",id="floatingInput")}}
+      <i class="fas fa-calendar input-prefix"></i>
     </div>
+    
+
+  </div>
+</div>
+
+
+     <div class="card" style="width: 18rem;">
+      <div class="card-body">
+        <h5 class="card-title">{{form.type.label}}</h5>
+        {{form.type(class='form-control',style="list-style:none")}}
+      </div>
+    </div>
+    
     <div class="mb-3">
       <label for="floatingInput" class="form-label">{{form.med_pic.label}}</label>
       {{form.med_pic(class='form-control')}}
     </div>
+    
     <div class="form-group">
       {{form.submit(class='btn btn-outline-primary')}}
       <input type="reset" value="Reset" class="btn btn-outline-warning">

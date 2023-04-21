@@ -10,7 +10,9 @@ class AdminLog(FlaskForm):
     user_name=StringField("User Name: ")
     password=PasswordField("Password: ")
     possition=SelectField("Possition",choices=['OFFICE','HOD'])
+    department=SelectField("Department",choices=['IT','MANAGEMENT','ACCOUNTENCY','ENGLISH','TOURISM'])
     submit=SubmitField("Log In")
+    
 
 #user Log in form
 class UserLog(FlaskForm):
@@ -24,15 +26,13 @@ class UserForm(FlaskForm):
     userName=StringField('Name with Initials')
     course=SelectField("Course",choices=['IT','Accountency','Management','Tourism'])
     year=SelectField("Year",choices=['1','2','3','4'])
-    semeseter=SelectField("Semester",choices=['1','2'])
+    semester=SelectField("Semester",choices=['1','2'])
     attempt=SelectField("Attemp",choices=['1','2','3','4'])
-    comment=TextAreaField("Signs and Symptoms Observed By Medical Officer")
     start_date=DateField("Start Date")
     end_date=DateField("End Date")
-    doc_name=StringField("Name of the Medical Officer")
+    date_issued=DateField("Issued Date")
     type=RadioField("Medical By",choices=['Government','Private'])
     med_pic=FileField("Upload picture of Medical Sheet")
-    date_issued=DateField("Enter Date")
     submit=SubmitField("Save")
 
 #admin Sign Up

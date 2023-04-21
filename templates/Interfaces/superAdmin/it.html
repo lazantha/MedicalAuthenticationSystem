@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% block head %}
+<title>{IT}</title>
+ 
+{% endblock %}
+
+
+{% block content %}
+
+
+<div class=" row" >
+  {{form.hidden_tag()}}
+  <!-- first Column -->
+  <div class="col-3 border-top border-end rounded-end" style="background-color: #344ba0;height: 100vh;">
+
+    <div class="mt-5 ps-3">
+        <ul class="">
+          
+          <li class="pb-5" style="list-style: none;">
+            <i class="fa-solid fa-gears" style="color: #f0c76f;"></i>
+          <a href="#" class="link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" style="text-decoration: none;">Admin(HOD)</a>
+          
+          </li>
+          <hr>
+          <li class="pb-5" style="list-style: none;">
+            <i class="fa-solid fa-calendar-plus" style="color: #f0c76f;"></i>
+          <a href="#" class="link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" style="text-decoration: none;">Update Time Tables</a>
+          
+          </li>
+          <hr>
+          <li class="pb-5" style="list-style: none;">
+            <i class="fa-solid fa-file-export" style="color: #f0c76f;"></i>
+          <a href="#" class="link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" style="text-decoration: none;">Reports</a>
+          
+          </li>
+          <hr>
+          <li class="" style="list-style: none;">
+            <i class="fa-solid fa-chart-line" style="color: #f0c76f;"></i>
+          <a href="#" class="link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" style="text-decoration: none;">Statistics</a>
+          
+          </li>
+          
+             
+        </ul>
+
+    </div>
+  </div> 
+  <!-- End of First Column -->
+
+  <div class="col">
+
+    <!-- first Card -->
+    <!-- table -->
+    <div class="card bg-body-tertiary pt-3">
+      <h5 class="card-header">You Have Request !</h5>
+      <div class="card-body">
+        <h5 class="card-title">Special title treatment</h5>
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Index</th>
+              <th scope="col">Applications</th>
+              <th scope="col">Confirmations</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">1</th>
+              <td>Application_1</td>
+              <td>
+                {{form.authenticate(class='btn btn-success btn-sm')}}
+                {{form.reject(class='btn btn-danger btn-sm')}}
+
+              </td>               
+            </tr>
+            <tr>
+              <th scope="row">2</th>
+              <td>Application_2</td>
+              <td>
+                {{form.authenticate(class='btn btn-success btn-sm')}}
+                {{form.reject(class='btn btn-danger btn-sm')}}
+                
+              </td>
+
+              
+            </tr>
+          </tbody>
+        </table>
+        {{form.all_authenticate(class='btn btn-success')}}
+        {{form.all_reject(class='btn btn-danger')}}
+        
+      </div>
+    </div>
+    <!-- End of First card -->
+
+    <!-- Second card -->
+    
+
+    
+    <!-- end of Second card bundle -->
+    
+  </div>
+  <!-- End of Second Column -->
+  
+</div>
+
+
+
+{% endblock %}
+
+
+
