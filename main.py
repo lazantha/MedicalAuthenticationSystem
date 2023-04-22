@@ -83,16 +83,29 @@ def adminlog():
         user_name=new_admin.user_name.data
         password=new_admin.password.data
         possition=new_admin.possition.data
-        if user_name == 'sansa' and password=='sansa123':
-            if possition=="OFFICE":
-                return redirect('adminPanel')
-            else:
-                return redirect('superAdminPanel')
+        department=new_admin.department.data
+        if user_name=='sample' and password=='123':
+            if possition=="HOD":
+                if department=="IT":
+                    return redirect('superAdminPanelIt')
+                elif department=="MANAGEMENT":
+                    return redirect('superAdminPanelManagement')
+                elif department=="ACCOUNTENCY":
+                    return redirect('superAdminPanelAccount')
+                elif department=="ENGLISH":
+                    return redirect('superAdminPanelEnglish')
+                else:
+                    return redirect('superAdminPanelThm')
             
+            
+            else:
+                return redirect('admin')
         else:
             return redirect('adminlog')
+        
+
             
-    
+        
         
     return render_template('login/admin.html',form=new_admin)
 
@@ -160,23 +173,14 @@ def request():
         return redirect('request')
         
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
 
     return render_template('interfaces/user/mainform.html',form=new_req_form)
 
 
-
-
+#office
+@app.route('/admin',methods=['GET','POST'])
+def admin():
+    return render_template('interfaces/admin/admin.html')
 #superAdminIt
 @app.route('/superAdminPanelIt',methods=['GET','POST'])
 def superAdminPanelIt():
