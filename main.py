@@ -180,7 +180,8 @@ def request():
 #office
 @app.route('/admin',methods=['GET','POST'])
 def admin():
-    return render_template('interfaces/admin/admin.html')
+    new_admin=AdminInterface()
+    return render_template('interfaces/admin/admin.html',form=new_admin)
 #superAdminIt
 @app.route('/superAdminPanelIt',methods=['GET','POST'])
 def superAdminPanelIt():
