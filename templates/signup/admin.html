@@ -46,10 +46,15 @@
       <label for="floatingInput">{{form.ati.label}}</label>
     </div>
 
+    
     <div class="form-floating">
-      <!-- <input type="password" class="form-control" id="floatingPassword" placeholder="Password"> -->
-      {{form.possition(class="form-control", id="floatingInput" )}}
+      {{form.possition(class="form-control  possition-select", id="floatingInput" )}}
       <label for="floatingInput">{{form.possition.label}}</label>
+    </div>
+
+    <div class="form-floating department-div" style="display: none;">
+      {{form.department(class="form-control department-select", id="floatingInput" )}}
+      <label for="floatingInput">{{form.department.label}}</label>
     </div>
     
     <div class="form-group">
@@ -61,7 +66,22 @@
   </form>
 </fieldset>
   
+<script>
+          var possitionSelect = document.querySelector(".possition-select");
+          var departmentDiv = document.querySelector(".department-div");
+          var departmentSelect = document.querySelector(".department-select");
+          possitionSelect.addEventListener("change", function() {
+            if (possitionSelect.value == "OFFICE") {
+                // Hide the "department" input field
+                departmentDiv.style.display = "none";
+                departmentSelect.value = " ";
+            } else if (possitionSelect.value == "HOD") {
+                // Show the "department" input field
+                departmentDiv.style.display = "block";
+            }
+        });
 
+</script>
 
 {% endblock %}
 

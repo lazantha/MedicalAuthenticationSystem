@@ -44,13 +44,14 @@ class AdminSignUp(FlaskForm):
     confirm_password=PasswordField("Confirm Password: ")
     ati=StringField("ATI: ")
     possition=SelectField("Possision: ",choices=['Office','HOD'])
+    department=SelectField("Department: ",choices=['IT','ACCOUNTANCY','MANAGEMENT','TOURISM','ENGLISH'])
     submit=SubmitField("Submit")
  
 #user SignUp
 class UserSignUp(FlaskForm):
     first_name=StringField("First Name: ")
     last_name=StringField("Last Name: ")
-    department=SelectField("Department: ",choices=['IT','ACCOUNTANCY','MANAGEMENT','TOURISM'])
+    department=SelectField("Department: ",choices=['IT','ACCOUNTANCY','MANAGEMENT','TOURISM','ENGLISH'])
     email=StringField("Email: ")
     password=PasswordField("Password: ")
     confirm_password=PasswordField("Confirm Password: ")

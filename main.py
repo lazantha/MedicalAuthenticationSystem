@@ -124,7 +124,8 @@ def adminSign():
         confirm_password=new_admin.confirm_password.data
         ati=new_admin.ati.data
         possition=new_admin.possition.data
-        query=" INSERT INTO admin (first_name,last_name,email,password,confirm_password,ati,possition) VALUES(%s,%s,%s,%s,%s,%s,%s) "
+        department=new_admin.department.data
+        query=" INSERT INTO admin (first_name,last_name,email,password,confirm_password,ati,possition,department) VALUES(%s,%s,%s,%s,%s,%s,%s) "
         data=(first_name,last_name,email,password,confirm_password,ati,possition)
         new_data.table(query,data,host,database,user)
         return redirect(url_for('adminlog'))
