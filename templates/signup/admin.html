@@ -52,7 +52,7 @@
       <label for="floatingInput">{{form.possition.label}}</label>
     </div>
 
-    <div class="form-floating department-div" style="display: none;">
+    <div class="form-floating department-div " style="display: none;" >
       {{form.department(class="form-control department-select", id="floatingInput" )}}
       <label for="floatingInput">{{form.department.label}}</label>
     </div>
@@ -67,20 +67,20 @@
 </fieldset>
   
 <script>
-          var possitionSelect = document.querySelector(".possition-select");
-          var departmentDiv = document.querySelector(".department-div");
-          var departmentSelect = document.querySelector(".department-select");
-          possitionSelect.addEventListener("change", function() {
-            if (possitionSelect.value == "OFFICE") {
+        var possitionSelect = document.querySelector(".possition-select");
+        var departmentDiv = document.querySelector(".department-div");
+        var departmentSelect = document.querySelector(".department-select");
+
+        possitionSelect.addEventListener("change", function() {
+            if (possitionSelect.value == "Office") {
                 // Hide the "department" input field
                 departmentDiv.style.display = "none";
-                departmentSelect.value = " ";
+                departmentSelect.value = "";
             } else if (possitionSelect.value == "HOD") {
                 // Show the "department" input field
                 departmentDiv.style.display = "block";
             }
         });
-
 </script>
 
 {% endblock %}
