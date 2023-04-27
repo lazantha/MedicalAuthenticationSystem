@@ -22,7 +22,7 @@ class MySql:
 				print("Connection Closed !")
 
 
-	def getData(self,query,data,host,database,user):
+	def fetchAll(self,query,data,host,database,user):
 		try:
 			connection=None
 			connection=mysql.connector.connect(host=host,database=database,user=user,password=None)
@@ -37,6 +37,51 @@ class MySql:
 			if connection != None and connection.is_connected():
 				connection.close()
 				print("Connection Closed !")
+
+	
+	def fetchOne(self,query,host,database,user):
+		try:
+			connection=None
+			connection=mysql.connector.connect(host=host,database=database,user=user,password=None)
+			cursor=connection.cursor(prepared=True)
+			cursor.execute(query)
+			result=cursor.fetchone()
+			return(result[0])
+			print("getting success !")
+		except mysql.connector.Error as error:
+			print("query failed {}".format(error))
+		finally:
+			if connection != None and connection.is_connected():
+				connection.close()
+				print("Connection Closed !")
+	
+
+	def getData(self,query,host,database,user):
+		try:
+			connection=None
+			connection=mysql.connector.connect(host=host,database=database,user=user,password=None)
+			cursor=connection.cursor(prepared=True)
+			cursor.execute(query)
+			result=cursor.fetchall()
+			return(result)
+			print("getting success !")
+		except mysql.connector.Error as error:
+			print("query failed {}".format(error))
+		finally:
+			if connection != None and connection.is_connected():
+				connection.close()
+				print("Connection Closed !")
+
+
+
+
+
+
+
+
+	
+
+
 
 
 

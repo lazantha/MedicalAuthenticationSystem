@@ -63,8 +63,14 @@ def userSign():
         email=new_sign.email.data
         password=new_sign.password.data
         confirm_password=new_sign.confirm_password.data
-        query="INSERT INTO user(first_name,last_name,department,email,password,confirm_password)VALUES(%s,%s,%s,%s,%s,%s);"
-        data=(first_name,last_name,department,email,password,confirm_password)
+        depQuery="SELECT department_id FROM department ORDER BY department_id DESC"
+        dep_id=new_sql.fetchOne(depQuery,host,database,user)
+        adminQuery="SELECT admin_id FROM admin ORDER BY admin_id DESC"
+        admin_id=new_sql.fetchOne(adminQuery,host,database,user)
+
+
+        query="INSERT INTO user(department_id,admin_id,first_name,last_name,department,email,password,confirm_password)VALUES(%s,%s,%s,%s,%s,%s,%s,%s);"
+        data=(dep_id,admin_id,first_name,last_name,department,email,password,confirm_password)
         new_sql.table(query,data,host,database,user)
         return redirect('userlog')
         
@@ -125,8 +131,10 @@ def adminSign():
         ati=new_admin.ati.data
         possition=new_admin.possition.data
         department=new_admin.department.data
-        query=" INSERT INTO admin (first_name,last_name,email,password,confirm_password,ati,possition,department) VALUES(%s,%s,%s,%s,%s,%s,%s) "
-        data=(first_name,last_name,email,password,confirm_password,ati,possition)
+        if possition=='Office':
+            department=" "
+        query=" INSERT INTO admin (first_name,last_name,email,password,confirm_password,ati,possition,department) VALUES(%s,%s,%s,%s,%s,%s,%s,%s) "
+        data=(first_name,last_name,email,password,confirm_password,ati,possition,department)
         new_data.table(query,data,host,database,user)
         return redirect(url_for('adminlog'))
         
@@ -168,8 +176,10 @@ def request():
         date_issued=new_req_form.date_issued.data
         type=new_req_form.type.data
         med_pic=new_req_form.med_pic.data
-        query="INSERT INTO medical_infor (name,course,year,semester,attempt,date_begin,date_end,method,image,date_issued)VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"
-        data=(user_name,course,year,semester,attempt,start_date,end_date,type ,med_pic,date_issued)
+        medQuery="SELECT user_id FROM user ORDER BY user_id DESC"
+        user_id=new_data.fetchOne(medQuery,host,database,user)
+        query="INSERT INTO medical_infor (user_id,name,course,year,semester,attempt,date_begin,date_end,method,image,date_issued)VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"
+        data=(user_id,user_name,course,year,semester,attempt,start_date,end_date,type ,med_pic,date_issued)
         new_data.table(query,data,host,database,user)
         return redirect('request')
         
@@ -182,7 +192,13 @@ def request():
 @app.route('/admin',methods=['GET','POST'])
 def admin():
     new_admin=AdminInterface()
-    return render_template('interfaces/admin/admin.html',form=new_admin)
+    new_data=MySql()
+    query="SELECT COUNT(id)FROM medical_infor"
+    count=new_data.fetchOne(query,host,database,user)
+
+
+
+    return render_template('interfaces/admin/admin.html',form=new_admin,count=count)
 #superAdminIt
 @app.route('/superAdminPanelIt',methods=['GET','POST'])
 def superAdminPanelIt():
@@ -219,4 +235,9 @@ def superAdminPanelThm():
 @app.route('/timetable',methods=['GET','POST'])
 def timeTable():
     new_time_table=TimeSchedule()
+    new_data=MySql()
+    if new_time_table.validate_on_submit():
+        department=new_time_table.department.data
+        semester=new_time_table.semester.data
+        
     return render_template('interfaces/admin/timetable.html',form=new_time_table)
