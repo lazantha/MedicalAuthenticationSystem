@@ -7,60 +7,168 @@
 
 {% block content %}
 
+<!-- recieved messeges -->
+{% with messages= get_flashed_messages(with_categories=True)%}
+  {% if messages %}
+    {% for categories, message in messages %}
+      <div class="alert alert-success" role="alert">
+        {{message}}
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
 <fieldset class="container p-3 mb-2 bg-light text-dark pt-5 mt-5">
   <legend><span><i>Sign Up !</i></span></legend>
   <form action="/adminSign" method="POST">
     {{form.hidden_tag()}}
     <div class="form-floating mb-3">
-      <!-- <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com"> -->
-      {{form.first_name(class="form-control",id="floatingInput",placeholder="Kevin")}}
+      {% if form.first_name.errors %}
+        {{form.first_name(class="form-control is-invalid",id="floatingInput",placeholder="Kevin")}}
+        <div class="invalid-feedback">
+            {% for error in form.first_name.errors  %}
+              <span>{{error}}</span>
+            {% endfor %}
+        </div>
+        {%else%}
+          {{form.first_name(class="form-control",id="floatingInput",placeholder="Kevin")}}
+      {% endif %}
       <label for="floatingInput">{{form.first_name.label}}</label>
     </div>
+
     <div class="form-floating">
-      <!-- <input type="password" class="form-control" id="floatingPassword" placeholder="Password"> -->
-      {{form.last_name(class="form-control",id="floatingInput",placeholder="Re")}}
+      <!-- {{form.last_name(class="form-control",id="floatingInput",placeholder="Re")}}
       <label for="floatingInput">{{form.last_name.label}}</label>
+
+       -->
+       {% if form.last_name.errors %}
+        {{form.last_name(class="form-control is-invalid",id="floatingInput",placeholder="Kevin")}}
+        <div class="invalid-feedback">
+            {% for error in form.last_name.errors  %}
+              <span>{{error}}</span>
+            {% endfor %}
+        </div>
+        {%else%}
+          {{form.last_name(class="form-control",id="floatingInput",placeholder="Re")}}
+      {% endif %}
+      <label for="floatingInput">{{form.last_name.label}}</label>
+
     </div>
 
-
     <div class="form-floating mb-3">
-      <!-- <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com"> -->
-      {{form.email(class="form-control",id="floatingInput",placeholder="name@example.com")}}
+      <!-- {{form.email(class="form-control",id="floatingInput",placeholder="name@example.com")}}
       <label for="floatingInput">{{form.email.label}}</label>
-      <!-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> -->
+       -->
+       {% if form.email.errors %}
+       {{form.email(class="form-control is-invalid",id="floatingInput",placeholder="Kevin")}}
+       <div class="invalid-feedback">
+           {% for error in form.email.errors  %}
+             <span>{{error}}</span>
+           {% endfor %}
+       </div>
+       {%else%}
+         {{form.email(class="form-control",id="floatingInput",placeholder="mail")}}
+     {% endif %}
+     <label for="floatingInput">{{form.email.label}}</label>
+
     </div>
+
     <div class="form-floating">
-      <!-- <input type="password" class="form-control" id="floatingPassword" placeholder="Password"> -->
-      {{form.password(class="form-control",id="floatingPassword",placeholder="Password")}}
+
+      <!-- {{form.password(class="form-control",id="floatingPassword",placeholder="Password")}}
       <label for="floatingPassword">{{form.password.label}}</label>
+       -->
+       {% if form.password.errors %}
+       {{form.password(class="form-control is-invalid",id="floatingInput",placeholder="Kevin")}}
+       <div class="invalid-feedback">
+           {% for error in form.password.errors  %}
+             <span>{{error}}</span>
+           {% endfor %}
+       </div>
+       {%else%}
+         {{form.password(class="form-control",id="floatingInput",placeholder="Password")}}
+     {% endif %}
+     <label for="floatingInput">{{form.password.label}}</label>
     </div>
+
     <div class="form-floating">
-      <!-- <input type="password" class="form-control" id="floatingPassword" placeholder="Password"> -->
-      {{form.confirm_password(class="form-control",id="floatingPassword",placeholder="Password")}}
+
+      <!-- {{form.confirm_password(class="form-control",id="floatingPassword",placeholder="Password")}}
       <label for="floatingPassword">{{form.confirm_password.label}}</label>
+       -->
+       {% if form.confirm_password.errors %}
+       {{form.confirm_password(class="form-control is-invalid",id="floatingInput",placeholder="Kevin")}}
+       <div class="invalid-feedback">
+           {% for error in form.confirm_password.errors  %}
+             <span>{{error}}</span>
+           {% endfor %}
+       </div>
+       {%else%}
+         {{form.confirm_password(class="form-control",id="floatingInput",placeholder="confirm_passoword")}}
+     {% endif %}
+     <label for="floatingInput">{{form.confirm_password.label}}</label>
+
     </div>
 
     <div class="form-floating mb-3">
-      <!-- <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com"> -->
-      {{form.ati(class="form-control",id="floatingInput")}}
+
+      <!-- {{form.ati(class="form-control",id="floatingInput")}}
       <label for="floatingInput">{{form.ati.label}}</label>
+       -->
+       {% if form.ati.errors %}
+       {{form.ati(class="form-control is-invalid",id="floatingInput",placeholder="Kevin")}}
+       <div class="invalid-feedback">
+           {% for error in form.ati.errors  %}
+             <span>{{error}}</span>
+           {% endfor %}
+       </div>
+       {%else%}
+         {{form.ati(class="form-control",id="floatingInput",placeholder="confirm_passoword")}}
+     {% endif %}
+     <label for="floatingInput">{{form.ati.label}}</label>
     </div>
 
-    
     <div class="form-floating">
-      {{form.possition(class="form-control  possition-select", id="floatingInput" )}}
+      <!-- {{form.possition(class="form-control  possition-select", id="floatingInput" )}}
       <label for="floatingInput">{{form.possition.label}}</label>
+      
+       -->
+       {% if form.possition.errors %}
+       {{form.possition(class="form-control is-invalid",id="floatingInput",placeholder="Kevin")}}
+       <div class="invalid-feedback">
+           {% for error in form.possition.errors  %}
+             <span>{{error}}</span>
+           {% endfor %}
+       </div>
+       {%else%}
+         {{form.possition(class="form-control",id="floatingInput",placeholder="confirm_passoword")}}
+     {% endif %}
+     <label for="floatingInput">{{form.possition.label}}</label>
     </div>
 
     <div class="form-floating department-div " style="display: none;" >
-      {{form.department(class="form-control department-select", id="floatingInput" )}}
+
+      <!-- {{form.department(class="form-control department-select", id="floatingInput" )}}
       <label for="floatingInput">{{form.department.label}}</label>
+       -->
+       {% if form.department.errors %}
+       {{form.department(class="form-control is-invalid",id="floatingInput",placeholder="Kevin")}}
+       <div class="invalid-feedback">
+           {% for error in form.department.errors  %}
+             <span>{{error}}</span>
+           {% endfor %}
+       </div>
+       {%else%}
+         {{form.department(class="form-control",id="floatingInput",placeholder="confirm_passoword")}}
+     {% endif %}
+     <label for="floatingInput">{{form.department.label}}</label>
     </div>
     
     <div class="form-group">
       {{form.submit(class='btn btn-outline-primary')}}
       <input type="reset" value="Reset" class="btn btn-outline-warning">
     </div>
+
     <p><span><a href="{{url_for('adminlog')}}"><span><i>Have an Account ?</i></span></a></span></p>
     
   </form>

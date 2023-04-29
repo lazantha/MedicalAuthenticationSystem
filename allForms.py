@@ -1,14 +1,14 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField,validators,SelectField,TextAreaField,DateTimeField,DateField,RadioField,FileField,SubmitField,PasswordField,TimeField
-
-# from wtforms.validators import DataRequired,Length,Email,EqualTo
+from wtforms.validators import DataRequired, Length, EqualTo
+from email_validator import validate_email
 
 
 
 #admin Log in form
 class AdminLog(FlaskForm):
-    user_name=StringField("User Name: ")
-    password=PasswordField("Password: ")
+    user_name=StringField("User Name: ",validators=[DataRequired(), Length(min=3, max=10)])
+    password=PasswordField("Password: ",validators=[DataRequired(),Length(min=4)])
     possition=SelectField("Possition",choices=['OFFICE','HOD'])
     department=SelectField("Department",choices=['IT','MANAGEMENT','ACCOUNTENCY','ENGLISH','TOURISM'])
     submit=SubmitField("Log In")
@@ -16,45 +16,45 @@ class AdminLog(FlaskForm):
 
 #user Log in form
 class UserLog(FlaskForm):
-    user_name=StringField("User Name: ")
+    user_name=StringField("User Name: ",validators=[DataRequired(),Length(min=3, max=10)])
     password=PasswordField("Password: ")
     submit=SubmitField("Log In")
 
 
 #user main form
 class UserForm(FlaskForm):
-    userName=StringField('Name with Initials')
-    course=SelectField("Course",choices=['IT','Accountency','Management','Tourism'])
-    year=SelectField("Year",choices=['1','2','3','4'])
-    semester=SelectField("Semester",choices=['1','2'])
-    attempt=SelectField("Attemp",choices=['1','2','3','4'])
-    start_date=DateField("Start Date")
-    end_date=DateField("End Date")
-    date_issued=DateField("Issued Date")
-    type=RadioField("Medical By",choices=['Government','Private'])
-    med_pic=FileField("Upload picture of Medical Sheet")
+    userName=StringField('Name with Initials',validators=[DataRequired(),Length(min=3, max=10)])
+    course=SelectField("Course",choices=['IT','Accountency','Management','Tourism'],validators=[DataRequired()])
+    year=SelectField("Year",choices=['1','2','3','4'],validators=[DataRequired()])
+    semester=SelectField("Semester",choices=['1','2'],validators=[DataRequired()])
+    attempt=SelectField("Attemp",choices=['1','2','3','4'],validators=[DataRequired()])
+    start_date=DateField("Start Date",validators=[DataRequired()])
+    end_date=DateField("End Date",validators=[DataRequired()])
+    date_issued=DateField("Issued Date",validators=[DataRequired()])
+    type=RadioField("Medical By",choices=['Government','Private'],validators=[DataRequired()])
+    med_pic=FileField("Upload picture of Medical Sheet",validators=[DataRequired()])
     submit=SubmitField("Save")
 
 #admin Sign Up
 class AdminSignUp(FlaskForm):
-    first_name=StringField("Frist Name: ")
-    last_name=StringField("Last Name: ")
-    email=StringField("Email: ")
-    password=PasswordField("Password: ")
-    confirm_password=PasswordField("Confirm Password: ")
-    ati=StringField("ATI: ")
-    possition=SelectField("Possision: ",choices=['Office','HOD'])
-    department=SelectField("Department: ",choices=['IT','ACCOUNTANCY','MANAGEMENT','TOURISM','ENGLISH'])
+    first_name=StringField("Frist Name: ",validators=[DataRequired(),Length(min=3, max=10)])
+    last_name=StringField("Last Name: ",validators=[DataRequired(),Length(min=3, max=10)])
+    email=StringField("Email: ",[validators.Email()])
+    password=PasswordField("Password: ",validators=[DataRequired()])
+    confirm_password=PasswordField("Confirm Password: ",validators=[DataRequired(),EqualTo('password')])
+    ati=SelectField(choices=['KANDY'])
+    possition=SelectField("Possision: ",choices=['Office','HOD'],validators=[DataRequired()])
+    department=SelectField("Department: ",choices=['IT','ACCOUNTANCY','MANAGEMENT','TOURISM','ENGLISH'],validators=[DataRequired()])
     submit=SubmitField("Submit")
  
 #user SignUp
 class UserSignUp(FlaskForm):
-    first_name=StringField("First Name: ")
-    last_name=StringField("Last Name: ")
-    department=SelectField("Department: ",choices=['IT','ACCOUNTANCY','MANAGEMENT','TOURISM','ENGLISH'])
-    email=StringField("Email: ")
-    password=PasswordField("Password: ")
-    confirm_password=PasswordField("Confirm Password: ")
+    first_name=StringField("First Name: ",validators=[DataRequired(),Length(min=3, max=10)])
+    last_name=StringField("Last Name: ",validators=[DataRequired(),Length(min=3, max=10)])
+    department=SelectField("Department: ",choices=['IT','ACCOUNTANCY','MANAGEMENT','TOURISM','ENGLISH'],validators=[DataRequired(),])
+    email=StringField("Email: ",[validators.Email()])
+    password=PasswordField("Password: ",validators=[DataRequired()])
+    confirm_password=PasswordField("Confirm Password: ",validators=[DataRequired(),EqualTo('password')])
     submit=SubmitField("Submit")
 
     

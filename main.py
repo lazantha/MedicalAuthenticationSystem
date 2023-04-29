@@ -4,6 +4,7 @@ from allForms import UserLog,AdminLog,AdminSignUp,UserSignUp,UserForm,AdminInter
 from flask_bcrypt import Bcrypt
 from database import MySql,host,database,user
 from datetime import datetime
+from binaryFiles import Binary
 
 app=Flask(__name__)
 app.config['SECRET_KEY']="kEY"
@@ -136,7 +137,9 @@ def adminSign():
         query=" INSERT INTO admin (first_name,last_name,email,password,confirm_password,ati,possition,department) VALUES(%s,%s,%s,%s,%s,%s,%s,%s) "
         data=(first_name,last_name,email,password,confirm_password,ati,possition,department)
         new_data.table(query,data,host,database,user)
+        flash(f'Account Successfully created {first_name}!','success')
         return redirect(url_for('adminlog'))
+        
         
         
         
@@ -165,6 +168,7 @@ def contact():
 def request():
     new_req_form=UserForm()
     new_data=MySql()
+    new_binary=Binary()
     if new_req_form.validate_on_submit():
         user_name=new_req_form.userName.data
         course=new_req_form.course.data
@@ -176,10 +180,15 @@ def request():
         date_issued=new_req_form.date_issued.data
         type=new_req_form.type.data
         med_pic=new_req_form.med_pic.data
+        image=new_binary.convertToBinary(med_pic)
+
+
+
+
         medQuery="SELECT user_id FROM user ORDER BY user_id DESC"
         user_id=new_data.fetchOne(medQuery,host,database,user)
         query="INSERT INTO medical_infor (user_id,name,course,year,semester,attempt,date_begin,date_end,method,image,date_issued)VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"
-        data=(user_id,user_name,course,year,semester,attempt,start_date,end_date,type ,med_pic,date_issued)
+        data=(user_id,user_name,course,year,semester,attempt,start_date,end_date,type ,image,date_issued)
         new_data.table(query,data,host,database,user)
         return redirect('request')
         
