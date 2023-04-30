@@ -1,10 +1,11 @@
-from flask import Flask,render_template,url_for,redirect,flash
+from flask import Flask,render_template,url_for,redirect,flash,session
 from flask import request
 from allForms import UserLog,AdminLog,AdminSignUp,UserSignUp,UserForm,AdminInterface,SuperAdminInterface,TimeSchedule
 from flask_bcrypt import Bcrypt
 from database import MySql,host,database,user
 from datetime import datetime
 from binaryFiles import Binary
+import hashlib
 
 app=Flask(__name__)
 app.config['SECRET_KEY']="kEY"
@@ -18,6 +19,45 @@ def page_not_found(e):
 def internal_server_error(e):
   return render_template('errorhandler/500.html'), 500
 #...............................................................
+
+# Sessions Admin logging out
+@app.route('/adminLogOut')
+def adminLogOut():
+    pass
+
+# Sessions  English Admin logging out
+@app.route('/englishAdminLogOut')
+def englishAdminLogOut():
+    pass
+
+# Sessions  account Admin logging out
+@app.route('/accountAdminLogOut')
+def accountAdminLogOut():
+    pass
+
+# Sessions  it Admin logging out
+@app.route('/itAdminLogOut')
+def itAdminLogOut():
+    pass
+
+# Sessions  management Admin logging out
+@app.route('/managementAdminLogOut')
+def managementAdminLogOut():
+    pass
+
+# Sessions  thm Admin logging out
+@app.route('/thmAdminLogOut')
+def thmAdminLogOut():
+    pass
+
+
+#password encryption method
+def hashPassword(password):
+
+	encode=hashlib.new('SHA256')
+	encode.update(password.encode())
+	hashed_password=encode.hexdigest()
+	return hashed_password
 
 #home page
 @app.route('/')
@@ -161,6 +201,7 @@ def request():
     new_binary=Binary()
     if new_req_form.validate_on_submit():
         user_name=new_req_form.userName.data
+        gender=new_req_form.gender.data
         course=new_req_form.course.data
         year=new_req_form.year.data
         semester=new_req_form.semester.data
@@ -176,8 +217,8 @@ def request():
         admin_id=new_data.fetchOneForeing(admin_query,admin_data,host,database,user)
         user_query="SELECT user_id FROM user ORDER BY user_id DESC"
         user_id=new_data.fetchOne(user_query,host,database,user)
-        main_query="INSERT INTO medical_infor(user_id,admin_id,name,course,year,semester,attempt,date_begin,date_end,method,image,date_issued)VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"
-        main_data=(user_id,admin_id,user_name,course,year,semester,attempt,start_date,end_date,type,med_pic,date_issued)
+        main_query="INSERT INTO medical_infor(user_id,admin_id,name,gender,course,year,semester,attempt,date_begin,date_end,method,image,date_issued)VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"
+        main_data=(user_id,admin_id,user_name,gender,course,year,semester,attempt,start_date,end_date,type,med_pic,date_issued)
         new_data.table(main_query,main_data,host,database,user)
     return render_template('interfaces/user/mainform.html',form=new_req_form)
 
@@ -204,7 +245,28 @@ def admin():
     manage_count=new_data.fetchOneForeing(manage_query,manage_data,host,database,user)
     thm_count=new_data.fetchOneForeing(thm_query,thm_data,host,database,user)
     english_count=new_data.fetchOneForeing(english_query,english_data,host,database,user)
-    return render_template('interfaces/admin/admin.html',form=new_admin,count=count,it_count=it_count,account_count=account_count,manage_count=manage_count,thm_count=thm_count,english_count=english_count)
+
+    #main records
+    main_query_it="SELECT name,gender,course FROM medical_infor WHERE course= %s"
+    result_it=new_data.fetchAllMulForeing(main_query_it,it_data,host,database,user)
+    main_query_account="SELECT name,gender,course FROM medical_infor WHERE course= %s"
+    result_account=new_data.fetchAllMulForeing(main_query_account,account_data,host,database,user)    
+    main_query_manage="SELECT name,gender,course FROM medical_infor WHERE course= %s"
+    result_manage=new_data.fetchAllMulForeing(main_query_manage,manage_data,host,database,user)    
+    main_query_thm="SELECT name,gender,course FROM medical_infor WHERE course= %s"
+    result_thm=new_data.fetchAllMulForeing(main_query_thm,thm_data,host,database,user) 
+    main_query_english="SELECT name,gender,course FROM medical_infor WHERE course= %s"
+    result_english=new_data.fetchAllMulForeing(main_query_english,english_data,host,database,user) 
+    return render_template('interfaces/admin/admin.html',form=new_admin,
+                           count=count,it_count=it_count,account_count=account_count,
+                           manage_count=manage_count,thm_count=thm_count,
+                           english_count=english_count,
+                           result_it=result_it,
+                           result_account=result_account,
+                           result_manage=result_manage,
+                           result_thm=result_thm,
+                           result_english=result_english
+                           )
 #superAdminIt
 @app.route('/superAdminPanelIt',methods=['GET','POST'])
 def superAdminPanelIt():

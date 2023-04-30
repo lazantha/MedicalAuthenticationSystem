@@ -13,6 +13,10 @@
       {{form.userName(class="form-control" ,id="floatingInput")}}
       <label for="floatingInput">{{form.userName.label}}</label>
     </div>
+    <div class="card-body">
+      <p class="card-title">{{form.gender.label}}</p>
+      {{form.gender(class='form-control',style="list-style:none")}}
+    </div>
 
     <div class="form-floating">
       {{form.course(class="form-control", id="floatingInput")}}
@@ -83,7 +87,7 @@
 
      <div class="card" style="width: 18rem;">
       <div class="card-body">
-        <h5 class="card-title">{{form.type.label}}</h5>
+        <p class="card-title">{{form.type.label}}</p>
         {{form.type(class='form-control',style="list-style:none")}}
       </div>
     </div>

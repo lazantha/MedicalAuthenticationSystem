@@ -40,7 +40,7 @@ class MySql:
 				connection.close()
 				print("Connection Closed !")
 
-	#For multiple foreing keys
+	#For multiple foreing keys data bind
 	def fetchAllMulForeing(self,query,data,host,database,user):
 		try:
 			connection=None
@@ -77,6 +77,24 @@ class MySql:
 			if connection != None and connection.is_connected():
 				connection.close()
 				print("Connection Closed !")
+	
+	#FOR SINGLE QUERY WITHOUT BINDING 
+	def fetchMultiVal(self,query,host,database,user):
+		try:
+			connection=None
+			connection=mysql.connector.connect(host=host,database=database,user=user,password=None)
+			cursor=connection.cursor(prepared=True)
+			cursor.execute(query)
+			result=cursor.fetchall()
+			return result
+			print("getting success !")
+		except mysql.connector.Error as error:
+			print("query failed {}".format(error))
+		finally:
+			if connection != None and connection.is_connected():
+				connection.close()
+				print("Connection Closed !")
+
 	
 
 	
