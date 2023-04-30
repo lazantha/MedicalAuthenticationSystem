@@ -47,45 +47,20 @@
     <div class="col">
 
       <!-- first Card -->
-      <!-- table -->
+      
       <div class="card bg-body-tertiary pt-3">
-        <h5 class="card-header">You Have <span><i>{{count}}</i></span> Request !</h5>
+        <h5 class="card-header">You Have <span><i>({{count}})</i></span> Request In Total</h5>
         <div class="card-body">
-          <!-- <h5 class="card-title">Special title treatment</h5> -->
-          <table class="table">
-            <thead>
-              <tr>
-                <th scope="col">Index</th>
-                <th scope="col">Applications</th>
-                <th scope="col">Confirmations</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <th scope="row">1</th>
-                <td>Application_1</td>
-                <td>
-                  {{form.accept(class='btn btn-success btn-sm')}}
-                  {{form.reject(class='btn btn-danger btn-sm')}}
-
-                </td>               
-              </tr>
-              <tr>
-                <th scope="row">2</th>
-                <td>Application_2</td>
-                <td>
-                  {{form.accept(class='btn btn-success btn-sm')}}
-                  {{form.reject(class='btn btn-danger btn-sm')}}
-                  
-                </td>
-
-                
-              </tr>
-            </tbody>
-          </table>
-          {{form.all_accept(class='btn btn-success')}}
-          {{form.all_reject(class='btn btn-danger')}}
-          
+          <div class="card" style="width: 18rem;">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item">IT <span>({{it_count}})</span></li>
+              <li class="list-group-item">Accountency <span>({{account_count}})</span></li>
+              <li class="list-group-item">Management <span>({{manage_count}})</span></li>
+              <li class="list-group-item">THM <span>({{thm_count}})</span></li>
+              <li class="list-group-item">English <span>({{english_count}})</span></li>
+              
+            </ul>
+          </div>
         </div>
       </div>
       <!-- End of First card -->

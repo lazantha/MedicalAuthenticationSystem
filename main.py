@@ -29,27 +29,17 @@ def index():
 @app.route('/userlog',methods=['GET','POST'])
 def userlog():
     new_user=UserLog()
-    new_row=MySql()
+    new_data=MySql()
     if new_user.validate_on_submit():
         user_name=new_user.user_name.data
         password=new_user.password.data
-        data_name=(user_name)
-        data_password=(password)
-        query_1="SELECT first_name FROM user WHERE first_name=%s"
-        query_2="SELECT passowrd FROM user WHERE first_name=%s"
-        
-        name=new_row.getData(query_1,data_name,host,database,user)
-        print(name)
-        
-        password=new_row.getData(query_2,data_password,host,database,user)
-        print(password)
-        if user_name==name and password==password:
-            return redirect('request')
+        query="SELECT first_name,password FROM user WHERE first_name=%s AND password=%s"
+        data=(user_name,password)
+        exist=new_data.fetchAllMulForeing(query,data,host,database,user)
+        if exist:
+            return redirect(url_for('request'))
         else:
-            return redirect('userlog')
-        
-        
-
+            return redirect(url_for('userlog'))
     return render_template('login/user.html',form=new_user)
 
 #user Sign
@@ -180,17 +170,15 @@ def request():
         date_issued=new_req_form.date_issued.data
         type=new_req_form.type.data
         med_pic=new_req_form.med_pic.data
-        image=new_binary.convertToBinary(med_pic)
-
-        medQuery="SELECT user_id FROM user ORDER BY user_id DESC"
-        user_id=new_data.fetchOne(medQuery,host,database,user)
-        query="INSERT INTO medical_infor (user_id,name,course,year,semester,attempt,date_begin,date_end,method,image,date_issued)VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"
-        data=(user_id,user_name,course,year,semester,attempt,start_date,end_date,type ,image,date_issued)
-        new_data.table(query,data,host,database,user)
-        return redirect('request')
-        
-        
-
+        image=new_binary.convertToBinary(med_pic)    
+        admin_query="SELECT admin_id FROM admin WHERE possition= %s"
+        admin_data=('OFFICE',)
+        admin_id=new_data.fetchOneForeing(admin_query,admin_data,host,database,user)
+        user_query="SELECT user_id FROM user ORDER BY user_id DESC"
+        user_id=new_data.fetchOne(user_query,host,database,user)
+        main_query="INSERT INTO medical_infor(user_id,admin_id,name,course,year,semester,attempt,date_begin,date_end,method,image,date_issued)VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"
+        main_data=(user_id,admin_id,user_name,course,year,semester,attempt,start_date,end_date,type,med_pic,date_issued)
+        new_data.table(main_query,main_data,host,database,user)
     return render_template('interfaces/user/mainform.html',form=new_req_form)
 
 
@@ -201,7 +189,22 @@ def admin():
     new_data=MySql()
     query="SELECT COUNT(id)FROM medical_infor"
     count=new_data.fetchOne(query,host,database,user)
-    return render_template('interfaces/admin/admin.html',form=new_admin,count=count)
+    it_query="SELECT COUNT(id) FROM medical_infor WHERE course =%s"
+    it_data=('IT',)
+    account_query="SELECT COUNT(id) FROM medical_infor WHERE course =%s"
+    account_data=('ACCOUNTANCY',)
+    manage_query="SELECT COUNT(id) FROM medical_infor WHERE course =%s"
+    manage_data=('MANAGEMENT',)
+    thm_query="SELECT COUNT(id) FROM medical_infor WHERE course =%s"
+    thm_data=('TOURISM',)
+    english_query="SELECT COUNT(id) FROM medical_infor WHERE course =%s"
+    english_data=('ENGLISH',)
+    it_count=new_data.fetchOneForeing(it_query,it_data,host,database,user)
+    account_count=new_data.fetchOneForeing(account_query,account_data,host,database,user)
+    manage_count=new_data.fetchOneForeing(manage_query,manage_data,host,database,user)
+    thm_count=new_data.fetchOneForeing(thm_query,thm_data,host,database,user)
+    english_count=new_data.fetchOneForeing(english_query,english_data,host,database,user)
+    return render_template('interfaces/admin/admin.html',form=new_admin,count=count,it_count=it_count,account_count=account_count,manage_count=manage_count,thm_count=thm_count,english_count=english_count)
 #superAdminIt
 @app.route('/superAdminPanelIt',methods=['GET','POST'])
 def superAdminPanelIt():

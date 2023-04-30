@@ -24,7 +24,7 @@ class UserLog(FlaskForm):
 #user main form
 class UserForm(FlaskForm):
     userName=StringField('Name with Initials',validators=[DataRequired(),Length(min=3, max=10)])
-    course=SelectField("Course",choices=['IT','Accountency','Management','Tourism'],validators=[DataRequired()])
+    course=SelectField("Course",choices=['IT','ACCOUNTANCY','MANAGEMENT','TOURISM','ENGLISH'],validators=[DataRequired()])
     year=SelectField("Year",choices=['1','2','3','4'],validators=[DataRequired()])
     semester=SelectField("Semester",choices=['1','2'],validators=[DataRequired()])
     attempt=SelectField("Attemp",choices=['1','2','3','4'],validators=[DataRequired()])
