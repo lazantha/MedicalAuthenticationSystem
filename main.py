@@ -64,15 +64,12 @@ def userSign():
         email=new_sign.email.data
         password=new_sign.password.data
         confirm_password=new_sign.confirm_password.data
-        depQuery="SELECT department_id FROM department ORDER BY department_id DESC"
-        dep_id=new_sql.fetchOne(depQuery,host,database,user)
-        adminQuery="SELECT admin_id FROM admin ORDER BY admin_id DESC"
-        admin_id=new_sql.fetchOne(adminQuery,host,database,user)
-
-
-        query="INSERT INTO user(department_id,admin_id,first_name,last_name,department,email,password,confirm_password)VALUES(%s,%s,%s,%s,%s,%s,%s,%s);"
-        data=(dep_id,admin_id,first_name,last_name,department,email,password,confirm_password)
-        new_sql.table(query,data,host,database,user)
+        admin_query="SELECT admin_id FROM admin WHERE possition=%s "
+        admin_data=('OFFICE',)
+        admin_id=new_sql.fetchOneForeing(admin_query,admin_data,host,database,user)
+        main_query="INSERT INTO user(admin_id,first_name,last_name,department,email,password,confirm_password)VALUES(%s,%s,%s,%s,%s,%s,%s);"
+        main_data=(admin_id,first_name,last_name,department,email,password,confirm_password)
+        new_sql.table(main_query,main_data,host,database,user)
         return redirect('userlog')
         
     return render_template('signup/user.html',form=new_sign)
@@ -86,34 +83,38 @@ def userSign():
 @app.route('/adminlog',methods=['GET','POST'])
 def adminlog():
     new_admin=AdminLog()
+    new_data=MySql()
     if new_admin.validate_on_submit():
         user_name=new_admin.user_name.data
         password=new_admin.password.data
         possition=new_admin.possition.data
         department=new_admin.department.data
-        if user_name=='sample' and password=='123':
+        query = "SELECT first_name,password FROM admin WHERE first_name = %s AND password = %s"
+        data = (user_name, password)
+        exist_data = new_data.fetchAllMulForeing(query, data, host, database, user)
+        page_list={
+            'IT':'superAdminPanelIt',
+            'MANAGEMENT':'superAdminPanelManagement',
+            'ACCOUNTANCY':'superAdminPanelAccount',
+            'ENGLISH':'superAdminPanelEnglish',
+            'TOURISM':'superAdminPanelThm'
+        }
+        if exist_data:
             if possition=="HOD":
-                if department=="IT":
-                    return redirect('superAdminPanelIt')
-                elif department=="MANAGEMENT":
-                    return redirect('superAdminPanelManagement')
-                elif department=="ACCOUNTENCY":
-                    return redirect('superAdminPanelAccount')
-                elif department=="ENGLISH":
-                    return redirect('superAdminPanelEnglish')
-                else:
-                    return redirect('superAdminPanelThm')
-            
-            
+                query_possition = "SELECT first_name,department FROM admin WHERE first_name= %s AND department= %s"
+                data_possition = (user_name, department)
+                exist_possition=new_data.fetchAllMulForeing(query_possition,data_possition,host,database,user)                
+                if exist_possition:
+                    page_name=page_list.get(department)
+                    if page_name:
+                        return redirect(url_for(page_name))
+                    else:
+                        return redirect(url_for('login'))
             else:
-                return redirect('admin')
+                return redirect(url_for('admin'))
         else:
-            return redirect('adminlog')
-        
-
-            
-        
-        
+            return redirect(url_for('login'))
+     
     return render_template('login/admin.html',form=new_admin)
 
 
@@ -122,7 +123,7 @@ def adminlog():
 def adminSign():
     new_admin=AdminSignUp()
     new_data=MySql()
-
+    possition="OFFICE"
     if new_admin.validate_on_submit():
         first_name=new_admin.first_name.data
         last_name=new_admin.last_name.data
@@ -132,18 +133,17 @@ def adminSign():
         ati=new_admin.ati.data
         possition=new_admin.possition.data
         department=new_admin.department.data
-        if possition=='Office':
-            department=" "
+        if possition=='OFFICE':
+            department='ADMIN'
+        if possition=='HOD':
+            possition="HOD"
+        
         query=" INSERT INTO admin (first_name,last_name,email,password,confirm_password,ati,possition,department) VALUES(%s,%s,%s,%s,%s,%s,%s,%s) "
         data=(first_name,last_name,email,password,confirm_password,ati,possition,department)
         new_data.table(query,data,host,database,user)
         flash(f'Account Successfully created {first_name}!','success')
         return redirect(url_for('adminlog'))
-        
-        
-        
-        
-        
+             
         
     return render_template('signup/admin.html',form=new_admin)
 
@@ -182,9 +182,6 @@ def request():
         med_pic=new_req_form.med_pic.data
         image=new_binary.convertToBinary(med_pic)
 
-
-
-
         medQuery="SELECT user_id FROM user ORDER BY user_id DESC"
         user_id=new_data.fetchOne(medQuery,host,database,user)
         query="INSERT INTO medical_infor (user_id,name,course,year,semester,attempt,date_begin,date_end,method,image,date_issued)VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"
@@ -204,9 +201,6 @@ def admin():
     new_data=MySql()
     query="SELECT COUNT(id)FROM medical_infor"
     count=new_data.fetchOne(query,host,database,user)
-
-
-
     return render_template('interfaces/admin/admin.html',form=new_admin,count=count)
 #superAdminIt
 @app.route('/superAdminPanelIt',methods=['GET','POST'])
@@ -240,13 +234,14 @@ def superAdminPanelThm():
     return render_template('interfaces/superAdmin/thm.html',form=new_super)
 
 
-#time schedule
+#time schedule later
 @app.route('/timetable',methods=['GET','POST'])
 def timeTable():
     new_time_table=TimeSchedule()
     new_data=MySql()
     if new_time_table.validate_on_submit():
         department=new_time_table.department.data
+        year=new_time_table.year.data
         semester=new_time_table.semester.data
         
     return render_template('interfaces/admin/timetable.html',form=new_time_table)

@@ -129,39 +129,18 @@
     </div>
 
     <div class="form-floating">
-      <!-- {{form.possition(class="form-control  possition-select", id="floatingInput" )}}
+      {{form.possition(class="form-control  possition-select", id="floatingInput" )}}
       <label for="floatingInput">{{form.possition.label}}</label>
-      
-       -->
-       {% if form.possition.errors %}
-       {{form.possition(class="form-control is-invalid",id="floatingInput",placeholder="Kevin")}}
-       <div class="invalid-feedback">
-           {% for error in form.possition.errors  %}
-             <span>{{error}}</span>
-           {% endfor %}
-       </div>
-       {%else%}
-         {{form.possition(class="form-control",id="floatingInput",placeholder="confirm_passoword")}}
-     {% endif %}
-     <label for="floatingInput">{{form.possition.label}}</label>
+     
     </div>
 
-    <div class="form-floating department-div " style="display: none;" >
+    <div class="form-floating department-div "style="display: none;"  >
+      
 
-      <!-- {{form.department(class="form-control department-select", id="floatingInput" )}}
+      {{form.department(class="form-control department-select", id="floatingInput" )}}
       <label for="floatingInput">{{form.department.label}}</label>
-       -->
-       {% if form.department.errors %}
-       {{form.department(class="form-control is-invalid",id="floatingInput",placeholder="Kevin")}}
-       <div class="invalid-feedback">
-           {% for error in form.department.errors  %}
-             <span>{{error}}</span>
-           {% endfor %}
-       </div>
-       {%else%}
-         {{form.department(class="form-control",id="floatingInput",placeholder="confirm_passoword")}}
-     {% endif %}
-     <label for="floatingInput">{{form.department.label}}</label>
+       
+     
     </div>
     
     <div class="form-group">
@@ -180,7 +159,7 @@
         var departmentSelect = document.querySelector(".department-select");
 
         possitionSelect.addEventListener("change", function() {
-            if (possitionSelect.value == "Office") {
+            if (possitionSelect.value == "OFFICE") {
                 // Hide the "department" input field
                 departmentDiv.style.display = "none";
                 departmentSelect.value = "";
@@ -189,6 +168,7 @@
                 departmentDiv.style.display = "block";
             }
         });
+        
 </script>
 
 {% endblock %}

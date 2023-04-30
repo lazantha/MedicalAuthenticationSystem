@@ -6,6 +6,7 @@ user='root'
 
 
 class MySql:
+	#for insertions
 	def table(self,query,data,host,database,user):
 		try:
 			connection=None
@@ -21,8 +22,26 @@ class MySql:
 				connection.close()
 				print("Connection Closed !")
 
+	# For parameter Binding and foreing keys
+	#use comma after created tuple when binding arguments if it has One Argument 
+	def fetchOneForeing(self,query,data,host,database,user):
+		try:
+			connection=None
+			connection=mysql.connector.connect(host=host,database=database,user=user,password=None)
+			cursor=connection.cursor(prepared=True)
+			cursor.execute(query,data)
+			result=cursor.fetchone()
+			return(result[0])
+			print("getting success !")
+		except mysql.connector.Error as error:
+			print("query failed {}".format(error))
+		finally:
+			if connection != None and connection.is_connected():
+				connection.close()
+				print("Connection Closed !")
 
-	def fetchAll(self,query,data,host,database,user):
+	#For multiple foreing keys
+	def fetchAllMulForeing(self,query,data,host,database,user):
 		try:
 			connection=None
 			connection=mysql.connector.connect(host=host,database=database,user=user,password=None)
@@ -38,7 +57,11 @@ class MySql:
 				connection.close()
 				print("Connection Closed !")
 
-	
+
+
+		
+
+	# FOR SINGLE QUERY
 	def fetchOne(self,query,host,database,user):
 		try:
 			connection=None
@@ -46,7 +69,7 @@ class MySql:
 			cursor=connection.cursor(prepared=True)
 			cursor.execute(query)
 			result=cursor.fetchone()
-			return(result[0])
+			return result[0]
 			print("getting success !")
 		except mysql.connector.Error as error:
 			print("query failed {}".format(error))
@@ -56,21 +79,7 @@ class MySql:
 				print("Connection Closed !")
 	
 
-	def getData(self,query,host,database,user):
-		try:
-			connection=None
-			connection=mysql.connector.connect(host=host,database=database,user=user,password=None)
-			cursor=connection.cursor(prepared=True)
-			cursor.execute(query)
-			result=cursor.fetchall()
-			return(result)
-			print("getting success !")
-		except mysql.connector.Error as error:
-			print("query failed {}".format(error))
-		finally:
-			if connection != None and connection.is_connected():
-				connection.close()
-				print("Connection Closed !")
+	
 
 
 

@@ -35,102 +35,50 @@
     </div> 
     <!-- End of First Column -->
 
+    <!-- second column -->
     <div class="col">
+        <!-- card for department and semester -->
+       <form action="{{url_for('timeTable')}}" method="POST">
+        {{form.hidden_tag()}}
+        <fieldset>
+          <legend>Select </legend>
+          
+        <ul class="list-group list-group-horizontal">
+          <li class="list-group-item">
+              <small><label for="floatingInput">{{form.department.label}}</label></small>
+              {{form.department(class="form-control department-select", id="floatingInput" )}}
+              
 
-      <form action="{{url_for('timeTable')}}" method="POST">
+          </li>
+          <li class="list-group-item">
+              <small><label for="floatingInput">{{form.year.label}}</label> </small> 
+              {{form.year(class="form-control department-select", id="floatingInput" )}}
+
+              
+          </li>
+          <li class="list-group-item">
+             <small> <label for="floatingInput">{{form.semester.label}}</label></small>
+              {{form.semester(class="form-control department-select", id="floatingInput" )}}
+              
+
+          </li>
+      </ul>
         
-        <div class="card w-75 mb-3">
-          <div class="card-body">
-            <h5 class="card-title">Select</h5>
-            <div class="row g-2">
-              <div class="col-md">
-                <div class="form-floating">
-                  {{form.department(class="form-select" ,id="floatingSelectGrid")}}
-                  <label for="floatingSelectGrid">{{form.department.label}}</label>
-                </div>
-
-              </div>
-              <div class="col-md">
-                <div class="form-floating">
-                  {{form.semester(class="form-select" ,id="floatingSelectGrid")}}
-                  
-                  <label for="floatingSelectGrid">{{form.semester.label}}</label>
-                </div>
-              </div>
-            </div>
-            {{form.submit(class='btn btn-info btn-sm')}}
-          </div>
-        </div>
-        
-        
-
-
-
-      <!-- first Card -->
-      <div class="card text-center">
-        <div class="card-header">
-            <h5 class="card-title">Set up Schedules and Time tables</h5>
-        </div>
-        <div class="card-body">
-          
-          
-
-          
-
-                <table class="table">
-                    <thead>
-                      <tr>
-                        <th scope="col">Date</th>
-                        <th scope="col">Start Time</th>
-                        <th scope="col">End TIme</th>
-                        <th scope="col">Subject Code</th>
-                        <th scope="col">Subject Name</th>
-                        
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <th scope="row">{{form.date()}}<br>{{form.newSlot(class='btn btn-warning btn-sm')}}</th>
-                        <td>{{form.start_time()}}</td>
-                        <td>{{form.end_time()}}</td>
-                        <td>{{form.subject_code()}}</td>
-                        <td>{{form.subject_name()}}</td>
-
-                        
-                      </tr>
-                      <tr>
-                        <th scope="row">{{form.date()}}<br>{{form.newSlot(class='btn btn-warning btn-sm')}}</th>
-                        <td>{{form.start_time()}}</td>
-                        <td>{{form.end_time()}}</td>
-                        <td>{{form.subject_code()}}</td>
-                        <td>{{form.subject_name()}}</td>
-                        
-
-                      </tr>
-                     
-                    </tbody>
-                  </table>
-
-            </form>
-
-
-
-
-
-
-          
-        </div>
-        <div class="card-footer text-body-secondary">
-          2 days ago
-        </div>
-      </div>
        
 
-      
-      
-    </form>
+       
+        </fieldset>
+       </form>
+       
+    
+       
+
+  
+
     </div>
     
+   
+              
     
   </div>
 

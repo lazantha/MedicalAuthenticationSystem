@@ -10,7 +10,7 @@ class AdminLog(FlaskForm):
     user_name=StringField("User Name: ",validators=[DataRequired(), Length(min=3, max=10)])
     password=PasswordField("Password: ",validators=[DataRequired(),Length(min=4)])
     possition=SelectField("Possition",choices=['OFFICE','HOD'])
-    department=SelectField("Department",choices=['IT','MANAGEMENT','ACCOUNTENCY','ENGLISH','TOURISM'])
+    department=SelectField("Department",choices=['IT','MANAGEMENT','ACCOUNTANCY','ENGLISH','TOURISM'])
     submit=SubmitField("Log In")
     
 
@@ -43,7 +43,7 @@ class AdminSignUp(FlaskForm):
     password=PasswordField("Password: ",validators=[DataRequired()])
     confirm_password=PasswordField("Confirm Password: ",validators=[DataRequired(),EqualTo('password')])
     ati=SelectField(choices=['KANDY'])
-    possition=SelectField("Possision: ",choices=['Office','HOD'],validators=[DataRequired()])
+    possition=SelectField("Possision: ",choices=['OFFICE','HOD'],validators=[DataRequired()])
     department=SelectField("Department: ",choices=['IT','ACCOUNTANCY','MANAGEMENT','TOURISM','ENGLISH'],validators=[DataRequired()])
     submit=SubmitField("Submit")
  
@@ -87,11 +87,14 @@ class SuperAdminInterface(FlaskForm):
 
 class TimeSchedule(FlaskForm):
     department=SelectField("Department",choices=['HNDIT','HNDTHM','HNDM','HNDE'])
+    year=SelectField("Academic Year",choices=[1,2,3,4])
     semester=SelectField("Semester",choices=[1,2,3,4])
-    date=DateField()
-    start_time=TimeField("Start Time")
-    end_time=TimeField("End Time")
-    subject_code=SelectField("Subject Code",choices=['From Db'])
-    subject_name=SelectField('Subject Name',choices=['From DB'])
-    newSlot=SubmitField('New Slot')
-    submit=SubmitField('Update')
+    submit=SubmitField('Show Table')
+    
+    # date=DateField()
+    # start_time=TimeField("Start Time")
+    # end_time=TimeField("End Time")
+    # subject_code=SelectField("Subject Code",choices=['From Db'])
+    # subject_name=SelectField('Subject Name',choices=['From DB'])
+    # newSlot=SubmitField('New Slot')
+   
