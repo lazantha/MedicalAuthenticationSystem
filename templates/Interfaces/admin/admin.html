@@ -69,31 +69,38 @@
       <div class="card bg-body-tertiary pt-3">
         <h5 class="card-header"> IT  </h5>
         <div class="card-body">
-          <table class="table table-hover">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Gender</th>
-                <th>Course</th>
-                <th>Photo</th>
+          
+          <div class="table-wrapper-scroll-y my-custom-scrollbar">
+            <table class="table table-hover table table-bordered table-striped mb-0">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Gender</th>
+                  <th>Course</th>
+                  <th>Photo</th>
+                  <th>Confirmation</th>
+                  
+                  
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in result_it %}
+  
+  
+                <tr>
+                  <td>{{ row[0] }}</td>
+                  <td>{{ row[1] }}</td>
+                  <td>{{ row[2] }}</td>
+                  <td>{{ row[3] }}</td>
+                  <td><a class="btn btn-secondary btn-sm" href="/admin?action=accept" role="button">Accept</a>|<a class="btn btn-danger btn-sm" href="/admin?action=reject" role="button">Reject</a></td>
+                  
+                  
+                </tr>
                 
-              </tr>
-            </thead>
-            <tbody>
-              {% for row in result_it %}
-
-
-              <tr>
-                <td>{{ row[0] }}</td>
-                <td>{{ row[1] }}</td>
-                <td>{{ row[2] }}</td>
-                <td><button type="button" class="btn btn-secondary btn-sm">Small button</button></td>
-              </tr>
-              
-              {% endfor %}
-            </tbody>
-          </table>
-
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
           
           
           
@@ -103,30 +110,41 @@
       <div class="card bg-body-tertiary pt-3">
         <h5 class="card-header"> Accountency  </h5>
         <div class="card-body">
-          <table class="table table-hover">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Gender</th>
-                <th>Course</th>
-                <th>Photo</th>
+          
+          <div class="table-wrapper-scroll-y my-custom-scrollbar">
+            <table class="table table-hover table table-bordered table-striped mb-0">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Gender</th>
+                  <th>Course</th>
+                  <th>Photo</th>
+                  <th>Confirmation</th>
+                  
+                  
+                  
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in result_account %}
+  
+  
+                <tr>
+                  <td>{{ row[0] }}</td>
+                  <td>{{ row[1] }}</td>
+                  <td>{{ row[2] }}</td>
+                  <td>{{ row[3] }}</td>
+                  <td><a class="btn btn-secondary btn-sm" href="/admin?action=accept" role="button">Accept</a>|<a class="btn btn-danger btn-sm" href="/admin?action=reject" role="button">Reject</a></td>
+  
+  
+  
+                  
+                </tr>
                 
-              </tr>
-            </thead>
-            <tbody>
-              {% for row in result_account %}
-
-
-              <tr>
-                <td>{{ row[0] }}</td>
-                <td>{{ row[1] }}</td>
-                <td>{{ row[2] }}</td>
-                <td><button type="button" class="btn btn-secondary btn-sm">Small button</button></td>
-              </tr>
-              
-              {% endfor %}
-            </tbody>
-          </table>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
 
           
           
@@ -137,13 +155,15 @@
       <div class="card bg-body-tertiary pt-3">
         <h5 class="card-header"> Management  </h5>
         <div class="card-body">
-          <table class="table table-hover">
+         <div class="table-wrapper-scroll-y my-custom-scrollbar">
+          <table class="table table-hover table table-bordered table-striped mb-0">
             <thead>
               <tr>
-                <th>Name</th>
+                 <th>Name</th>
                 <th>Gender</th>
                 <th>Course</th>
                 <th>Photo</th>
+                <th>Confirmation</th>
                 
               </tr>
             </thead>
@@ -152,15 +172,20 @@
 
 
               <tr>
-                <td>{{ row[0] }}</td>
+              <td>{{ row[0] }}</td>
                 <td>{{ row[1] }}</td>
                 <td>{{ row[2] }}</td>
-                <td><button type="button" class="btn btn-secondary btn-sm">Small button</button></td>
+                <td>{{ row[3] }}</td>
+                <td>{{ row[4] }}</td>
+                <td><a class="btn btn-secondary btn-sm" href="/admin?action=accept" role="button">Accept</a>|<a class="btn btn-danger btn-sm" href="/admin?action=reject" role="button">Reject</a></td>
+                
+                
               </tr>
               
               {% endfor %}
             </tbody>
           </table>
+         </div>
 
           
           
@@ -171,30 +196,37 @@
       <div class="card bg-body-tertiary pt-3">
         <h5 class="card-header"> THM  </h5>
         <div class="card-body">
-          <table class="table table-hover">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Gender</th>
-                <th>Course</th>
-                <th>Photo</th>
+          <div class="table-wrapper-scroll-y my-custom-scrollbar">
+            <table class="table table-hover table table-bordered table-striped mb-0">
+              <thead>
+                <tr>
+                   <th>Name</th>
+                  <th>Gender</th>
+                  <th>Course</th>
+                  <th>Photo</th>
+                  <th>Confirmation</th>
+                  
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in result_thm %}
+  
+  
+                <tr>
+                 <td>{{ row[0] }}</td>
+                  <td>{{ row[1] }}</td>
+                  <td>{{ row[2] }}</td>
+                  <td>{{ row[3] }}</td>
+                  <td>{{ row[4] }}</td>
+                  <td><a class="btn btn-secondary btn-sm" href="/admin?action=accept" role="button">Accept</a>|<a class="btn btn-danger btn-sm" href="/admin?action=reject" role="button">Reject</a></td>
+                  
+                  
+                </tr>
                 
-              </tr>
-            </thead>
-            <tbody>
-              {% for row in result_thm %}
-
-
-              <tr>
-                <td>{{ row[0] }}</td>
-                <td>{{ row[1] }}</td>
-                <td>{{ row[2] }}</td>
-                <td><button type="button" class="btn btn-secondary btn-sm">Small button</button></td>
-              </tr>
-              
-              {% endfor %}
-            </tbody>
-          </table>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
 
           
           
@@ -205,30 +237,37 @@
       <div class="card bg-body-tertiary pt-3">
         <h5 class="card-header"> English  </h5>
         <div class="card-body">
-          <table class="table table-hover">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Gender</th>
-                <th>Course</th>
-                <th>Photo</th>
+          <div  class="table-wrapper-scroll-y my-custom-scrollbar">
+            <table class="table table-hover table table-bordered table-striped mb-0">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Gender</th>
+                  <th>Course</th>
+                  <th>Photo</th>
+                  <th>Confirmation</th>
+                  
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in result_english %}
+  
+  
+                <tr>
+                 <td>{{ row[0] }}</td>
+                  <td>{{ row[1] }}</td>
+                  <td>{{ row[2] }}</td>
+                  <td>{{ row[3] }}</td>
+                  <td>{{ row[4] }}</td>
+                  <td><a class="btn btn-secondary btn-sm" href="/admin?action=accept" role="button">Accept</a>|<a class="btn btn-danger btn-sm" href="/admin?action=reject" role="button">Reject</a></td>
+                  
+                 
+                </tr>
                 
-              </tr>
-            </thead>
-            <tbody>
-              {% for row in result_english %}
-
-
-              <tr>
-                <td>{{ row[0] }}</td>
-                <td>{{ row[1] }}</td>
-                <td>{{ row[2] }}</td>
-                <td><button type="button" class="btn btn-secondary btn-sm">Small button</button></td>
-              </tr>
-              
-              {% endfor %}
-            </tbody>
-          </table>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
 
           
           

@@ -105,6 +105,11 @@ def userSign():
     return render_template('signup/user.html',form=new_sign)
 
 #...............................................................
+@app.route('/user',methods=['GET','POST'])
+def user():
+
+    return render_template('interfaces/user/user_account.html')
+
 
 
 
@@ -226,6 +231,11 @@ def request():
 #office
 @app.route('/admin',methods=['GET','POST'])
 def admin():
+    from flask import request
+
+    action = request.args.get('action')
+    print(action)
+
     new_admin=AdminInterface()
     new_data=MySql()
     query="SELECT COUNT(id)FROM medical_infor"
@@ -256,7 +266,32 @@ def admin():
     main_query_thm="SELECT name,gender,course FROM medical_infor WHERE course= %s"
     result_thm=new_data.fetchAllMulForeing(main_query_thm,thm_data,host,database,user) 
     main_query_english="SELECT name,gender,course FROM medical_infor WHERE course= %s"
-    result_english=new_data.fetchAllMulForeing(main_query_english,english_data,host,database,user) 
+    result_english=new_data.fetchAllMulForeing(main_query_english,english_data,host,database,user)
+
+
+
+    # if action=='accept':
+    #     print(action)s
+    
+
+    #     new_data=MySql()
+    #     admin="SELECT admin_id FROM admin WHERE first_name=%s"
+    #     data=('arya',)
+    #     admin_id=new_data.fetchOneForeing(admin,data,host,database,user)
+    #     query="INSERT INTO admin_accountency(admin_id,name,year,semester,attempt,date_begin,date_end,method,image)SELECT admin_id,name,year,semester,attempt,date_begin,date_end,method,image FROM medical_infor WHERE admin_id=%s LIMIT =%s"
+    #     data=(2,1)
+    #     new_data.table(query,data,host,database,user)
+
+
+    # elif action=='reject':
+    #     pass
+
+    
+
+
+        # perform the reject action using the row_id
+
+
     return render_template('interfaces/admin/admin.html',form=new_admin,
                            count=count,it_count=it_count,account_count=account_count,
                            manage_count=manage_count,thm_count=thm_count,
@@ -267,6 +302,9 @@ def admin():
                            result_thm=result_thm,
                            result_english=result_english
                            )
+
+
+
 #superAdminIt
 @app.route('/superAdminPanelIt',methods=['GET','POST'])
 def superAdminPanelIt():
@@ -292,7 +330,7 @@ def superAdminPanelEnglish():
     new_super=SuperAdminInterface()
     return render_template('interfaces/superAdmin/english.html',form=new_super)
 
-#superAdmin
+#superAdminThm
 @app.route('/superAdminPanelThm',methods=['GET','POST'])
 def superAdminPanelThm():
     new_super=SuperAdminInterface()
