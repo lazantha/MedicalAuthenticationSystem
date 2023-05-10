@@ -9,30 +9,41 @@
   <legend><span><i>Request Medical</i></span></legend>
   <form action="/request" method="POST" class="container pt-5">
     {{form.hidden_tag()}}
+    <!-- user name -->
     <div class="form-floating mb-3"> 
       {{form.userName(class="form-control" ,id="floatingInput")}}
       <label for="floatingInput">{{form.userName.label}}</label>
     </div>
+
+    <!-- gender -->
     <div class="card-body">
       <p class="card-title">{{form.gender.label}}</p>
       {{form.gender(class='form-control',style="list-style:none")}}
     </div>
 
+    <!-- Department -->
     <div class="form-floating">
       {{form.course(class="form-control", id="floatingInput")}}
       <label for="floatingInput">{{form.course.label}}</label>
     </div>
-    
+    <!-- year -->
     <div class="form-floating">
       {{form.year(class="form-control", id="floatingInput")}}
       <label for="floatingInput">{{form.year.label}}</label>
     </div>
-
+    <!-- semester -->
     <div class="form-floating">
       {{form.semester(class="form-control", id="floatingPassword" )}}
       <label for="floatingInput">{{form.semester.label}}</label>
     </div>
+    <!-- subject -->
 
+    <div class="form-floating">
+      {{form.subject(class="form-control", id="floatingInput",style="list-style:none")}}
+      <label for="floatingInput">{{form.subject.label}}</label>
+    </div>
+    
+    <!-- attempt -->
     <div class="form-floating">
       {{form.attempt(class="form-control", id="floatingInput" )}}
       <label for="floatingInput">{{form.attempt.label}}</label>
@@ -91,11 +102,16 @@
         {{form.type(class='form-control',style="list-style:none")}}
       </div>
     </div>
+    <div class="mb-3">
+      <label for="floatingInput" class="form-label">{{form.red_book.label}}</label>
+      {{form.red_book(class='form-control')}}
+    </div>
     
     <div class="mb-3">
       <label for="floatingInput" class="form-label">{{form.med_pic.label}}</label>
       {{form.med_pic(class='form-control')}}
     </div>
+
     
     <div class="form-group">
       {{form.submit(class='btn btn-outline-primary')}}

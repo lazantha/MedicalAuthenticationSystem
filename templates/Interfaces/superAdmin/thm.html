@@ -15,7 +15,8 @@
 
     <div class="mt-5 ps-3">
       <div >
-        <a href="" class="fs-4 border-bottom "><i class="fa-solid fa-power-off" style="color: #f0c76f;"></i></a>
+        <span style="margin: 0; padding: 0; color: #f0c76f; margin-left: 1rem; padding-left: 1rem;"><i> Hi {{user_name|title}}</i></span>
+        <a href="{{url_for('thmAdminLogOut')}}" class="fs-4 border-bottom "><i class="fa-solid fa-power-off" style="color: #f0c76f;"></i></a>
       </div>
       
         <ul class="">
@@ -56,42 +57,46 @@
     <!-- first Card -->
     <!-- table -->
     <div class="card bg-body-tertiary pt-3">
-      <h5 class="card-header">You Have Request !</h5>
+      <h5 class="card-header"> DEPARTMENT OF TOURISM & HOSPITALITY MANAGEMENT  </h5>
+      <span>Requests {{count}}</span>
       <div class="card-body">
-        <h5 class="card-title">Special title treatment</h5>
-        <table class="table">
-          <thead>
-            <tr>
-              <th scope="col">Index</th>
-              <th scope="col">Applications</th>
-              <th scope="col">Confirmations</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <th scope="row">1</th>
-              <td>Application_1</td>
-              <td>
-                {{form.authenticate(class='btn btn-success btn-sm')}}
-                {{form.reject(class='btn btn-danger btn-sm')}}
-
-              </td>               
-            </tr>
-            <tr>
-              <th scope="row">2</th>
-              <td>Application_2</td>
-              <td>
-                {{form.authenticate(class='btn btn-success btn-sm')}}
-                {{form.reject(class='btn btn-danger btn-sm')}}
+        <div class="table-wrapper-scroll-y my-custom-scrollbar">
+          <table class="table table-hover table table-bordered table-striped mb-0">
+            <thead>
+              <tr>
+                 <th>Name</th>
+                <th>Gender</th>
+                <th>Course</th>
+                <th>Subject</th>            
+                <th>Photo</th>
+                <th>Authentication</th>
                 
-              </td>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in result %}
 
+
+              <tr>
+               <td>{{ row[0] }}</td>
+                <td>{{ row[1] }}</td>
+                <td>{{ row[2] }}</td>
+                <td>{{ row[3] }}</td>
+                <td>{{ row[4] }}</td>
               
-            </tr>
-          </tbody>
-        </table>
-        {{form.all_authenticate(class='btn btn-success')}}
-        {{form.all_reject(class='btn btn-danger')}}
+                
+                <td><a class="btn btn-secondary btn-sm" href="/admin?action=thmAccept" role="button">Authenticate</a>|<a class="btn btn-danger btn-sm" href="/admin?action=thmReject" role="button">Reject</a></td>
+                
+                
+              </tr>
+              
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        
+        
         
       </div>
     </div>

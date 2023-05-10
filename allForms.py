@@ -1,9 +1,14 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField,validators,SelectField,TextAreaField,DateTimeField,DateField,RadioField,FileField,SubmitField,PasswordField,TimeField
+from wtforms import  widgets,SelectMultipleField
 from wtforms.validators import DataRequired, Length, EqualTo
 from email_validator import validate_email
 
 
+
+class MultiCheckboxField(SelectMultipleField):
+    widget = widgets.ListWidget(prefix_label=False)
+    option_widget = widgets.CheckboxInput()
 
 #admin Log in form
 class AdminLog(FlaskForm):
@@ -25,7 +30,8 @@ class UserLog(FlaskForm):
 class UserForm(FlaskForm):
     userName=StringField('Name with Initials',validators=[DataRequired(),Length(min=3, max=10)])
     gender=RadioField("Gender",choices=['MALE','FEMALE'])
-    course=SelectField("Course",choices=['IT','ACCOUNTANCY','MANAGEMENT','TOURISM','ENGLISH'],validators=[DataRequired()])
+    course=SelectField("Department",choices=['IT','ACCOUNTANCY','MANAGEMENT','TOURISM','ENGLISH'],validators=[DataRequired()])
+    subject=SelectField("Subject",choices=['SAD','OOP'],validators=[DataRequired()])
     year=SelectField("Year",choices=['1','2','3','4'],validators=[DataRequired()])
     semester=SelectField("Semester",choices=['1','2'],validators=[DataRequired()])
     attempt=SelectField("Attemp",choices=['1','2','3','4'],validators=[DataRequired()])
@@ -33,6 +39,7 @@ class UserForm(FlaskForm):
     end_date=DateField("End Date",validators=[DataRequired()])
     date_issued=DateField("Issued Date",validators=[DataRequired()])
     type=RadioField("Medical By",choices=['Government','Private'],validators=[DataRequired()])
+    red_book=FileField("Upload picture of Redbook/ID",validators=[DataRequired()])
     med_pic=FileField("Upload picture of Medical Sheet",validators=[DataRequired()])
     submit=SubmitField("Save")
 
@@ -91,11 +98,10 @@ class TimeSchedule(FlaskForm):
     year=SelectField("Academic Year",choices=[1,2,3,4])
     semester=SelectField("Semester",choices=[1,2,3,4])
     submit=SubmitField('Show Table')
-    
-    # date=DateField()
-    # start_time=TimeField("Start Time")
-    # end_time=TimeField("End Time")
-    # subject_code=SelectField("Subject Code",choices=['From Db'])
-    # subject_name=SelectField('Subject Name',choices=['From DB'])
-    # newSlot=SubmitField('New Slot')
+
+    subject_code=StringField("Subject Code",validators=[DataRequired()])
+    subject_name=StringField('Subject Name',validators=[DataRequired()]) 
+    date=DateField()
+    start_time=TimeField("Start Time")
+    end_time=TimeField("End Time")
    

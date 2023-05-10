@@ -13,8 +13,9 @@
     <div class="col-3 border-top border-end rounded-end" style="background-color: #344ba0;">
 
       <div class="mt-5 ps-3 ">
+        <span style="margin: 0; padding: 0; color: #f0c76f; margin-left: 1rem; padding-left: 1rem;"><i> Hi {{user_name|title}}</i></span>
           <div class=" align-top " style="text-align: center;margin: 3rem;">
-            <a href="" class="fs-4 border-bottom "><i class="fa-solid fa-power-off" style="color: #f0c76f;"></i></a>
+            <a href="{{url_for('adminLogOut')}}" class="fs-4 border-bottom "><i class="fa-solid fa-power-off" style="color: #f0c76f;"></i></a>
         
           </div>
           
@@ -77,7 +78,8 @@
                   <th>Name</th>
                   <th>Gender</th>
                   <th>Course</th>
-                  <th>Photo</th>
+                  <th>Red Book/ID</th>
+                  <th>Medical</th>
                   <th>Confirmation</th>
                   
                   
@@ -92,7 +94,11 @@
                   <td>{{ row[1] }}</td>
                   <td>{{ row[2] }}</td>
                   <td>{{ row[3] }}</td>
-                  <td><a class="btn btn-secondary btn-sm" href="/admin?action=accept" role="button">Accept</a>|<a class="btn btn-danger btn-sm" href="/admin?action=reject" role="button">Reject</a></td>
+                  <td>{{ row[4] }}</td>
+                  
+                  
+                  
+                  <td><a class="btn btn-secondary btn-sm" href="/admin?action=itAccept" role="button">Accept</a>|<a class="btn btn-danger btn-sm" href="/admin?action=itReject" role="button">Reject</a></td>
                   
                   
                 </tr>
@@ -118,7 +124,8 @@
                   <th>Name</th>
                   <th>Gender</th>
                   <th>Course</th>
-                  <th>Photo</th>
+                  <th>Red Book/ID</th>
+                  <th>Medical</th>
                   <th>Confirmation</th>
                   
                   
@@ -134,7 +141,11 @@
                   <td>{{ row[1] }}</td>
                   <td>{{ row[2] }}</td>
                   <td>{{ row[3] }}</td>
-                  <td><a class="btn btn-secondary btn-sm" href="/admin?action=accept" role="button">Accept</a>|<a class="btn btn-danger btn-sm" href="/admin?action=reject" role="button">Reject</a></td>
+                  <td>{{ row[4] }}</td>
+                  
+                  
+                  
+                  <td><a class="btn btn-secondary btn-sm" href="/admin?action=accAccept" role="button">Accept</a>|<a class="btn btn-danger btn-sm" href="/admin?action=accReject" role="button">Reject</a></td>
   
   
   
@@ -162,7 +173,8 @@
                  <th>Name</th>
                 <th>Gender</th>
                 <th>Course</th>
-                <th>Photo</th>
+                <th>Red Book/ID</th> 
+                <th>Medical</th>
                 <th>Confirmation</th>
                 
               </tr>
@@ -177,7 +189,9 @@
                 <td>{{ row[2] }}</td>
                 <td>{{ row[3] }}</td>
                 <td>{{ row[4] }}</td>
-                <td><a class="btn btn-secondary btn-sm" href="/admin?action=accept" role="button">Accept</a>|<a class="btn btn-danger btn-sm" href="/admin?action=reject" role="button">Reject</a></td>
+                
+                
+                <td><a class="btn btn-secondary btn-sm" href="/admin?action=manaAccept" role="button">Accept</a>|<a class="btn btn-danger btn-sm" href="/admin?action=manaReject" role="button">Reject</a></td>
                 
                 
               </tr>
@@ -203,7 +217,8 @@
                    <th>Name</th>
                   <th>Gender</th>
                   <th>Course</th>
-                  <th>Photo</th>
+                  <th>Red Book/ID</th>                 
+                  <th>Medical</th>
                   <th>Confirmation</th>
                   
                 </tr>
@@ -218,7 +233,9 @@
                   <td>{{ row[2] }}</td>
                   <td>{{ row[3] }}</td>
                   <td>{{ row[4] }}</td>
-                  <td><a class="btn btn-secondary btn-sm" href="/admin?action=accept" role="button">Accept</a>|<a class="btn btn-danger btn-sm" href="/admin?action=reject" role="button">Reject</a></td>
+                  
+                  
+                  <td><a class="btn btn-secondary btn-sm" href="/admin?action=thmAccept" role="button">Accept</a>|<a class="btn btn-danger btn-sm" href="/admin?action=thmReject" role="button">Reject</a></td>
                   
                   
                 </tr>
@@ -244,7 +261,8 @@
                   <th>Name</th>
                   <th>Gender</th>
                   <th>Course</th>
-                  <th>Photo</th>
+                  <th>Red Book/ID</th>   
+                  <th>Medical</th>
                   <th>Confirmation</th>
                   
                 </tr>
@@ -259,7 +277,9 @@
                   <td>{{ row[2] }}</td>
                   <td>{{ row[3] }}</td>
                   <td>{{ row[4] }}</td>
-                  <td><a class="btn btn-secondary btn-sm" href="/admin?action=accept" role="button">Accept</a>|<a class="btn btn-danger btn-sm" href="/admin?action=reject" role="button">Reject</a></td>
+                  
+                  
+                  <td><a class="btn btn-secondary btn-sm" href="/admin?action=engAccept" role="button">Accept</a>|<a class="btn btn-danger btn-sm" href="/admin?action=engReject" role="button">Reject</a></td>
                   
                  
                 </tr>

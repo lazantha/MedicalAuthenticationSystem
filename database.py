@@ -21,7 +21,22 @@ class MySql:
 			if connection != None and connection.is_connected():
 				connection.close()
 				print("Connection Closed !")
-
+	
+	def insertData(self,query,host,database,user):
+		try:
+			connection=None
+			connection=mysql.connector.connect(host=host,database=database,user=user,password=None)
+			cursor=connection.cursor(prepared=True)
+			cursor.execute(query)
+			connection.commit()
+			print("Success !")
+		except mysql.connector.Error as error:
+			print("query failed {}".format(error))
+		finally:
+			if connection != None and connection.is_connected():
+				connection.close()
+				print("Connection Closed !")
+	
 	# For parameter Binding and foreing keys
 	#use comma after created tuple when binding arguments if it has One Argument 
 	def fetchOneForeing(self,query,data,host,database,user):
@@ -94,6 +109,22 @@ class MySql:
 			if connection != None and connection.is_connected():
 				connection.close()
 				print("Connection Closed !")
+		
+	
+	def delete(self,query,host,database,user):
+		try:
+			connection=None
+			connection=mysql.connector.connect(host=host,database=database,user=user,password=None)
+			cursor=connection.cursor(prepared=True)
+			cursor.execute(query)
+			print("Success !")
+		except mysql.connector.Error as error:
+			print("query failed {}".format(error))
+		finally:
+			if connection != None and connection.is_connected():
+				connection.close()
+				print("Connection Closed !")
+	
 
 	
 
