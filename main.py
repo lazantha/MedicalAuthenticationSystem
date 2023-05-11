@@ -148,9 +148,9 @@ def user_home():
         query_data=(name,password)
         
         result=new_data.fetchAllMulForeing(query,query_data,host,database,user)
+        cleaned_result = [ (str(year), str(semester), subject.decode('utf-8'),str(attempt)) for year,semester,subject,attempt in result]
         
-        
-        return render_template('interfaces/user/user_account.html',name=name,result=result)
+        return render_template('interfaces/user/user_account.html',name=name,result=cleaned_result)
     else:
         return redirect('userlog')
 
@@ -313,16 +313,21 @@ def admin():
                 english_count=new_data.fetchOneForeing(english_query,english_data,host,database,user)
 
             #main records
-                main_query_it="SELECT name,gender,course id_image,med_image FROM medical_infor WHERE course= %s"
+                main_query_it="SELECT name,gender,course  FROM medical_infor WHERE course= %s"
                 result_it=new_data.fetchAllMulForeing(main_query_it,it_data,host,database,user)
-                main_query_account="SELECT name,gender,course id_image,med_image FROM medical_infor WHERE course= %s"
+                cleaned_result_it = [ (name.decode('utf-8'), gender.decode('utf-8'),course.decode('utf-8')) for name,gender,course in result_it]
+                main_query_account="SELECT name,gender,course  FROM medical_infor WHERE course= %s"
                 result_account=new_data.fetchAllMulForeing(main_query_account,account_data,host,database,user)    
-                main_query_manage="SELECT name,gender,course id_image,med_image FROM medical_infor WHERE course= %s"
+                cleaned_result_account = [ (name.decode('utf-8'), gender.decode('utf-8'),course.decode('utf-8')) for name,gender,course in result_account]
+                main_query_manage="SELECT name,gender,course  FROM medical_infor WHERE course= %s"
                 result_manage=new_data.fetchAllMulForeing(main_query_manage,manage_data,host,database,user)    
-                main_query_thm="SELECT name,gender,course id_image,med_image FROM medical_infor WHERE course= %s"
+                cleaned_result_manage = [ (name.decode('utf-8'), gender.decode('utf-8'),course.decode('utf-8')) for name,gender,course in result_manage]
+                main_query_thm="SELECT name,gender,course  FROM medical_infor WHERE course= %s"
                 result_thm=new_data.fetchAllMulForeing(main_query_thm,thm_data,host,database,user) 
-                main_query_english="SELECT name,gender,course id_image,med_image FROM medical_infor WHERE course= %s"
+                cleaned_result_thm = [ (name.decode('utf-8'), gender.decode('utf-8'),course.decode('utf-8')) for name,gender,course in result_thm]
+                main_query_english="SELECT name,gender,course  FROM medical_infor WHERE course= %s"
                 result_english=new_data.fetchAllMulForeing(main_query_english,english_data,host,database,user)
+                cleaned_result_english = [ (name.decode('utf-8'), gender.decode('utf-8'),course.decode('utf-8')) for name,gender,course in result_english]
                 action = request.args.get('action')
                 def actionSelection(action):
                     if action=='itAccept':
@@ -375,11 +380,12 @@ def admin():
                            count=count,it_count=it_count,account_count=account_count,
                            manage_count=manage_count,thm_count=thm_count,
                            english_count=english_count,
-                           result_it=result_it,
-                           result_account=result_account,
-                           result_manage=result_manage,
-                           result_thm=result_thm,
-                           result_english=result_english,
+
+                           result_it=cleaned_result_it,
+                           result_account=cleaned_result_account,
+                           result_manage=cleaned_result_manage,
+                           result_thm=cleaned_result_thm,
+                           result_english=cleaned_result_english,
                            user_name=user_name
                            )
 
@@ -395,9 +401,10 @@ def superAdminPanelIt():
         count="SELECT COUNT(*) FROM `admin_it`"
         count=new_data.fetchOne(count,host,database,user)
 
-        query="SELECT name,subject,image FROM admin_it "
+        query="SELECT name,subject FROM admin_it "
         result=new_data.fetchMultiVal(query,host,database,user)
-        return render_template('interfaces/superAdmin/it.html',form=new_super,user_name=user_name,count=count,result=result)
+        cleaned_result = [ (name.decode('utf-8'), subject.decode('utf-8')) for name,subject in result]
+        return render_template('interfaces/superAdmin/it.html',form=new_super,user_name=user_name,count=count,result=cleaned_result)
     else:
         return redirect('adminlog')
     
@@ -412,9 +419,10 @@ def superAdminPanelAccount():
         count="SELECT COUNT(*) FROM `admin_accountency`"
         count=new_data.fetchOne(count,host,database,user)
 
-        query="SELECT name,subject,image FROM admin_accountency"
+        query="SELECT name,subject FROM admin_accountency"
         result=new_data.fetchMultiVal(query,host,database,user)
-        return render_template('interfaces/superAdmin/account.html',form=new_super,user_name=user_name,count=count,result=result)
+        cleaned_result = [ (name.decode('utf-8'), subject.decode('utf-8')) for name,subject in result]
+        return render_template('interfaces/superAdmin/account.html',form=new_super,user_name=user_name,count=count,result=cleaned_result)
     else:
         return redirect('adminlog')
 
@@ -428,9 +436,10 @@ def superAdminPanelManagement():
         count="SELECT COUNT(*) FROM `admin_management`"
         count=new_data.fetchOne(count,host,database,user)
 
-        query="SELECT name,subject,image FROM admin_management"
+        query="SELECT name,subject FROM admin_management"
         result=new_data.fetchMultiVal(query,host,database,user)
-        return render_template('interfaces/superAdmin/management.html',form=new_super,user_name=user_name,count=count,result=result)
+        cleaned_result = [ (name.decode('utf-8'), subject.decode('utf-8')) for name,subject in result]
+        return render_template('interfaces/superAdmin/management.html',form=new_super,user_name=user_name,count=count,result=cleaned_result)
     else:
         return redirect('adminlog')
 
@@ -444,9 +453,10 @@ def superAdminPanelEnglish():
         count="SELECT COUNT(*) FROM `admin_english`"
         count=new_data.fetchOne(count,host,database,user)
 
-        query="SELECT name,subject,image FROM admin_english"
+        query="SELECT name,subject FROM admin_english"
         result=new_data.fetchMultiVal(query,host,database,user)
-        return render_template('interfaces/superAdmin/english.html',form=new_super,user_name=user_name,count=count,result=result)
+        cleaned_result = [ (name.decode('utf-8'), subject.decode('utf-8')) for name,subject in result]
+        return render_template('interfaces/superAdmin/english.html',form=new_super,user_name=user_name,count=count,result=cleaned_result)
     else:
         return redirect('adminlog')
 
@@ -460,9 +470,10 @@ def superAdminPanelThm():
         count="SELECT COUNT(*) FROM `admin_thm`"
         count=new_data.fetchOne(count,host,database,user)
 
-        query="SELECT name,subject,image FROM admin_thm"
+        query="SELECT name,subject FROM admin_thm"
         result=new_data.fetchMultiVal(query,host,database,user)
-        return render_template('interfaces/superAdmin/thm.html',form=new_super,user_name=user_name,count=count,result=result)
+        cleaned_result = [ (name.decode('utf-8'), subject.decode('utf-8')) for name,subject in result]
+        return render_template('interfaces/superAdmin/thm.html',form=new_super,user_name=user_name,count=count,result=cleaned_result)
     else:
         return redirect('adminlog')
 
