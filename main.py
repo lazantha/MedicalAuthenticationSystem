@@ -96,13 +96,17 @@ def userlog():
         if exist:
             session['name'] = user_name
             session['password']=hashed_password
-            return redirect(url_for('user_home'))
             flash('Login Success ','success')
+            return redirect(url_for('user_home'))
+            
         else:
-            if 'name' in session:
-                return redirect(url_for('user_home'))
-            return redirect(url_for('userlog'))
-            flash('Please recheck user name and password','warning')
+             flash('Please recheck user name and password','warning')
+             return redirect(url_for('userlog'))
+            # if 'name' in session:
+            #     return redirect(url_for('user_home'))
+            # return redirect(url_for('userlog'))
+        
+            # flash('Please recheck user name and password','warning')
     return render_template('login/user.html',form=new_user)
 
 #user Sign
@@ -188,14 +192,20 @@ def adminlog():
                     session['user_name']=user_name
                     page_name=page_list.get(department)
                     if page_name:
+                        flash('Login SuccessFull','success')
                         return redirect(url_for(page_name))
                     else:
+                        flash('Login Failed','warning')
                         return redirect(url_for('adminlog'))
             else:
+                
                 session['user_name']=user_name
+                flash('Login SuccessFull','success')
                 return redirect(url_for('admin'))
         else:
+            flash('Login Failed','warning')
             return redirect(url_for('adminlog'))
+           
      
     return render_template('login/admin.html',form=new_admin)
 
@@ -313,68 +323,86 @@ def admin():
                 english_count=new_data.fetchOneForeing(english_query,english_data,host,database,user)
 
             #main records
-                main_query_it="SELECT name,gender,course  FROM medical_infor WHERE course= %s"
+                main_query_it="SELECT name,gender,course  FROM medical_infor WHERE course= %s ORDER BY time ASC"
                 result_it=new_data.fetchAllMulForeing(main_query_it,it_data,host,database,user)
                 cleaned_result_it = [ (name.decode('utf-8'), gender.decode('utf-8'),course.decode('utf-8')) for name,gender,course in result_it]
-                main_query_account="SELECT name,gender,course  FROM medical_infor WHERE course= %s"
+                main_query_account="SELECT name,gender,course  FROM medical_infor WHERE course= %s ORDER BY time ASC"
                 result_account=new_data.fetchAllMulForeing(main_query_account,account_data,host,database,user)    
                 cleaned_result_account = [ (name.decode('utf-8'), gender.decode('utf-8'),course.decode('utf-8')) for name,gender,course in result_account]
-                main_query_manage="SELECT name,gender,course  FROM medical_infor WHERE course= %s"
+                main_query_manage="SELECT name,gender,course  FROM medical_infor WHERE course= %s ORDER BY time ASC"
                 result_manage=new_data.fetchAllMulForeing(main_query_manage,manage_data,host,database,user)    
                 cleaned_result_manage = [ (name.decode('utf-8'), gender.decode('utf-8'),course.decode('utf-8')) for name,gender,course in result_manage]
-                main_query_thm="SELECT name,gender,course  FROM medical_infor WHERE course= %s"
+                main_query_thm="SELECT name,gender,course  FROM medical_infor WHERE course= %s ORDER BY time ASC"
                 result_thm=new_data.fetchAllMulForeing(main_query_thm,thm_data,host,database,user) 
                 cleaned_result_thm = [ (name.decode('utf-8'), gender.decode('utf-8'),course.decode('utf-8')) for name,gender,course in result_thm]
-                main_query_english="SELECT name,gender,course  FROM medical_infor WHERE course= %s"
+                main_query_english="SELECT name,gender,course  FROM medical_infor WHERE course= %s ORDER BY time ASC"
                 result_english=new_data.fetchAllMulForeing(main_query_english,english_data,host,database,user)
                 cleaned_result_english = [ (name.decode('utf-8'), gender.decode('utf-8'),course.decode('utf-8')) for name,gender,course in result_english]
                 action = request.args.get('action')
                 def actionSelection(action):
                     if action=='itAccept':
-                        query="INSERT INTO admin_it(admin_id,name,year,semester,subject,attempt,date_begin,date_end,method,image,date_issued)SELECT admin_id,name,year,semester,subject,attempt,date_begin,date_end,method,med_image,date_issued FROM medical_infor LIMIT 1"
+                        query="INSERT INTO admin_it(admin_id,name,year,semester,subject,attempt,date_begin,date_end,method,image,date_issued)SELECT admin_id,name,year,semester,subject,attempt,date_begin,date_end,method,med_image,date_issued FROM medical_infor ORDER BY time ASC LIMIT 1"
                         new_data.insertData(query,host,database,user)
-                        dltQuery="DELETE  FROM medical_infor WHERE course='IT'  ORDER BY time ASC LIMIT 1 "
-                        new_data.delete(dltQuery,host,database,user)
+                        dlt_query="DELETE FROM medical_infor WHERE course='IT' ORDER BY time ASC LIMIT 1"
+                        new_data.delete(dlt_query,host,database,user)
 
-
-
-                    elif action=='itReject':
+                        
                         # dltQuery="DELETE  FROM medical_infor WHERE course='IT'  ORDER BY time ASC LIMIT 1 "
                         # new_data.delete(dltQuery,host,database,user)
-                        pass
+
+                    elif action=='itReject':
+        
+                        dlt_query="DELETE FROM medical_infor WHERE course='IT' ORDER BY time ASC LIMIT 1"
+                        new_data.delete(dlt_query,host,database,user)
+                        return redirect(url_for('admin'))
+                    
 
 
                     elif action=='accAccept':
-                        query="INSERT INTO admin_accountency(admin_id,name,year,semester,subject,attempt,date_begin,date_end,method,image,date_issued)SELECT admin_id,name,year,semester,subject,attempt,date_begin,date_end,method,med_image,date_issued FROM medical_infor LIMIT 1"
+                        query="INSERT INTO admin_accountency(admin_id,name,year,semester,subject,attempt,date_begin,date_end,method,image,date_issued)SELECT admin_id,name,year,semester,subject,attempt,date_begin,date_end,method,med_image,date_issued FROM medical_infor ORDER BY time ASC LIMIT 1"
                         new_data.insertData(query,host,database,user)
+                        dlt_query="DELETE FROM medical_infor WHERE course='ACCOUNTANCY' ORDER BY time ASC LIMIT 1"
+                        new_data.delete(dlt_query,host,database,user)
                         
 
                     elif action=='accReject':
-                        pass
+                        dlt_query="DELETE FROM medical_infor WHERE course='ACCOUNTANCY' ORDER BY time ASC LIMIT 1"
+                        new_data.delete(dlt_query,host,database,user)
+                        return redirect(url_for('admin'))
 
                     elif action=='manaAccept':
-                        query="INSERT INTO admin_management(admin_id,name,year,semester,subject,attempt,date_begin,date_end,method,image,date_issued)SELECT admin_id,name,year,semester,subject,attempt,date_begin,date_end,method,med_image,date_issued FROM medical_infor LIMIT 1"
+                        query="INSERT INTO admin_management(admin_id,name,year,semester,subject,attempt,date_begin,date_end,method,image,date_issued)SELECT admin_id,name,year,semester,subject,attempt,date_begin,date_end,method,med_image,date_issued FROM medical_infor ORDER BY time ASC LIMIT 1"
                         new_data.insertData(query,host,database,user)
+                        dlt_query="DELETE FROM medical_infor WHERE course='MANAGEMENT' ORDER BY time ASC LIMIT 1"
+                        new_data.delete(dlt_query,host,database,user)
                         
 
                     elif action=='manaReject':
-                        pass
+                         
+                        dlt_query="DELETE FROM medical_infor WHERE course='MANAGEMENT' ORDER BY time ASC LIMIT 1"
+                        new_data.delete(dlt_query,host,database,user)
                     elif action=='thmAccept':
-                        query="INSERT INTO admin_thm(admin_id,name,year,semester,subject,attempt,date_begin,date_end,method,image,date_issued)SELECT admin_id,name,year,semester,subject,attempt,date_begin,date_end,method,med_image,date_issued FROM medical_infor LIMIT 1"
+                        query="INSERT INTO admin_thm(admin_id,name,year,semester,subject,attempt,date_begin,date_end,method,image,date_issued)SELECT admin_id,name,year,semester,subject,attempt,date_begin,date_end,method,med_image,date_issued FROM medical_infor ORDER BY time ASC LIMIT 1"
                         new_data.insertData(query,host,database,user)
+                        dlt_query="DELETE FROM medical_infor WHERE course='TOURISM' ORDER BY time ASC LIMIT 1"
+                        new_data.delete(dlt_query,host,database,user)
                         
 
                     elif action=='thmReject':
-                        pass
+                        dlt_query="DELETE FROM medical_infor WHERE course='TOURISM' ORDER BY time ASC LIMIT 1"
+                        new_data.delete(dlt_query,host,database,user)
 
                     
                     elif action=='engAccept':
-                        query="INSERT INTO admin_english(admin_id,name,year,semester,subject,attempt,date_begin,date_end,method,image,date_issued)SELECT admin_id,name,year,semester,subject,attempt,date_begin,date_end,method,med_image,date_issued FROM medical_infor LIMIT 1"
+                        query="INSERT INTO admin_english(admin_id,name,year,semester,subject,attempt,date_begin,date_end,method,image,date_issued)SELECT admin_id,name,year,semester,subject,attempt,date_begin,date_end,method,med_image,date_issued FROM medical_infor ORDER BY time ASC LIMIT 1"
                         new_data.insertData(query,host,database,user)
+                        dlt_query="DELETE FROM medical_infor WHERE course='ENGLISH' ORDER BY time ASC LIMIT 1"
+                        new_data.delete(dlt_query,host,database,user)
 
                     elif action=='engReject':
-                        pass
-                    actionSelection(action)
+                        dlt_query="DELETE FROM medical_infor WHERE course='ENGLISH' ORDER BY time ASC LIMIT 1"
+                        new_data.delete(dlt_query,host,database,user)
+                actionSelection(action)
 
     return render_template('interfaces/admin/admin.html',form=new_admin,
                            count=count,it_count=it_count,account_count=account_count,

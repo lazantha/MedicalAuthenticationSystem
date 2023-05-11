@@ -110,8 +110,26 @@ class MySql:
 				connection.close()
 				print("Connection Closed !")
 		
+	#without binding
+	def delete(self, query, host, database, user):
+
+		try:
+			connection = None
+			connection = mysql.connector.connect(host=host, database=database, user=user, password=None)
+			cursor = connection.cursor(prepared=True)
+			cursor.execute(query)
+			connection.commit()  # Commit the deletion operation
+			print("Deletion successful!")
+		except mysql.connector.Error as error:
+			print("Query failed: {}".format(error))
+		finally:
+			if connection is not None and connection.is_connected():
+				cursor.close()  # Close the cursor
+				connection.close()  # Close the connection
+				print("Connection closed!")
+
 	
-	def delete(self,query,host,database,user):
+	def deleteMulti(self,query,data,host,database,user):
 		try:
 			connection=None
 			connection=mysql.connector.connect(host=host,database=database,user=user,password=None)
@@ -124,7 +142,6 @@ class MySql:
 			if connection != None and connection.is_connected():
 				connection.close()
 				print("Connection Closed !")
-	
 
 	
 

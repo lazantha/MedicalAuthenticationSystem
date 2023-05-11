@@ -5,7 +5,18 @@
 {% endblock %}
 
 
-{% block content%}
+
+<!-- {% block content%}
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <ul class="flash-messages">
+            {% for message in messages %}
+                <li class="flash-message">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %} -->
+
 
 <fieldset  class="container p-3 mb-2 bg-light text-dark pt-5 mt-5">
   <legend><span><i>Log In</i></span></legend>
