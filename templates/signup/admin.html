@@ -37,10 +37,6 @@
     </div>
 
     <div class="form-floating">
-      <!-- {{form.last_name(class="form-control",id="floatingInput",placeholder="Re")}}
-      <label for="floatingInput">{{form.last_name.label}}</label>
-
-       -->
        {% if form.last_name.errors %}
         {{form.last_name(class="form-control is-invalid",id="floatingInput",placeholder="Kevin")}}
         <div class="invalid-feedback">
@@ -55,10 +51,23 @@
 
     </div>
 
+    <!-- gender -->
+    <div class="form-floating">
+       {% if form.gender.errors %}
+        {{form.gender(class="form-control is-invalid",id="floatingInput",placeholder="Kevin")}}
+        <div class="invalid-feedback">
+            {% for error in form.gender.errors  %}
+              <span>{{error}}</span>
+            {% endfor %}
+        </div>
+        {%else%}
+          {{form.gender(class="form-control",id="floatingInput",placeholder="Re")}}
+      {% endif %}
+      <label for="floatingInput">{{form.gender.label}}</label>
+
+    </div>
+
     <div class="form-floating mb-3">
-      <!-- {{form.email(class="form-control",id="floatingInput",placeholder="name@example.com")}}
-      <label for="floatingInput">{{form.email.label}}</label>
-       -->
        {% if form.email.errors %}
        {{form.email(class="form-control is-invalid",id="floatingInput",placeholder="Kevin")}}
        <div class="invalid-feedback">
@@ -74,10 +83,6 @@
     </div>
 
     <div class="form-floating">
-
-      <!-- {{form.password(class="form-control",id="floatingPassword",placeholder="Password")}}
-      <label for="floatingPassword">{{form.password.label}}</label>
-       -->
        {% if form.password.errors %}
        {{form.password(class="form-control is-invalid",id="floatingInput",placeholder="Kevin")}}
        <div class="invalid-feedback">
@@ -92,10 +97,6 @@
     </div>
 
     <div class="form-floating">
-
-      <!-- {{form.confirm_password(class="form-control",id="floatingPassword",placeholder="Password")}}
-      <label for="floatingPassword">{{form.confirm_password.label}}</label>
-       -->
        {% if form.confirm_password.errors %}
        {{form.confirm_password(class="form-control is-invalid",id="floatingInput",placeholder="Kevin")}}
        <div class="invalid-feedback">
@@ -109,25 +110,6 @@
      <label for="floatingInput">{{form.confirm_password.label}}</label>
 
     </div>
-
-    <div class="form-floating mb-3">
-
-      <!-- {{form.ati(class="form-control",id="floatingInput")}}
-      <label for="floatingInput">{{form.ati.label}}</label>
-       -->
-       {% if form.ati.errors %}
-       {{form.ati(class="form-control is-invalid",id="floatingInput",placeholder="Kevin")}}
-       <div class="invalid-feedback">
-           {% for error in form.ati.errors  %}
-             <span>{{error}}</span>
-           {% endfor %}
-       </div>
-       {%else%}
-         {{form.ati(class="form-control",id="floatingInput",placeholder="confirm_passoword")}}
-     {% endif %}
-     <label for="floatingInput">{{form.ati.label}}</label>
-    </div>
-
     <div class="form-floating">
       {{form.possition(class="form-control  possition-select", id="floatingInput" )}}
       <label for="floatingInput">{{form.possition.label}}</label>

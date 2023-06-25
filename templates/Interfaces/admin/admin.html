@@ -1,19 +1,70 @@
 {% extends 'base.html' %}
 {% block head %}
 <title>Admin Panel</title>
+<style>
+  /* CSS styles for the container and small photos */
+  .photo-container {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .small-photo {
+    width: 100px;
+    height: 100px;
+    margin: 10px;
+    cursor: pointer;
+    /*100px
+    100px
+    10px
+    */
+  }
+
+  /* CSS styles for the modal */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    /*100
+    100
+    */
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+
+  .modal-content {
+    display: block;
+    margin: auto;
+    max-width: 800px;
+    max-height: 600px; 
+
+    /*800
+    600
+    */
+  }
+
+  .modal-content img {
+    width: 60%;
+/*      100*/
+    height: auto;
+  }
+</style>
  
 {% endblock %}
 
 
 {% block content %}
 
-<div class=" row" >
+<div class="row "  >
     {{form.hidden_tag()}}
     <!-- first Column -->
     <div class="col-3 border-top border-end rounded-end" style="background-color: #344ba0;">
 
       <div class="mt-5 ps-3 ">
-        <span style="margin: 0; padding: 0; color: #f0c76f; margin-left: 1rem; padding-left: 1rem;"><i> Hi {{user_name|title}}</i></span>
+        <span style="margin: 0; padding: 0; color: #f0c76f; margin-left: 1rem; padding-left: 1rem;"><i> Hi {{name|title}}</i></span>
           <div class=" align-top " style="text-align: center;margin: 3rem;">
             <a href="{{url_for('adminLogOut')}}" class="fs-4 border-bottom "><i class="fa-solid fa-power-off" style="color: #f0c76f;"></i></a>
         
@@ -45,7 +96,7 @@
     </div> 
     <!-- End of First Column -->
 
-    <div class="col">
+    <div class="col ">
 
       <!-- first Card -->
       
@@ -76,8 +127,6 @@
               <thead>
                 <tr>
                   <th>Name</th>
-                  <th>Gender</th>
-                  <th>Course</th>
                   <th>Red Book/ID</th>
                   <th>Medical</th>
                   <th>Confirmation</th>
@@ -90,21 +139,17 @@
   
   
                 <tr>
-                  <td>{{ row[0] }}</td>
-                  <td>{{ row[1] }}</td>
-                  <td>{{ row[2] }}</td>
-                  <td>{{ row[3] }}</td>
-                  <td>{{ row[4] }}</td>
-                  
-                  
-                  
-                  <td><a class="btn btn-secondary btn-sm" href="/admin?action=itAccept" role="button">Accept</a>|<a class="btn btn-danger btn-sm" href="/admin?action=itReject" role="button">Reject</a></td>
-                  
-                  
+                <td>{{ row[0] }}</td>
+                <div class="photo-container">
+                  <td><img class="small-photo" src="static/images/{{row[1]}}"></td>
+                  <td><img class="small-photo" src="static/images/{{row[2]}}"></td>
+                 </div>           
+                <td><a class="btn btn-secondary btn-sm" href="/admin?action=manaAccept" role="button">Accept</a>|<a class="btn btn-danger btn-sm" href="/admin?action=manaReject" role="button">Reject</a></td>
                 </tr>
                 
                 {% endfor %}
               </tbody>
+          
             </table>
           </div>
           
@@ -122,8 +167,6 @@
               <thead>
                 <tr>
                   <th>Name</th>
-                  <th>Gender</th>
-                  <th>Course</th>
                   <th>Red Book/ID</th>
                   <th>Medical</th>
                   <th>Confirmation</th>
@@ -138,18 +181,12 @@
   
                 <tr>
                   <td>{{ row[0] }}</td>
-                  <td>{{ row[1] }}</td>
-                  <td>{{ row[2] }}</td>
-                  <td>{{ row[3] }}</td>
-                  <td>{{ row[4] }}</td>
-                  
-                  
-                  
+                  <div class="photo-container">
+                    <td><img class="small-photo" src="static/images/{{row[1]}}"></td>
+                    <td><img class="small-photo" src="static/images/{{row[2]}}"></td>
+                  </div>
                   <td><a class="btn btn-secondary btn-sm" href="/admin?action=accAccept" role="button">Accept</a>|<a class="btn btn-danger btn-sm" href="/admin?action=accReject" role="button">Reject</a></td>
   
-  
-  
-                  
                 </tr>
                 
                 {% endfor %}
@@ -171,8 +208,6 @@
             <thead>
               <tr>
                  <th>Name</th>
-                <th>Gender</th>
-                <th>Course</th>
                 <th>Red Book/ID</th> 
                 <th>Medical</th>
                 <th>Confirmation</th>
@@ -185,15 +220,11 @@
 
               <tr>
               <td>{{ row[0] }}</td>
-                <td>{{ row[1] }}</td>
-                <td>{{ row[2] }}</td>
-                <td>{{ row[3] }}</td>
-                <td>{{ row[4] }}</td>
-                
-                
-                <td><a class="btn btn-secondary btn-sm" href="/admin?action=manaAccept" role="button">Accept</a>|<a class="btn btn-danger btn-sm" href="/admin?action=manaReject" role="button">Reject</a></td>
-                
-                
+              <div class="photo-container">
+                <td><img class="small-photo" src="static/images/{{row[1]}}"></td>
+                <td><img class="small-photo" src="static/images/{{row[2]}}"></td>
+               </div>           
+              <td><a class="btn btn-secondary btn-sm" href="/admin?action=manaAccept" role="button">Accept</a>|<a class="btn btn-danger btn-sm" href="/admin?action=manaReject" role="button">Reject</a></td>
               </tr>
               
               {% endfor %}
@@ -215,8 +246,6 @@
               <thead>
                 <tr>
                    <th>Name</th>
-                  <th>Gender</th>
-                  <th>Course</th>
                   <th>Red Book/ID</th>                 
                   <th>Medical</th>
                   <th>Confirmation</th>
@@ -225,29 +254,19 @@
               </thead>
               <tbody>
                 {% for row in result_thm %}
-  
-  
                 <tr>
                  <td>{{ row[0] }}</td>
-                  <td>{{ row[1] }}</td>
-                  <td>{{ row[2] }}</td>
-                  <td>{{ row[3] }}</td>
-                  <td>{{ row[4] }}</td>
-                  
-                  
+                 <div class="photo-container">
+                  <td><img class="small-photo" src="static/images/{{row[1]}}"></td>
+                  <td><img class="small-photo" src="static/images/{{row[2]}}"></td>
+                  </div>
                   <td><a class="btn btn-secondary btn-sm" href="/admin?action=thmAccept" role="button">Accept</a>|<a class="btn btn-danger btn-sm" href="/admin?action=thmReject" role="button">Reject</a></td>
-                  
-                  
                 </tr>
                 
                 {% endfor %}
               </tbody>
             </table>
           </div>
-
-          
-          
-          
         </div>
       </div>
       <hr>
@@ -259,8 +278,6 @@
               <thead>
                 <tr>
                   <th>Name</th>
-                  <th>Gender</th>
-                  <th>Course</th>
                   <th>Red Book/ID</th>   
                   <th>Medical</th>
                   <th>Confirmation</th>
@@ -268,20 +285,14 @@
                 </tr>
               </thead>
               <tbody>
-                {% for row in result_english %}
-  
-  
+                {% for row in result_en %}
                 <tr>
                  <td>{{ row[0] }}</td>
-                  <td>{{ row[1] }}</td>
-                  <td>{{ row[2] }}</td>
-                  <td>{{ row[3] }}</td>
-                  <td>{{ row[4] }}</td>
-                  
-                  
+                 <div class="photo-container">
+                  <td><img class="small-photo" src="static/images/{{row[1]}}"></td>
+                  <td><img class="small-photo" src="static/images/{{row[2]}}"></td>
+                </div>
                   <td><a class="btn btn-secondary btn-sm" href="/admin?action=engAccept" role="button">Accept</a>|<a class="btn btn-danger btn-sm" href="/admin?action=engReject" role="button">Reject</a></td>
-                  
-                 
                 </tr>
                 
                 {% endfor %}
@@ -302,8 +313,47 @@
     <!-- End of Second Column -->
     
   </div>
+  <div id="modal" class="modal">
+    <span class="close">&times;</span>
+    <div class="modal-content">
+      <img id="modal-image" src="">
+    </div>
+  </div>
+  
+  <script>
+    // Get the modal element and the image element within it
+    const modal = document.getElementById("modal");
+    const modalImage = document.getElementById("modal-image");
 
+    // Get all the small photos
+    const smallPhotos = document.querySelectorAll(".small-photo");
 
+    // Add click event listener to each small photo
+    smallPhotos.forEach(photo => {
+      photo.addEventListener("click", function() {
+        // Set the source of the modal image to the clicked small photo's source
+        modalImage.src = photo.src;
+
+        // Display the modal
+        modal.style.display = "block";
+      });
+    });
+
+    // Close the modal when the close button or outside the modal is clicked
+    modal.addEventListener("click", function(event) {
+      if (event.target === modal || event.target.className === "close") {
+        modal.style.display = "none";
+      }
+    });
+
+    // Close the modal when the Esc key is pressed
+    document.addEventListener("keydown", function(event) {
+      if (event.key === "Escape") {
+        modal.style.display = "none";
+      }
+    });
+  </script>
+  
 {% endblock %}
 
 

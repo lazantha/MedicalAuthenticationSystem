@@ -28,41 +28,43 @@ class UserLog(FlaskForm):
 
 #user main form
 class UserForm(FlaskForm):
-    userName=StringField('Name with Initials',validators=[DataRequired(),Length(min=3, max=10)])
-    gender=RadioField("Gender",choices=['MALE','FEMALE'])
-    course=SelectField("Department",choices=['IT','ACCOUNTANCY','MANAGEMENT','TOURISM','ENGLISH'],validators=[DataRequired()])
-    subject=SelectField("Subject",choices=['SAD','OOP'],validators=[DataRequired()])
-    year=SelectField("Year",choices=['1','2','3','4'],validators=[DataRequired()])
-    semester=SelectField("Semester",choices=['1','2'],validators=[DataRequired()])
-    attempt=SelectField("Attemp",choices=['1','2','3','4'],validators=[DataRequired()])
-    start_date=DateField("Start Date",validators=[DataRequired()])
-    end_date=DateField("End Date",validators=[DataRequired()])
     date_issued=DateField("Issued Date",validators=[DataRequired()])
-    type=RadioField("Medical By",choices=['Government','Private'],validators=[DataRequired()])
-    red_book=FileField("Upload picture of Redbook/ID",validators=[DataRequired()])
-    med_pic=FileField("Upload picture of Medical Sheet",validators=[DataRequired()])
-    submit=SubmitField("Save")
+    start_date=DateField("From ",validators=[DataRequired()])
+    end_date=DateField("To",validators=[DataRequired()])
+    attempt=SelectField("Attemp",validators=[DataRequired()])
+    doc_name=StringField('Doctors Name',validators=[DataRequired(),Length(min=3, max=20)])
+    hospital=StringField('Hospital',validators=[DataRequired(),Length(min=3, max=50)])
+    med_type=RadioField("Medical By",validators=[DataRequired()])
+    med_image=FileField("Upload picture of Medical Sheet",validators=[DataRequired()])
+    year=SelectField("Year",validators=[DataRequired()])
+    semester=SelectField("Semester",validators=[DataRequired()])
+    subject=SelectField("Subject",validators=[DataRequired()])
+    submit=SubmitField("Upload")
 
 #admin Sign Up
 class AdminSignUp(FlaskForm):
     first_name=StringField("Frist Name: ",validators=[DataRequired(),Length(min=3, max=10)])
     last_name=StringField("Last Name: ",validators=[DataRequired(),Length(min=3, max=10)])
+    gender=SelectField("Gender: ",choices=['MALE','FEMALE'],validators=[DataRequired()])
     email=StringField("Email: ",[validators.Email()])
     password=PasswordField("Password: ",validators=[DataRequired()])
     confirm_password=PasswordField("Confirm Password: ",validators=[DataRequired(),EqualTo('password')])
-    ati=SelectField(choices=['KANDY'])
     possition=SelectField("Possision: ",choices=['OFFICE','HOD'],validators=[DataRequired()])
-    department=SelectField("Department: ",choices=['IT','ACCOUNTANCY','MANAGEMENT','TOURISM','ENGLISH'],validators=[DataRequired()])
+    department=SelectField("Department: ",validators=[DataRequired()])
     submit=SubmitField("Submit")
  
 #user SignUp
 class UserSignUp(FlaskForm):
     first_name=StringField("First Name: ",validators=[DataRequired(),Length(min=3, max=10)])
     last_name=StringField("Last Name: ",validators=[DataRequired(),Length(min=3, max=10)])
-    department=SelectField("Department: ",choices=['IT','ACCOUNTANCY','MANAGEMENT','TOURISM','ENGLISH'],validators=[DataRequired(),])
+    index_number=StringField("Index Number",validators=[DataRequired(),Length(min=3, max=10)])
+    mode=SelectField("Mode: ",validators=[DataRequired(),])
+    gender=SelectField("Gender: ",choices=['MALE','FEMALE'],validators=[DataRequired()])
+    department=SelectField("Department: ",validators=[DataRequired(),])
     email=StringField("Email: ",[validators.Email()])
     password=PasswordField("Password: ",validators=[DataRequired()])
     confirm_password=PasswordField("Confirm Password: ",validators=[DataRequired(),EqualTo('password')])
+    id_card=FileField("Red book/ID",validators=[DataRequired()])
     submit=SubmitField("Submit")
 
     
@@ -94,14 +96,11 @@ class SuperAdminInterface(FlaskForm):
 #timetable
 
 class TimeSchedule(FlaskForm):
-    department=SelectField("Department",choices=['HNDIT','HNDTHM','HNDM','HNDE'])
-    year=SelectField("Academic Year",choices=[1,2,3,4])
-    semester=SelectField("Semester",choices=[1,2,3,4])
-    submit=SubmitField('Show Table')
-
-    subject_code=StringField("Subject Code",validators=[DataRequired()])
-    subject_name=StringField('Subject Name',validators=[DataRequired()]) 
+    subject_name=SelectField('Subject Name',validators=[DataRequired()]) 
     date=DateField()
     start_time=TimeField("Start Time")
     end_time=TimeField("End Time")
+    location=StringField(validators=[DataRequired(),Length(min=3, max=20)])
+    update=SubmitField("Update")
+
    

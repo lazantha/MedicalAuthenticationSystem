@@ -1,16 +1,29 @@
 # Sucess !
 import mysql.connector
-host='localhost'
-database='medical_db'
-user='root'
+# host='localhost'
+# database='test_medical_db'
+# user='root
 
+#medi_db
 
 class MySql:
+
+	host=''
+	database=''
+	user=''
+
+	def __init__(self,host,database,user):
+		self.host=host
+		self.database=database
+		self.user=user
+
+
+		
 	#for insertions
-	def table(self,query,data,host,database,user):
+	def table(self,query,data):
 		try:
 			connection=None
-			connection=mysql.connector.connect(host=host,database=database,user=user,password=None)
+			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=None)
 			cursor=connection.cursor(prepared=True)
 			cursor.execute(query,data)
 			connection.commit()
@@ -22,10 +35,10 @@ class MySql:
 				connection.close()
 				print("Connection Closed !")
 	
-	def insertData(self,query,host,database,user):
+	def insertData(self,query):
 		try:
 			connection=None
-			connection=mysql.connector.connect(host=host,database=database,user=user,password=None)
+			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=None)
 			cursor=connection.cursor(prepared=True)
 			cursor.execute(query)
 			connection.commit()
@@ -39,10 +52,10 @@ class MySql:
 	
 	# For parameter Binding and foreing keys
 	#use comma after created tuple when binding arguments if it has One Argument 
-	def fetchOneForeing(self,query,data,host,database,user):
+	def fetchOneForeing(self,query,data):
 		try:
 			connection=None
-			connection=mysql.connector.connect(host=host,database=database,user=user,password=None)
+			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=None)
 			cursor=connection.cursor(prepared=True)
 			cursor.execute(query,data)
 			result=cursor.fetchone()
@@ -56,10 +69,10 @@ class MySql:
 				print("Connection Closed !")
 
 	#For multiple foreing keys data bind
-	def fetchAllMulForeing(self,query,data,host,database,user):
+	def fetchAllMulForeing(self,query,data):
 		try:
 			connection=None
-			connection=mysql.connector.connect(host=host,database=database,user=user,password=None)
+			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=None)
 			cursor=connection.cursor(prepared=True)
 			cursor.execute(query,data)
 			result=cursor.fetchall()
@@ -77,10 +90,10 @@ class MySql:
 		
 
 	# FOR SINGLE QUERY
-	def fetchOne(self,query,host,database,user):
+	def fetchOne(self,query):
 		try:
 			connection=None
-			connection=mysql.connector.connect(host=host,database=database,user=user,password=None)
+			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=None)
 			cursor=connection.cursor(prepared=True)
 			cursor.execute(query)
 			result=cursor.fetchone()
@@ -94,10 +107,10 @@ class MySql:
 				print("Connection Closed !")
 	
 	#FOR SINGLE QUERY WITHOUT BINDING 
-	def fetchMultiVal(self,query,host,database,user):
+	def fetchMultiVal(self,query):
 		try:
 			connection=None
-			connection=mysql.connector.connect(host=host,database=database,user=user,password=None)
+			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=None)
 			cursor=connection.cursor(prepared=True)
 			cursor.execute(query)
 			result=cursor.fetchall()
@@ -111,11 +124,11 @@ class MySql:
 				print("Connection Closed !")
 		
 	#without binding
-	def delete(self, query, host, database, user):
+	def delete(self, query):
 
 		try:
 			connection = None
-			connection = mysql.connector.connect(host=host, database=database, user=user, password=None)
+			connection = mysql.connector.connect(host=self.host, database=self.database, user=self.user, password=None)
 			cursor = connection.cursor(prepared=True)
 			cursor.execute(query)
 			connection.commit()  # Commit the deletion operation
@@ -129,10 +142,10 @@ class MySql:
 				print("Connection closed!")
 
 	
-	def deleteMulti(self,query,data,host,database,user):
+	def deleteMulti(self,query):
 		try:
 			connection=None
-			connection=mysql.connector.connect(host=host,database=database,user=user,password=None)
+			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=None)
 			cursor=connection.cursor(prepared=True)
 			cursor.execute(query)
 			print("Success !")
@@ -142,6 +155,99 @@ class MySql:
 			if connection != None and connection.is_connected():
 				connection.close()
 				print("Connection Closed !")
+		
+	#edit..
+	def getCount(self,department):
+
+		try:
+			connection=None
+			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=None)
+			cursor=connection.cursor(prepared=True)
+			query="SELECT count(*) FROM subjects AS s INNER JOIN medical_infor AS mi ON s.subject_id=mi.subject_id INNER JOIN departments AS dep ON s.department_id=dep.id WHERE dep.calling_name=%s;"
+			cursor.execute(query,(department,))
+			result=cursor.fetchone()
+			return result[0]
+			print("getting success !")
+		except mysql.connector.Error as error:
+			print("query failed {}".format(error))
+		finally:
+			if connection != None and connection.is_connected():
+				connection.close()
+				print("Connection Closed !")
+
+
+	def getMain(self,department):
+		try:
+			connection=None
+			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=None)
+			cursor=connection.cursor(prepared=True)
+			query="SELECT st.first_name,id_card,mi.medical_sheet FROM students AS st INNER JOIN medical_infor AS mi ON st.user_id =mi.user_id INNER JOIN departments AS dep ON st.department_id=dep.id WHERE dep.calling_name=%s ORDER BY mi.recorded_time DESC;"
+			cursor.execute(query,(department,))
+			result=cursor.fetchall()
+			return result
+			print("getting success !")
+		except mysql.connector.Error as error:
+			print("query failed {}".format(error))
+		finally:
+			if connection != None and connection.is_connected():
+				connection.close()
+				print("Connection Closed !")
+		
+
+
+	def getUniqeCountYear(self,department):
+		try:
+			connection=None
+			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=None)
+			cursor=connection.cursor(prepared=True)
+			query="SELECT DISTINCT s.year FROM subjects AS s INNER JOIN departments AS dep ON s.department_id=dep.id WHERE dep.calling_name=%s;"
+			cursor.execute(query,(department,))
+			result=cursor.fetchall()
+			return result
+			print("getting success !")
+		except mysql.connector.Error as error:
+			print("query failed {}".format(error))
+		finally:
+			if connection != None and connection.is_connected():
+				connection.close()
+				print("Connection Closed !")
+
+	def getUniqeCountSem(self,department):
+		try:
+			connection=None
+			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=None)
+			cursor=connection.cursor(prepared=True)
+			query="SELECT DISTINCT s.semester FROM subjects AS s INNER JOIN departments AS dep ON s.department_id=dep.id WHERE dep.calling_name=%s;"
+			cursor.execute(query,(department,))
+			result=cursor.fetchall()
+			return result
+			print("getting success !")
+		except mysql.connector.Error as error:
+			print("query failed {}".format(error))
+		finally:
+			if connection != None and connection.is_connected():
+				connection.close()
+				print("Connection Closed !")
+	
+	def getUniqeCountSub(self,department):
+		try:
+			connection=None
+			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=None)
+			cursor=connection.cursor(prepared=True)
+			query="SELECT  s.subject_name FROM subjects AS s INNER JOIN departments AS dep ON s.department_id=dep.id WHERE dep.calling_name=%s;"
+			cursor.execute(query,(department,))
+			result=cursor.fetchall()
+			return result
+			print("getting success !")
+		except mysql.connector.Error as error:
+			print("query failed {}".format(error))
+		finally:
+			if connection != None and connection.is_connected():
+				connection.close()
+				print("Connection Closed !")
+
+
+
 
 	
 

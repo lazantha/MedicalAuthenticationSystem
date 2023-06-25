@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block head %}
-<title>{IT}</title>
+<title>Exams</title>
  
 {% endblock %}
 
@@ -57,45 +57,46 @@
     <!-- first Card -->
     <!-- table -->
     <div class="card bg-body-tertiary pt-3">
-      <h5 class="card-header"> DEPARTMENT OF INFORMATIN TECHNOLOGY </h5>
-      <span>Requests {{count}}</span>
-      <div class="card-body">
-        <div class="table-wrapper-scroll-y my-custom-scrollbar">
-          <table class="table table-hover table table-bordered table-striped mb-0">
-            <thead>
-              <tr>
-                 <th>Name</th>
-                <th>Subject</th>            
-                <th>Photo</th>
-                <th>Authentication</th>
-                
-              </tr>
-            </thead>
-            <tbody>
-              {% for row in result %}
-
-
-              <tr>
-               <td>{{ row[0] }}</td>
-                <td>{{ row[1] }}</td>
-                <td>{{ row[2] }}</td>
-                
-                
-                
-                <td><a class="btn btn-secondary btn-sm" href="/superAdminPanelIt?action=itAuthenticate" role="button">Authenticate</a>|<a class="btn btn-danger btn-sm" href="/superAdminPanelIt?action=itReject" role="button">Reject</a></td>
-                
-                
-              </tr>
-              
-              {% endfor %}
-            </tbody>
-          </table>
+      <center><b><h5 class="card-header"> DEPARTMENT OF INFORMATIN TECHNOLOGY </h5></b></center>
+      <center><span>Update Time table</span></center>
+        <div class="card-body">
+        
+            <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">Subject</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Start Time</th>
+                    <th scope="col">End Time</th>
+                    <th scope="col">Location</th>
+                    <th scope="col">Update</th>
+                    
+                    
+                    
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <form action="/exams" method="POST">
+                        {{form.hidden_tag()}}
+                        {{ form.csrf_token }}
+                        <td>{{form.subject_name(class="w-50 form-select")}}</td>
+                        <td>{{form.date()}}</td>
+                        <td>{{form.start_time()}}</td>
+                        <td>{{form.end_time()}}</td>
+                        <td>{{form.location(class="w-75")}}</td>
+                        <td>{{form.update(class="btn btn-success btn-sm")}}</td>
+                    </form>
+                    
+                    
+                  </tr>
+                  
+                </tbody>
+              </table>
+        
+        
+        
         </div>
-
-        
-        
-        
-      </div>
     </div>
     <!-- End of First card -->
 
