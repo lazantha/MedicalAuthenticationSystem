@@ -1,2 +1,20 @@
-2023-06-25 11:08:20,708 - WARNING -  * Debugger is active!
-2023-06-25 11:08:20,790 - INFO -  * Debugger PIN: 789-558-955
+2023-06-27 21:52:02,792 - WARNING -  * Debugger is active!
+2023-06-27 21:52:02,832 - INFO -  * Debugger PIN: 789-558-955
+2023-06-27 21:52:12,649 - INFO - 127.0.0.1 - - [27/Jun/2023 21:52:12] "GET /admin HTTP/1.1" 200 -
+2023-06-27 21:52:13,919 - INFO - 127.0.0.1 - - [27/Jun/2023 21:52:13] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2023-06-27 21:52:14,144 - INFO - 127.0.0.1 - - [27/Jun/2023 21:52:14] "[36mGET /static/images/eb2a8f94-14f9-11ee-ba12-3cf862b32260_breathing.jpeg HTTP/1.1[0m" 304 -
+2023-06-27 21:52:14,369 - INFO - 127.0.0.1 - - [27/Jun/2023 21:52:14] "[36mGET /static/images/d41aaff2-117c-11ee-acde-3cf862b32260_med.jpeg HTTP/1.1[0m" 304 -
+2023-06-27 21:52:14,378 - INFO - 127.0.0.1 - - [27/Jun/2023 21:52:14] "[36mGET /static/images/8fab4906-1237-11ee-abda-3cf862b32260_med.jpeg HTTP/1.1[0m" 304 -
+2023-06-27 21:52:14,588 - INFO - 127.0.0.1 - - [27/Jun/2023 21:52:14] "[36mGET /static/images/686d0877-11d9-11ee-93b3-3cf862b32260_med.jpeg HTTP/1.1[0m" 304 -
+2023-06-27 21:52:14,977 - INFO - 127.0.0.1 - - [27/Jun/2023 21:52:14] "[36mGET /static/images/a93ccafc-11d9-11ee-9d1f-3cf862b32260_namal.jpeg HTTP/1.1[0m" 304 -
+2023-06-27 21:52:15,154 - INFO - 127.0.0.1 - - [27/Jun/2023 21:52:15] "[36mGET /static/images/acaa9255-11e4-11ee-9a13-3cf862b32260_med.jpeg HTTP/1.1[0m" 304 -
+2023-06-27 21:52:15,182 - INFO - 127.0.0.1 - - [27/Jun/2023 21:52:15] "[36mGET /static/images/health.jpg HTTP/1.1[0m" 304 -
+2023-06-27 21:52:17,414 - INFO - 127.0.0.1 - - [27/Jun/2023 21:52:17] "GET /admin?action=itReject&row_id=arya@gmail.com HTTP/1.1" 200 -
+2023-06-27 21:52:18,120 - INFO - 127.0.0.1 - - [27/Jun/2023 21:52:18] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2023-06-27 21:52:18,421 - INFO - 127.0.0.1 - - [27/Jun/2023 21:52:18] "[36mGET /static/images/d41aaff2-117c-11ee-acde-3cf862b32260_med.jpeg HTTP/1.1[0m" 304 -
+2023-06-27 21:52:18,621 - INFO - 127.0.0.1 - - [27/Jun/2023 21:52:18] "[36mGET /static/images/eb2a8f94-14f9-11ee-ba12-3cf862b32260_breathing.jpeg HTTP/1.1[0m" 304 -
+2023-06-27 21:52:18,954 - INFO - 127.0.0.1 - - [27/Jun/2023 21:52:18] "[36mGET /static/images/8fab4906-1237-11ee-abda-3cf862b32260_med.jpeg HTTP/1.1[0m" 304 -
+2023-06-27 21:52:19,147 - INFO - 127.0.0.1 - - [27/Jun/2023 21:52:19] "[36mGET /static/images/686d0877-11d9-11ee-93b3-3cf862b32260_med.jpeg HTTP/1.1[0m" 304 -
+2023-06-27 21:52:19,206 - INFO - 127.0.0.1 - - [27/Jun/2023 21:52:19] "[36mGET /static/images/a93ccafc-11d9-11ee-9d1f-3cf862b32260_namal.jpeg HTTP/1.1[0m" 304 -
+2023-06-27 21:52:19,254 - INFO - 127.0.0.1 - - [27/Jun/2023 21:52:19] "[36mGET /static/images/acaa9255-11e4-11ee-9a13-3cf862b32260_med.jpeg HTTP/1.1[0m" 304 -
+2023-06-27 21:52:19,300 - INFO - 127.0.0.1 - - [27/Jun/2023 21:52:19] "[36mGET /static/images/health.jpg HTTP/1.1[0m" 304 -

@@ -447,6 +447,23 @@ def request():
             sub_query="SELECT subject_id FROM subjects WHERE subject_name =%s;"
             sub_data=(subject,)
             sub_id=new_data.fetchOneForeing(sub_query,sub_data)
+            #get values from exams acording to subject
+            exam_query="SELECT held_date FROM exams WHERE subject_id=%s;"
+            s_time_query="SELECT start_time FROM exams WHERE subject_id=%s;"
+            e_time_query="SELECT end_time FROM exams WHERE subject_id=%s;"
+            location_query="SELECT location FROM exams WHERE subject_id=%s;"
+            med_data=(sub_id,)
+            exam_date=new_data.fetchOneForeing(exam_query,med_data)
+            start_time=new_data.fetchOneForeing(s_time_query,med_data)
+            end_time=new_data.fetchOneForeing(e_time_query,med_data)
+            location=new_data.fetchOneForeing(location_query,med_data).decode().strip()
+            print(f"{exam_date}: {start_time}: {end_time}: {location}")
+
+
+            
+            
+            
+
 
             
             # Grab image name
@@ -458,8 +475,8 @@ def request():
             # Save to db
             med_image = uniq_name
             
-            main_query="INSERT INTO medical_infor(user_id,med_type_id,subject_id,attempt_id,issued_date,from_date,to_date,doctor_name,hospital,medical_sheet)VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"
-            main_data=(user_id,med_id,sub_id,att_id,date_issued,start_date,end_date,doc_name,hospital,med_image)
+            main_query="INSERT INTO medical_infor(user_id,med_type_id,subject_id,attempt_id,exam_date,started_time,end_time,exam_location,issued_date,from_date,to_date,doctor_name,hospital,medical_sheet)VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"
+            main_data=(user_id,med_id,sub_id,att_id,exam_date,start_time,end_time,location,date_issued,start_date,end_date,doc_name,hospital,med_image)
             new_data.table(main_query,main_data)
             
             flash("Form Susscessfully Submited ! We will notify you once your form has been accepted.")
@@ -522,11 +539,13 @@ def admin():
                 action = request.args.get('action')
                 def actionSelection(action):
                     if action=='itAccept':
-                        print(action)
-                        subject="Medical Authenticatation System"
-                        receiver="gmchinthaka@gmail.com"
-                        message_content="Testing Flask Mail !"
-                        email(receiver,subject,message_content)
+                        row_id = request.args.get('row_id')
+                        print(row_id)
+                        # subject="Medical Authenticatation System"
+                        # receiver="sglasanthapradeep@gmail.com"
+                        # message_content="Testing Flask Mail !"
+                        # email(receiver,subject,message_content)
+
                         return redirect('admin')
 
                         # query="INSERT INTO admin_it(admin_id,name,year,semester,subject,attempt,date_begin,date_end,method,image,date_issued)SELECT admin_id,name,year,semester,subject,attempt,date_begin,date_end,method,med_image,date_issued FROM medical_infor ORDER BY time ASC LIMIT 1"
@@ -539,7 +558,8 @@ def admin():
                         # new_data.delete(dltQuery,host,database,user)
 
                     elif action=='itReject':
-                        pass
+                        row_id = request.args.get('row_id')
+                        print(row_id)
                         # dlt_query="DELETE FROM medical_infor WHERE course='IT' ORDER BY time ASC LIMIT 1"
                         # new_data.delete(dlt_query,host,database,user)
                         # return redirect(url_for('admin'))
@@ -635,6 +655,23 @@ def admin():
 
 
 from flask import request
+import datetime
+#for time table values
+def heavyClean(values):
+        cleaned_values=[]
+        for val in values:
+            cleaned_tuple = (
+
+                val[0].decode(),  # Convert bytearray to string
+                val[1].decode(),
+                val[2].strftime('%B %d, %Y'),# Format date as "Month day, Year"
+                str(val[3]),  # Convert timedelta to string
+                str(val[4]),  # Convert timedelta to string
+                val[5].decode()  # Convert bytearray to string 
+                
+            )
+            cleaned_values.append(cleaned_tuple)
+        return cleaned_values
 @app.route('/exams', methods=['GET', 'POST'])
 def exams():
     form = TimeSchedule()
@@ -647,6 +684,11 @@ def exams():
     subjects=new_data.fetchMultiVal(subject_query)
     cleaned_subjects = [item[0].decode() for item in subjects]
     form.subject_name.choices=cleaned_subjects
+    data=('IT',)
+    values=new_data.getValues(data)
+    cleaned_values=heavyClean(values)
+    
+
     if form.validate_on_submit():
         
         subject=form.subject_name.data
@@ -671,9 +713,9 @@ def exams():
         main_query="INSERT INTO exams(subject_id,syllabus_id,super_admin_id,held_date,start_time,end_time,location)VALUES(%s,%s,%s,%s,%s,%s,%s);"
         main_data=(sub_id,syll_id,super_id,date,start_time,end_time,location)
         new_data.table(main_query,main_data)
-        return redirect(url_for('exams'))
+        return redirect(url_for('exams'))   
 
-    return render_template('interfaces/superAdmin/exams.html', form=form)
+    return render_template('interfaces/superAdmin/exams.html', form=form,form_data=cleaned_values)
 
 
    

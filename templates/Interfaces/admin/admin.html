@@ -126,6 +126,7 @@
             <table class="table table-hover table table-bordered table-striped mb-0">
               <thead>
                 <tr>
+                  <th>Email</th>
                   <th>Name</th>
                   <th>Red Book/ID</th>
                   <th>Medical</th>
@@ -139,12 +140,13 @@
   
   
                 <tr>
-                <td>{{ row[0] }}</td>
+                  <td>{{ row[0] }}</td>  
+                <td>{{ row[1] }}</td>
                 <div class="photo-container">
-                  <td><img class="small-photo" src="static/images/{{row[1]}}"></td>
                   <td><img class="small-photo" src="static/images/{{row[2]}}"></td>
+                  <td><img class="small-photo" src="static/images/{{row[3]}}"></td>
                  </div>           
-                <td><a class="btn btn-secondary btn-sm" href="/admin?action=manaAccept" role="button">Accept</a>|<a class="btn btn-danger btn-sm" href="/admin?action=manaReject" role="button">Reject</a></td>
+                <td><a class="btn btn-secondary btn-sm" href="/admin?action=itAccept&row_id={{ row[0] }}" role="button">Accept</a>|<a class="btn btn-danger btn-sm" href="/admin?action=itReject&row_id={{ row[0] }}" role="button">Reject</a></td>
                 </tr>
                 
                 {% endfor %}
@@ -166,6 +168,7 @@
             <table class="table table-hover table table-bordered table-striped mb-0">
               <thead>
                 <tr>
+                  <th>Email</th>
                   <th>Name</th>
                   <th>Red Book/ID</th>
                   <th>Medical</th>
@@ -181,11 +184,12 @@
   
                 <tr>
                   <td>{{ row[0] }}</td>
+                  <td>{{ row[1] }}</td>
                   <div class="photo-container">
-                    <td><img class="small-photo" src="static/images/{{row[1]}}"></td>
                     <td><img class="small-photo" src="static/images/{{row[2]}}"></td>
+                    <td><img class="small-photo" src="static/images/{{row[3]}}"></td>
                   </div>
-                  <td><a class="btn btn-secondary btn-sm" href="/admin?action=accAccept" role="button">Accept</a>|<a class="btn btn-danger btn-sm" href="/admin?action=accReject" role="button">Reject</a></td>
+                  <td><a class="btn btn-secondary btn-sm" href="/admin?action=accAccept&row_id={{ row[0] }}" role="button">Accept</a>|<a class="btn btn-danger btn-sm" href="/admin?action=accReject&row_id={{ row[0] }}" role="button">Reject</a></td>
   
                 </tr>
                 
@@ -207,7 +211,8 @@
           <table class="table table-hover table table-bordered table-striped mb-0">
             <thead>
               <tr>
-                 <th>Name</th>
+                <th>Email</th>
+                <th>Name</th>
                 <th>Red Book/ID</th> 
                 <th>Medical</th>
                 <th>Confirmation</th>
@@ -219,12 +224,13 @@
 
 
               <tr>
-              <td>{{ row[0] }}</td>
+                <td>{{ row[0] }}</td>  
+              <td>{{ row[1] }}</td>
               <div class="photo-container">
-                <td><img class="small-photo" src="static/images/{{row[1]}}"></td>
                 <td><img class="small-photo" src="static/images/{{row[2]}}"></td>
+                <td><img class="small-photo" src="static/images/{{row[3]}}"></td>
                </div>           
-              <td><a class="btn btn-secondary btn-sm" href="/admin?action=manaAccept" role="button">Accept</a>|<a class="btn btn-danger btn-sm" href="/admin?action=manaReject" role="button">Reject</a></td>
+              <td><a class="btn btn-secondary btn-sm" href="/admin?action=manaAccept&row_id={{ row[0] }}" role="button">Accept</a>|<a class="btn btn-danger btn-sm" href="/admin?action=manaReject&row_id={{ row[0] }}" role="button">Reject</a></td>
               </tr>
               
               {% endfor %}
@@ -245,6 +251,7 @@
             <table class="table table-hover table table-bordered table-striped mb-0">
               <thead>
                 <tr>
+                  <th>Email</th>
                    <th>Name</th>
                   <th>Red Book/ID</th>                 
                   <th>Medical</th>
@@ -255,12 +262,13 @@
               <tbody>
                 {% for row in result_thm %}
                 <tr>
-                 <td>{{ row[0] }}</td>
+                  <td>{{ row[0] }}</td>
+                 <td>{{ row[1] }}</td>
                  <div class="photo-container">
-                  <td><img class="small-photo" src="static/images/{{row[1]}}"></td>
                   <td><img class="small-photo" src="static/images/{{row[2]}}"></td>
+                  <td><img class="small-photo" src="static/images/{{row[3]}}"></td>
                   </div>
-                  <td><a class="btn btn-secondary btn-sm" href="/admin?action=thmAccept" role="button">Accept</a>|<a class="btn btn-danger btn-sm" href="/admin?action=thmReject" role="button">Reject</a></td>
+                  <td><a class="btn btn-secondary btn-sm" href="/admin?action=thmAccept&row_id={{ row[0] }}" role="button">Accept</a>|<a class="btn btn-danger btn-sm" href="/admin?action=thmReject&row_id={{ row[0] }}" role="button">Reject</a></td>
                 </tr>
                 
                 {% endfor %}
@@ -277,6 +285,7 @@
             <table class="table table-hover table table-bordered table-striped mb-0">
               <thead>
                 <tr>
+                  <th>Email</th>
                   <th>Name</th>
                   <th>Red Book/ID</th>   
                   <th>Medical</th>
@@ -287,12 +296,13 @@
               <tbody>
                 {% for row in result_en %}
                 <tr>
-                 <td>{{ row[0] }}</td>
+                  <td>{{ row[0] }}</td> 
+                 <td>{{ row[1] }}</td>
                  <div class="photo-container">
-                  <td><img class="small-photo" src="static/images/{{row[1]}}"></td>
                   <td><img class="small-photo" src="static/images/{{row[2]}}"></td>
+                  <td><img class="small-photo" src="static/images/{{row[3]}}"></td>
                 </div>
-                  <td><a class="btn btn-secondary btn-sm" href="/admin?action=engAccept" role="button">Accept</a>|<a class="btn btn-danger btn-sm" href="/admin?action=engReject" role="button">Reject</a></td>
+                  <td><a class="btn btn-secondary btn-sm" href="/admin?action=engAccept&row_id={{ row[0] }}" role="button">Accept</a>|<a class="btn btn-danger btn-sm" href="/admin?action=engReject&row_id={{ row[0] }}" role="button">Reject</a></td>
                 </tr>
                 
                 {% endfor %}

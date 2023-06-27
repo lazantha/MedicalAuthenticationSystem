@@ -181,7 +181,7 @@ class MySql:
 			connection=None
 			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=None)
 			cursor=connection.cursor(prepared=True)
-			query="SELECT st.first_name,id_card,mi.medical_sheet FROM students AS st INNER JOIN medical_infor AS mi ON st.user_id =mi.user_id INNER JOIN departments AS dep ON st.department_id=dep.id WHERE dep.calling_name=%s ORDER BY mi.recorded_time DESC;"
+			query="SELECT st.email,first_name,id_card,mi.medical_sheet FROM students AS st INNER JOIN medical_infor AS mi ON st.user_id =mi.user_id INNER JOIN departments AS dep ON st.department_id=dep.id WHERE dep.calling_name=%s ORDER BY mi.recorded_time DESC;"
 			cursor.execute(query,(department,))
 			result=cursor.fetchall()
 			return result
@@ -234,7 +234,7 @@ class MySql:
 			connection=None
 			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=None)
 			cursor=connection.cursor(prepared=True)
-			query="SELECT  s.subject_name FROM subjects AS s INNER JOIN departments AS dep ON s.department_id=dep.id WHERE dep.calling_name=%s;"
+			query="SELECT sub.subject_name FROM subjects AS sub INNER JOIN exams AS ex ON ex.subject_id=sub.subject_id INNER JOIN departments AS dep ON dep.id=sub.department_id WHERE dep.calling_name=%s;"
 			cursor.execute(query,(department,))
 			result=cursor.fetchall()
 			return result
@@ -245,16 +245,28 @@ class MySql:
 			if connection != None and connection.is_connected():
 				connection.close()
 				print("Connection Closed !")
-
+	
+	#time table data
+	def getValues(self,data):
+		try:
+			connection=None
+			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=None)
+			cursor=connection.cursor(prepared=True)
+			query="SELECT sub.subject_name,subject_code,ex.held_date,start_time,end_time,location FROM departments AS dep INNER JOIN subjects AS sub ON dep.id=sub.department_id INNER JOIN exams AS ex ON sub.subject_id=ex.subject_id WHERE dep.calling_name=%s;"
+			cursor.execute(query,data)
+			result=cursor.fetchall()
+			return(result)
+			print("getting success !")
+		except mysql.connector.Error as error:
+			print("query failed {}".format(error))
+		finally:
+			if connection != None and connection.is_connected():
+				connection.close()
+				print("Connection Closed !")
 
 
 
 	
-
-	
-
-
-
 
 
 
