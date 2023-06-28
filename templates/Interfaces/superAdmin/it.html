@@ -1,7 +1,16 @@
 {% extends 'base.html' %}
 {% block head %}
 <title>{IT}</title>
- 
+ <style>
+  .my-custom-scrollbar {
+    position: relative;
+    height: 200px;
+    overflow: auto;
+}
+.table-wrapper-scroll-y {
+    display: block;
+}
+ </style>
 {% endblock %}
 
 
@@ -58,37 +67,39 @@
     <!-- table -->
     <div class="card bg-body-tertiary pt-3">
       <h5 class="card-header"> DEPARTMENT OF INFORMATIN TECHNOLOGY </h5>
-      <span>Requests {{count}}</span>
+      <!-- <span>Requests {{count}}</span> -->
       <div class="card-body">
         <div class="table-wrapper-scroll-y my-custom-scrollbar">
           <table class="table table-hover table table-bordered table-striped mb-0">
             <thead>
               <tr>
-                 <th>Name</th>
-                <th>Subject</th>            
-                <th>Photo</th>
-                <th>Authentication</th>
+                <th>Email</th>
+                <th>Subject</th>
+                <th>Attempt</th>
+                <th>Date of Exam</th>
+                <th>Location</th>
+                <th>Action</th>
+                
+                
                 
               </tr>
             </thead>
             <tbody>
-              {% for row in result %}
-
+              {% for row in results %}
 
               <tr>
-               <td>{{ row[0] }}</td>
-                <td>{{ row[1] }}</td>
-                <td>{{ row[2] }}</td>
-                
-                
-                
-                <td><a class="btn btn-secondary btn-sm" href="/superAdminPanelIt?action=itAuthenticate" role="button">Authenticate</a>|<a class="btn btn-danger btn-sm" href="/superAdminPanelIt?action=itReject" role="button">Reject</a></td>
-                
-                
+              <td>{{ row[0] }}</td>  
+              <td>{{ row[1] }}</td>
+              <td>{{ row[2] }}</td>  
+              <td>{{ row[3] }}</td>   
+              <td>{{ row[4] }}</td>   
+              <td><a class="btn btn-secondary btn-sm" href="/itPanel?action=itAuth&row_id={{ row[0] }}" role="button">Authenticate</a>|</td>
               </tr>
               
+                             
               {% endfor %}
             </tbody>
+        
           </table>
         </div>
 

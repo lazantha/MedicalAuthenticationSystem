@@ -113,7 +113,6 @@ def adminlog():
         hashed_password=setHash(password)
         if possition=='HOD':
             
-           
             query="SELECT sa.first_name,sa.password,dep.calling_name FROM super_admins AS sa INNER JOIN departments AS dep ON sa.dep_id=dep.id WHERE sa.first_name=%s AND sa.password=%s AND dep.calling_name=%s;"
             data=(name,hashed_password,department)
             exist_data=new_data.fetchAllMulForeing(query,data)
@@ -125,9 +124,10 @@ def adminlog():
                 page_list = {
                     'IT': 'itPanel',
                     'MANAGEMENT': 'managePanel',
-                    'ACCOUNTANCY': 'accountPanel',
+                    'ACCOUNTENCY': 'accountPanel',
                     'ENGLISH': 'englishPanel',
-                    'TOURISM': 'thmPanel'
+                    'TOURISM': 'thmPanel',
+                    'BUISNESS ADMINISTRATION':'buisnessAdminPanal'
                 }
                 page_name=page_list.get(department)
                 if page_name:
@@ -166,11 +166,51 @@ def adminlog():
 
 #super admins panels
 #...............................................................................
+def clean_values(values):
+    cleaned_values = []
+    for value in values:
+        cleaned_value = []
+        for item in value:
+            if isinstance(item, bytearray):
+                cleaned_value.append(item.decode('utf-8'))
+            elif isinstance(item, date):
+                cleaned_value.append(item.strftime('%Y-%m-%d'))
+            else:
+                cleaned_value.append(item)
+        cleaned_values.append(tuple(cleaned_value))
+    return cleaned_values
+
 @app.route('/itPanel',methods=['GET','POST'])
 def itPanel():
     form=SuperAdminInterface()
+    new_data=MySql(host,database,user)
+    result=new_data.getMainSuper(1)
+    result_set=clean_values(result)
+    if 'super_name' in session and 'super_password' in session:
+        action = request.args.get('action')
+        if action=='itAuth':
+            row_id = request.args.get('row_id')
+            user_query = "SELECT DISTINCT mi.user_id FROM medical_infor AS mi INNER JOIN students AS stu ON stu.user_id=mi.user_id WHERE stu.email=%s;"
+            user_data = (row_id,)
+            user_id = new_data.fetchOneForeing(user_query, user_data)
+            print(f"ID: {user_id}")
+            my_sql = MySql('localhost', 'test_medical_db', 'root')
+            update_query = "UPDATE medical_infor SET is_authenticate = %s WHERE user_id = %s"
+            update_data = (1, user_id)
+            new_data.update(update_query, update_data)
+            subject="Medical Authenticatation System"
+            receiver=row_id
+            message_content="ALL Right !Your Medical Form Authenticated By The Medical Panel THANK YOU !"
+            email(receiver,subject,message_content)
 
-    return render_template('interfaces/superAdmin/it.html',form=form)
+        else:
+            row_id = request.args.get('row_id')
+            print(row_id)
+
+
+
+
+    return render_template('interfaces/superAdmin/it.html',form=form,results=result_set)
 
 @app.route('/managePanel',methods=['GET','POST'])
 def managePanel():
@@ -196,6 +236,12 @@ def thmPanel():
     form=SuperAdminInterface()
 
     return render_template('interfaces/superAdmin/thm.html',form=form)
+
+@app.route('/buisnessAdminPanal',methods=['GET','POST'])
+def buisnessAdminPanal():
+    form=SuperAdminInterface()
+
+    return render_template('interfaces/superAdmin/businessAdmin.html',form=form)
 
 
 #...............................................................................
@@ -485,13 +531,17 @@ def request():
 
 
 #office
+from refined_database import NewMySql
+from datetime import date
 @app.route('/admin',methods=['GET','POST'])
 def admin():
     from flask import request
     if 'admin_name' in session:
                 user_name=session['admin_name']
                 new_admin=AdminInterface()
+                new_super_admin=SuperAdminInterface()
                 new_data=MySql(host,database,user)
+                db=NewMySql(host,database,user)
                 query="SELECT COUNT(*) FROM medical_infor;"
                 total=new_data.fetchOne(query)
                 it=new_data.getCount('IT')
@@ -537,27 +587,28 @@ def admin():
                 
 
                 action = request.args.get('action')
-                def actionSelection(action):
-                    if action=='itAccept':
+                if action=='itAccept':
                         row_id = request.args.get('row_id')
                         print(row_id)
+                        user_query = "SELECT DISTINCT mi.user_id FROM medical_infor AS mi INNER JOIN students AS stu ON stu.user_id=mi.user_id WHERE stu.email=%s;"
+                        user_data = (row_id,)
+                        user_id = new_data.fetchOneForeing(user_query, user_data)
+                        print(f"ID: {user_id}")
+                        my_sql = MySql('localhost', 'test_medical_db', 'root')
+                        update_query = "UPDATE medical_infor SET is_confirm = %s WHERE user_id = %s"
+                        update_data = (1, user_id)
+                        new_data.update(update_query, update_data)
+                        #Email
                         # subject="Medical Authenticatation System"
-                        # receiver="sglasanthapradeep@gmail.com"
-                        # message_content="Testing Flask Mail !"
+                        # receiver=row_id
+                        # message_content="Allmost Done !Your Medical Form Accepted By The Admin and We Let You Know When Authenticate You Medical By the Medical Panel"
                         # email(receiver,subject,message_content)
-
                         return redirect('admin')
+                
 
-                        # query="INSERT INTO admin_it(admin_id,name,year,semester,subject,attempt,date_begin,date_end,method,image,date_issued)SELECT admin_id,name,year,semester,subject,attempt,date_begin,date_end,method,med_image,date_issued FROM medical_infor ORDER BY time ASC LIMIT 1"
-                        # new_data.insertData(query,host,database,user)
-                        # dlt_query="DELETE FROM medical_infor WHERE course='IT' ORDER BY time ASC LIMIT 1"
-                        # new_data.delete(dlt_query,host,database,user)
 
-                        
-                        # dltQuery="DELETE  FROM medical_infor WHERE course='IT'  ORDER BY time ASC LIMIT 1 "
-                        # new_data.delete(dltQuery,host,database,user)
 
-                    elif action=='itReject':
+                elif action=='itReject':
                         row_id = request.args.get('row_id')
                         print(row_id)
                         # dlt_query="DELETE FROM medical_infor WHERE course='IT' ORDER BY time ASC LIMIT 1"
@@ -566,61 +617,61 @@ def admin():
                     
 
 
-                    elif action=='accAccept':
-                        pass
+                elif action=='accAccept':
+                    pass
                         # query="INSERT INTO admin_accountency(admin_id,name,year,semester,subject,attempt,date_begin,date_end,method,image,date_issued)SELECT admin_id,name,year,semester,subject,attempt,date_begin,date_end,method,med_image,date_issued FROM medical_infor ORDER BY time ASC LIMIT 1"
                         # new_data.insertData(query,host,database,user)
                         # dlt_query="DELETE FROM medical_infor WHERE course='ACCOUNTANCY' ORDER BY time ASC LIMIT 1"
                         # new_data.delete(dlt_query,host,database,user)
                         
 
-                    elif action=='accReject':
-                        pass
+                elif action=='accReject':
+                    pass
 
                         # dlt_query="DELETE FROM medical_infor WHERE course='ACCOUNTANCY' ORDER BY time ASC LIMIT 1"
                         # new_data.delete(dlt_query,host,database,user)
                         # return redirect(url_for('admin'))
 
-                    elif action=='manaAccept':
-                        pass
+                elif action=='manaAccept':
+                    pass
                         # query="INSERT INTO admin_management(admin_id,name,year,semester,subject,attempt,date_begin,date_end,method,image,date_issued)SELECT admin_id,name,year,semester,subject,attempt,date_begin,date_end,method,med_image,date_issued FROM medical_infor ORDER BY time ASC LIMIT 1"
                         # new_data.insertData(query,host,database,user)
                         # dlt_query="DELETE FROM medical_infor WHERE course='MANAGEMENT' ORDER BY time ASC LIMIT 1"
                         # new_data.delete(dlt_query,host,database,user)
                         
 
-                    elif action=='manaReject':
-                        pass
+                elif action=='manaReject':
+                    pass
                         # dlt_query="DELETE FROM medical_infor WHERE course='MANAGEMENT' ORDER BY time ASC LIMIT 1"
                         # new_data.delete(dlt_query,host,database,user)
-                    elif action=='thmAccept':
-                        pass
+                elif action=='thmAccept':
+                    pass
                         # query="INSERT INTO admin_thm(admin_id,name,year,semester,subject,attempt,date_begin,date_end,method,image,date_issued)SELECT admin_id,name,year,semester,subject,attempt,date_begin,date_end,method,med_image,date_issued FROM medical_infor ORDER BY time ASC LIMIT 1"
                         # new_data.insertData(query,host,database,user)
                         # dlt_query="DELETE FROM medical_infor WHERE course='TOURISM' ORDER BY time ASC LIMIT 1"
                         # new_data.delete(dlt_query,host,database,user)
                         
 
-                    elif action=='thmReject':
-                        pass
+                elif action=='thmReject':
+                    pass
                         # dlt_query="DELETE FROM medical_infor WHERE course='TOURISM' ORDER BY time ASC LIMIT 1"
                         # new_data.delete(dlt_query,host,database,user)
 
                     
-                    elif action=='engAccept':
-                        pass
+                elif action=='engAccept':
+                     pass
 
                         # query="INSERT INTO admin_english(admin_id,name,year,semester,subject,attempt,date_begin,date_end,method,image,date_issued)SELECT admin_id,name,year,semester,subject,attempt,date_begin,date_end,method,med_image,date_issued FROM medical_infor ORDER BY time ASC LIMIT 1"
                         # new_data.insertData(query,host,database,user)
                         # dlt_query="DELETE FROM medical_infor WHERE course='ENGLISH' ORDER BY time ASC LIMIT 1"
                         # new_data.delete(dlt_query,host,database,user)
 
-                    elif action=='engReject':
-                        pass
+                elif action=='engReject':
+                    pass
 
                         # dlt_query="DELETE FROM medical_infor WHERE course='ENGLISH' ORDER BY time ASC LIMIT 1"
                         # new_data.delete(dlt_query,host,database,user)
-                actionSelection(action)
+                
 
     return render_template('interfaces/admin/admin.html',form=new_admin,
                             
@@ -716,6 +767,5 @@ def exams():
         return redirect(url_for('exams'))   
 
     return render_template('interfaces/superAdmin/exams.html', form=form,form_data=cleaned_values)
-
 
    

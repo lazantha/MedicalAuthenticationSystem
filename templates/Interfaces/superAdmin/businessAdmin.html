@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block head %}
-<title>{MANAGEMENT}</title>
- <style>
+<title>{BA}</title>
+<style>
   .my-custom-scrollbar {
     position: relative;
     height: 200px;
@@ -10,7 +10,8 @@
 .table-wrapper-scroll-y {
     display: block;
 }
- </style>
+</style>
+ 
 {% endblock %}
 
 
@@ -66,7 +67,7 @@
     <!-- first Card -->
     <!-- table -->
     <div class="card bg-body-tertiary pt-3">
-      <h5 class="card-header"> DEPARTMENT OF MANAGEMENT </h5>
+      <h5 class="card-header"> DEPARTMENT OF BUSINESS ADMINISTRATION </h5>
       <!-- <span>Requests {{count}}</span> -->
       <div class="card-body">
         <div class="table-wrapper-scroll-y my-custom-scrollbar">
@@ -93,7 +94,7 @@
               <td>{{ row[2] }}</td>  
               <td>{{ row[3] }}</td>   
               <td>{{ row[4] }}</td>   
-              <td><a class="btn btn-secondary btn-sm" href="/managePanel?action=manaAuth&row_id={{ row[0] }}" role="button">Authenticate</a>|</td>
+              <td><a class="btn btn-secondary btn-sm" href="/buisnessAdminPanal?action=baAuth&row_id={{ row[0] }}" role="button">Authenticate</a>|</td>
               </tr>
               
                              
