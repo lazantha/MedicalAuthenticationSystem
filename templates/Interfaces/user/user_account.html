@@ -7,6 +7,15 @@
 
 {% block content %}
 
+{% with messages= get_flashed_messages(with_categories=True)%}
+  {% if messages %}
+    {% for categories, message in messages %}
+      <div class="alert alert-success" role="alert">
+        {{message}}
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
 
 <div class=" row" >
   
@@ -50,16 +59,6 @@
   <!-- End of First Column -->
 
   <div class="col">
-
-    {% with messages= get_flashed_messages(with_categories=True)%}
-    {% if messages %}
-      {% for categories, message in messages %}
-        <div class="alert alert-success" role="alert">
-          {{message}}
-        </div>
-      {% endfor %}
-    {% endif %}
-  {% endwith %}
 
     <div class="card text-center">
       <div class="card-header">

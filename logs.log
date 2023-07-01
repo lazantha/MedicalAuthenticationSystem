@@ -1,2 +1,5 @@
-2023-06-28 12:08:59,677 - WARNING -  * Debugger is active!
-2023-06-28 12:08:59,694 - INFO -  * Debugger PIN: 789-558-955
+2023-07-01 11:07:39,541 - WARNING -  * Debugger is active!
+2023-07-01 11:07:39,582 - INFO -  * Debugger PIN: 789-558-955
+2023-07-01 11:08:07,109 - INFO - 127.0.0.1 - - [01/Jul/2023 11:08:07] "GET / HTTP/1.1" 200 -
+2023-07-01 11:08:08,438 - INFO - 127.0.0.1 - - [01/Jul/2023 11:08:08] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2023-07-01 11:08:08,623 - INFO - 127.0.0.1 - - [01/Jul/2023 11:08:08] "[36mGET /static/images/health.jpg HTTP/1.1[0m" 304 -

@@ -12,6 +12,7 @@ import hashlib
 from werkzeug.utils import secure_filename
 import uuid
 import os
+import time
 host='localhost'
 database='test_medical_db'
 user='root'
@@ -39,37 +40,12 @@ def adminLogOut():
     session.pop('user_name',None)
     return redirect(url_for('adminlog'))
 
-# Sessions  English Admin logging out
-@app.route('/englishAdminLogOut')
-def englishAdminLogOut():
-    session.pop('user_name',None)
-    return redirect(url_for('adminlog'))
-
-# Sessions  account Admin logging out
-@app.route('/accountAdminLogOut')
-def accountAdminLogOut():
-    session.pop('user_name',None)
-    return redirect(url_for('adminlog'))
-
 # Sessions  it Admin logging out
-@app.route('/itAdminLogOut')
-def itAdminLogOut():
+@app.route('/superLogOut')
+def superLogOut():
     session.pop('user_name',None)
     return redirect(url_for('adminlog'))
     
-
-
-# Sessions  management Admin logging out
-@app.route('/managementAdminLogOut')
-def managementAdminLogOut():
-    session.pop('user_name',None)
-    return redirect(url_for('adminlog'))
-
-# Sessions  thm Admin logging out
-@app.route('/thmAdminLogOut')
-def thmAdminLogOut():
-    session.pop('user_name',None)
-    return redirect(url_for('adminlog'))
 
 @app.route('/userLogOut')
 def userLogOut():
@@ -87,6 +63,27 @@ def setHash(password):
 	hashed_password=template.hexdigest()
 	return hashed_password
 
+#password check
+def passwordCheck(hashed_password,table):
+    new_data=MySql(host,database,user)   
+    if table=="admins":
+        pass_query="SELECT password FROM admins WHERE password=%s;"
+        data=(hashed_password,)
+        result=new_data.fetchOneForeing(pass_query,data)
+        if result:
+            return 1
+        else:
+            return 0
+    else:
+
+        pass_query="SELECT password FROM super_admins WHERE password=%s;"
+        data=(hashed_password,)
+        result=new_data.fetchOneForeing(pass_query,data)
+        if result:
+            return 1
+        else:
+            return 0
+
 
 #home page
 @app.route('/')
@@ -101,7 +98,7 @@ def index():
 def adminlog():
     form=AdminLog()
     new_data=MySql(host,database,user)
-    query="SELECT calling_name FROM departments;"
+    query="SELECT dep.calling_name FROM departments AS dep INNER JOIN super_admins AS sa ON dep.id=sa.dep_id;"
     department_list=new_data.fetchMultiVal(query)
     cleaned_data = [value[0].decode() for value in department_list]
     form.department.choices=cleaned_data
@@ -127,16 +124,23 @@ def adminlog():
                     'ACCOUNTENCY': 'accountPanel',
                     'ENGLISH': 'englishPanel',
                     'TOURISM': 'thmPanel',
-                    'BUISNESS ADMINISTRATION':'buisnessAdminPanal'
+                    'BUISNESS ADMINISTRATION':'buisnessAdminPanal',
+                    'ENGINEERING':'engPanal',
+                    'BUILDING SERVICE':'buildingPanal',
+                    'AGRI':'agriPanal',
+                    'FOOD TECHNOLOGY':'foodPanal',
+                    'QS':'qsPanal',
+                    'BUISNESS FINANCE':'finacePanal'
                 }
                 page_name=page_list.get(department)
                 if page_name:
-                    
-                    return redirect(url_for(page_name))
+                    flash('Login successful! ','success')
+                    return redirect(url_for('superAdmin'))
                 else:
                     
                     return redirect('adminlog')
             else:
+                flash("Login failed. Please check your username and password and try again.",'warning')
                 return redirect('adminlog')
         
         else:
@@ -152,13 +156,12 @@ def adminlog():
                 session['admin_password']=hashed_password
                 if 'admin_name' in session:
                     admin_name=session['admin_name']
+                    flash('Login successful! ','success')
                     return redirect(url_for('admin'))
             else:
+                flash("Login failed. Please check your username and password and try again.",'warning')
                 return redirect(url_for('adminlog'))
         
-
-            
-            
 
 
     return render_template('login/admin.html',form=form)
@@ -180,13 +183,18 @@ def clean_values(values):
         cleaned_values.append(tuple(cleaned_value))
     return cleaned_values
 
-@app.route('/itPanel',methods=['GET','POST'])
-def itPanel():
+
+@app.route('/super_admin',methods=['GET','POST'])
+def superAdmin():
     form=SuperAdminInterface()
     new_data=MySql(host,database,user)
-    result=new_data.getMainSuper(1)
-    result_set=clean_values(result)
     if 'super_name' in session and 'super_password' in session:
+        name=session['super_name']
+        password=session['super_password']
+        print(f"{name} : {password}")
+        query="SELECT dep.calling_name FROM departments AS dep INNER JOIN super_admins AS sa ON dep.id=sa.dep_id WHERE sa.first_name=%s AND sa.password=%s"
+        data=(name,password)
+        dep=new_data.fetchOneForeing(query,data).decode().strip()
         action = request.args.get('action')
         if action=='itAuth':
             row_id = request.args.get('row_id')
@@ -206,45 +214,9 @@ def itPanel():
         else:
             row_id = request.args.get('row_id')
             print(row_id)
+    return render_template('interfaces/superAdmin/super_admin.html',form=form,department=dep,name=name)
+#.....................................................................
 
-
-
-
-    return render_template('interfaces/superAdmin/it.html',form=form,results=result_set)
-
-@app.route('/managePanel',methods=['GET','POST'])
-def managePanel():
-    form=SuperAdminInterface()
-
-    return render_template('interfaces/superAdmin/management.html',form=form)
-
-@app.route('/accountPanel',methods=['GET','POST'])
-def accountPanel():
-    form=SuperAdminInterface()
-
-    return render_template('interfaces/superAdmin/account.html',form=form)
-
-
-@app.route('/englishPanel',methods=['GET','POST'])
-def englishPanel():
-    form=SuperAdminInterface()
-
-    return render_template('interfaces/superAdmin/english.html',form=form)
-
-@app.route('/thmPanel',methods=['GET','POST'])
-def thmPanel():
-    form=SuperAdminInterface()
-
-    return render_template('interfaces/superAdmin/thm.html',form=form)
-
-@app.route('/buisnessAdminPanal',methods=['GET','POST'])
-def buisnessAdminPanal():
-    form=SuperAdminInterface()
-
-    return render_template('interfaces/superAdmin/businessAdmin.html',form=form)
-
-
-#...............................................................................
 
 #admin Sign
 @app.route('/adminSign',methods=['GET','POST'])
@@ -265,27 +237,39 @@ def adminSign():
         possition=form.possition.data
         department=form.department.data
         hashed_password=setHash(password)
-        
+           
         if possition=="OFFICE":
+            #password Checking
+            if passwordCheck(hashed_password,"admins")==1:
+                # print(passwordCheck(hashed_password))
+                flash("Password Already Exist ! Try Different One ")
+                return redirect(url_for('adminSign'))
+            else:
 
-            query="INSERT INTO admins (first_name,last_name,gender,email,password)VALUES(%s,%s,%s,%s,%s);"
-            data=(first_name,last_name,gender,email,hashed_password)
-            new_data.table(query,data)
+                query="INSERT INTO admins (first_name,last_name,gender,email,password)VALUES(%s,%s,%s,%s,%s);"
+                data=(first_name,last_name,gender,email,hashed_password)
+                new_data.table(query,data)
 
-            flash(f'Account Successfully created {first_name}!','success')
-            return redirect(url_for('adminlog'))
+                flash(f'Account Successfully created {first_name}!','success')
+                return redirect(url_for('adminlog'))
         else:
-            dep_query="SELECT id FROM departments WHERE calling_name =%s;"
-            dep_data=(department,)
-            dep_id=new_data.fetchOneForeing(dep_query,dep_data)
-            query="INSERT INTO super_admins (dep_id,first_name,last_name,gender,email,password)VALUES(%s,%s,%s,%s,%s,%s);"
-            data=(dep_id,first_name,last_name,gender,email,hashed_password)
-            new_data.table(query,data)
-            flash(f'Account Successfully created {first_name}!','success')
-            return redirect(url_for('adminlog'))
+            if passwordCheck(hashed_password,"super_admins")==1:
+                # print(passwordCheck(hashed_password))
+                flash("Password Already Exist ! Try Different One ")
+                return redirect(url_for('adminSign'))
+            else:
+
+                dep_query="SELECT id FROM departments WHERE calling_name =%s;"
+                dep_data=(department,)
+                dep_id=new_data.fetchOneForeing(dep_query,dep_data)
+                query="INSERT INTO super_admins (dep_id,first_name,last_name,gender,email,password)VALUES(%s,%s,%s,%s,%s,%s);"
+                data=(dep_id,first_name,last_name,gender,email,hashed_password)
+                new_data.table(query,data)
+                flash(f'Account Successfully created {first_name}!','success')
+                return redirect(url_for('adminlog'))
 
         
-        
+    
     else:
         pass
 
@@ -312,11 +296,11 @@ def userlog():
         if exist:
             session['student_name'] = user_name
             session['student_password']=hashed_password
-            flash('Login Success ','success')
+            flash('Login successful! ','success')
             return redirect(url_for('user_home'))
             
         else:
-             flash('Please recheck user name and password','warning')
+             flash("Login failed. Please check your username and password and try again.",'warning')
              return redirect(url_for('userlog'))
             # if 'name' in session:
             #     return redirect(url_for('user_home'))
@@ -362,20 +346,30 @@ def userSign():
         id_card=new_sign.id_card.data
         
         if hashed_password==hashed_password_confirm:
-            # Grab image name
-            img_name = secure_filename(id_card.filename)
-            uniq_name = str(uuid.uuid1()) + '_' + img_name
-            # Save image
-            save_path = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'], uniq_name)
-            id_card.save(save_path)
-            # Save to db
-            id_card = uniq_name
+                
+                pass_query="SELECT password,email FROM students WHERE password=%s OR email=%s;"
+                data=(hashed_password,email)
+                result=new_sql.fetchAllMulForeing(pass_query,data)
+                if result:
+                    flash("Email or Password Already Exist ! ")
+                    print(" Already Exist")
+                    return redirect('userSign')
+                else:
 
-            
-            main_query="INSERT INTO students(department_id,student_type_id,first_name,last_name,index_number,gender,email,password,id_card)VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s);"
-            main_data=(dep_id,mode_id,first_name,last_name,index_number,gender,email,hashed_password_confirm,id_card)
-            new_sql.table(main_query,main_data)
-            return redirect('userlog')
+                    # Grab image name
+                    img_name = secure_filename(id_card.filename)
+                    uniq_name = str(uuid.uuid1()) + '_' + img_name
+                    # Save image
+                    save_path = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'], uniq_name)
+                    id_card.save(save_path)
+                    # Save to db
+                    id_card = uniq_name
+
+                    
+                    main_query="INSERT INTO students(department_id,student_type_id,first_name,last_name,index_number,gender,email,password,id_card)VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s);"
+                    main_data=(dep_id,mode_id,first_name,last_name,index_number,gender,email,hashed_password_confirm,id_card)
+                    new_sql.table(main_query,main_data)
+                    return redirect('userlog')
 
         
         else:
@@ -587,103 +581,91 @@ def admin():
                 
 
                 action = request.args.get('action')
+                user_query = "SELECT DISTINCT mi.user_id FROM medical_infor AS mi INNER JOIN students AS stu ON stu.user_id=mi.user_id WHERE stu.email=%s;"
+                update_query = "UPDATE medical_infor SET is_confirm = %s WHERE user_id = %s"
+                def injectAction(row_id,value,user_query,update_query):
+                        user_data = (row_id,)
+                        user_id = new_data.fetchOneForeing(user_query, user_data)
+                        update_data = (value, user_id)
+                        new_data.update(update_query, update_data)
+                        return redirect('admin')
+                #.....................................................................
+                def acceptMail(row_id):
+                        
+                    subject="Medical Authenticatation System"
+                    receiver=row_id
+                    message_content="Allmost Done !Your Medical Form Accepted By The Admin and We Let You Know When Authenticate You Medical By the Medical Panel"
+                    email(receiver,subject,message_content)
+
+                def rejectMail(row_id):
+                    subject="Medical Authenticatation System"
+                    receiver=row_id
+                    message_content="Your Medical Rejected ! Please Provide Accurate Information"
+                    email(receiver,subject,message_content)
+                #.....................................................................
                 if action=='itAccept':
                         row_id = request.args.get('row_id')
                         print(row_id)
-                        user_query = "SELECT DISTINCT mi.user_id FROM medical_infor AS mi INNER JOIN students AS stu ON stu.user_id=mi.user_id WHERE stu.email=%s;"
-                        user_data = (row_id,)
-                        user_id = new_data.fetchOneForeing(user_query, user_data)
-                        print(f"ID: {user_id}")
-                        my_sql = MySql('localhost', 'test_medical_db', 'root')
-                        update_query = "UPDATE medical_infor SET is_confirm = %s WHERE user_id = %s"
-                        update_data = (1, user_id)
-                        new_data.update(update_query, update_data)
-                        #Email
-                        # subject="Medical Authenticatation System"
-                        # receiver=row_id
-                        # message_content="Allmost Done !Your Medical Form Accepted By The Admin and We Let You Know When Authenticate You Medical By the Medical Panel"
-                        # email(receiver,subject,message_content)
-                        return redirect('admin')
+                        
+                        injectAction(row_id,1,user_query,update_query)
+                        acceptMail(row_id)
                 
-
-
-
                 elif action=='itReject':
                         row_id = request.args.get('row_id')
                         print(row_id)
-                        # dlt_query="DELETE FROM medical_infor WHERE course='IT' ORDER BY time ASC LIMIT 1"
-                        # new_data.delete(dlt_query,host,database,user)
-                        # return redirect(url_for('admin'))
-                    
+                        injectAction(row_id,-1,user_query,update_query)
+                        rejectMail(row_id)                
 
 
                 elif action=='accAccept':
-                    pass
-                        # query="INSERT INTO admin_accountency(admin_id,name,year,semester,subject,attempt,date_begin,date_end,method,image,date_issued)SELECT admin_id,name,year,semester,subject,attempt,date_begin,date_end,method,med_image,date_issued FROM medical_infor ORDER BY time ASC LIMIT 1"
-                        # new_data.insertData(query,host,database,user)
-                        # dlt_query="DELETE FROM medical_infor WHERE course='ACCOUNTANCY' ORDER BY time ASC LIMIT 1"
-                        # new_data.delete(dlt_query,host,database,user)
+                    row_id = request.args.get('row_id')
+                    injectAction(row_id,1,user_query,update_query)
+                    acceptMail(row_id)
                         
 
                 elif action=='accReject':
-                    pass
 
-                        # dlt_query="DELETE FROM medical_infor WHERE course='ACCOUNTANCY' ORDER BY time ASC LIMIT 1"
-                        # new_data.delete(dlt_query,host,database,user)
-                        # return redirect(url_for('admin'))
+                    row_id = request.args.get('row_id')
+                    print(row_id)
+                    injectAction(row_id,-1,user_query,update_query)
+                    rejectMail(row_id)
 
                 elif action=='manaAccept':
-                    pass
-                        # query="INSERT INTO admin_management(admin_id,name,year,semester,subject,attempt,date_begin,date_end,method,image,date_issued)SELECT admin_id,name,year,semester,subject,attempt,date_begin,date_end,method,med_image,date_issued FROM medical_infor ORDER BY time ASC LIMIT 1"
-                        # new_data.insertData(query,host,database,user)
-                        # dlt_query="DELETE FROM medical_infor WHERE course='MANAGEMENT' ORDER BY time ASC LIMIT 1"
-                        # new_data.delete(dlt_query,host,database,user)
+                    row_id = request.args.get('row_id')
+                    injectAction(row_id,1,user_query,update_query)
+                    acceptMail(row_id)
                         
 
                 elif action=='manaReject':
-                    pass
-                        # dlt_query="DELETE FROM medical_infor WHERE course='MANAGEMENT' ORDER BY time ASC LIMIT 1"
-                        # new_data.delete(dlt_query,host,database,user)
+                    row_id = request.args.get('row_id')
+                    print(row_id)
+                    injectAction(row_id,-1,user_query,update_query)
+                    rejectMail(row_id)
                 elif action=='thmAccept':
-                    pass
-                        # query="INSERT INTO admin_thm(admin_id,name,year,semester,subject,attempt,date_begin,date_end,method,image,date_issued)SELECT admin_id,name,year,semester,subject,attempt,date_begin,date_end,method,med_image,date_issued FROM medical_infor ORDER BY time ASC LIMIT 1"
-                        # new_data.insertData(query,host,database,user)
-                        # dlt_query="DELETE FROM medical_infor WHERE course='TOURISM' ORDER BY time ASC LIMIT 1"
-                        # new_data.delete(dlt_query,host,database,user)
-                        
-
+                    row_id = request.args.get('row_id')
+                    injectAction(row_id,1,user_query,update_query)    
+                    acceptMail(row_id)
                 elif action=='thmReject':
-                    pass
-                        # dlt_query="DELETE FROM medical_infor WHERE course='TOURISM' ORDER BY time ASC LIMIT 1"
-                        # new_data.delete(dlt_query,host,database,user)
-
+                    row_id = request.args.get('row_id')
+                    print(row_id)
+                    injectAction(row_id,-1,user_query,update_query)
+                    rejectMail(row_id)
                     
                 elif action=='engAccept':
-                     pass
+                    row_id = request.args.get('row_id')
+                    injectAction(row_id,1,user_query,update_query)
+                    acceptMail(row_id)
 
-                        # query="INSERT INTO admin_english(admin_id,name,year,semester,subject,attempt,date_begin,date_end,method,image,date_issued)SELECT admin_id,name,year,semester,subject,attempt,date_begin,date_end,method,med_image,date_issued FROM medical_infor ORDER BY time ASC LIMIT 1"
-                        # new_data.insertData(query,host,database,user)
-                        # dlt_query="DELETE FROM medical_infor WHERE course='ENGLISH' ORDER BY time ASC LIMIT 1"
-                        # new_data.delete(dlt_query,host,database,user)
 
                 elif action=='engReject':
-                    pass
+                    row_id = request.args.get('row_id')
+                    print(row_id)
+                    injectAction(row_id,-1,user_query,update_query)
+                    rejectMail(row_id)
 
-                        # dlt_query="DELETE FROM medical_infor WHERE course='ENGLISH' ORDER BY time ASC LIMIT 1"
-                        # new_data.delete(dlt_query,host,database,user)
                 
 
     return render_template('interfaces/admin/admin.html',form=new_admin,
-                            
-                        #    manage_count=manage_count,thm_count=thm_count,
-                        #    english_count=english_count,
-
-                        #    
-                        #    result_account=cleaned_result_account,
-                        #    result_manage=cleaned_result_manage,
-                        #    result_thm=cleaned_result_thm,
-                        #    result_english=cleaned_result_english,
-
                             user_name=user_name,
                             count=total,
                             it_count=it,
@@ -727,18 +709,25 @@ def heavyClean(values):
 def exams():
     form = TimeSchedule()
     new_data = MySql(host, database, user)
-    year_data = new_data.getUniqeCountYear('IT')
-    semester_data = new_data.getUniqeCountSem('IT')
-    years = [x[0] for x in year_data]
-    semesters = [x[0] for x in semester_data]
-    subject_query="SELECT s.subject_name FROM subjects AS s INNER JOIN departments AS dep ON dep.id=s.department_id WHERE dep.calling_name='IT';"
-    subjects=new_data.fetchMultiVal(subject_query)
-    cleaned_subjects = [item[0].decode() for item in subjects]
-    form.subject_name.choices=cleaned_subjects
-    data=('IT',)
-    values=new_data.getValues(data)
-    cleaned_values=heavyClean(values)
-    
+    if 'super_name' and 'super_password' in session:
+        name=session['super_name']
+        password=session['super_password']
+        query="SELECT dep.calling_name FROM super_admins AS sa INNER JOIN departments AS dep ON dep.id=sa.dep_id WHERE sa.first_name=%s AND sa.password=%s;"
+        data=(name,password)
+        dep=new_data.fetchOneForeing(query,data).decode().strip()
+        year_data = new_data.getUniqeCountYear(dep)
+        semester_data = new_data.getUniqeCountSem(dep)
+        years = [x[0] for x in year_data]
+        semesters = [x[0] for x in semester_data]
+        subject_query="SELECT s.subject_name FROM subjects AS s INNER JOIN departments AS dep ON dep.id=s.department_id WHERE dep.calling_name=%s;"
+        data=(dep,)
+        subjects=new_data.fetchAllMulForeing(subject_query,data)
+        cleaned_subjects = [item[0].decode() for item in subjects]
+        form.subject_name.choices=cleaned_subjects
+        data=(dep,)
+        values=new_data.getValues(data)
+        cleaned_values=heavyClean(values)
+        
 
     if form.validate_on_submit():
         
@@ -766,6 +755,6 @@ def exams():
         new_data.table(main_query,main_data)
         return redirect(url_for('exams'))   
 
-    return render_template('interfaces/superAdmin/exams.html', form=form,form_data=cleaned_values)
+    return render_template('interfaces/superAdmin/exams.html', form=form,form_data=cleaned_values,department=dep)
 
    

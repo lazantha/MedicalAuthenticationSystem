@@ -295,6 +295,22 @@ class MySql:
 			if connection is not None and connection.is_connected():
 				connection.close()
 				print("Connection closed!")
+	
+	def getDynamicRow(self,query,data):
+		try:
+			connection=None
+			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=None)
+			cursor=connection.cursor(prepared=True)
+			cursor.execute(query,data)
+			result=cursor.fetchone()
+			return(result[0])
+			print("getting success !")
+		except mysql.connector.Error as error:
+			print("query failed {}".format(error))
+		finally:
+			if connection != None and connection.is_connected():
+				connection.close()
+				print("Connection Closed !")
 
 
 
