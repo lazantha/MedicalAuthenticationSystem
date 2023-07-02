@@ -25,7 +25,7 @@
     <div class="mt-5 ps-3">
       <span style="margin: 0; padding: 0; color: #f0c76f; margin-left: 1rem; padding-left: 1rem;"><i> Hi {{user_name|title}}</i></span>
       <div style="text-align: center;margin-bottom: 3rem;">
-        <a href="{{url_for('itAdminLogOut')}}" class="fs-4 border-bottom "><i class="fa-solid fa-power-off" style="color: #f0c76f;"></i></a>
+        <a href="{{url_for('superLogOut')}}" class="fs-4 border-bottom "><i class="fa-solid fa-power-off" style="color: #f0c76f;"></i></a>
       </div>
       
         <ul class="">
@@ -95,7 +95,7 @@
                         <td>{{form.end_time()}}</td>
                         <td>{{form.location(class="w-75")}}</td>
                         <td>{{form.update(class="btn btn-success btn-sm")}}</td>
-                    </form>
+                    
                     
                     
                   </tr>
@@ -114,20 +114,24 @@
                     <th scope="col">Start Time</th>
                     <th scope="col">End Time</th>
                     <th scope="col">Location</th>
+                    <th scope="col"></th>
+                    
                   </tr>
                 </thead>
                 <tbody>
                   {% for row in form_data %}
                   <tr>
                     <td>{{ row[0] }}</td>
-                    <td>{{ row[1] }}</td>
+                    <td>{{ row[1]}}</td>
                     <td>{{ row[2] }}</td>
                     <td>{{ row[3] }}</td>
                     <td>{{ row[4] }}</td>
                     <td>{{ row[5] }}</td>
+                    <td><a class="btn btn-warning btn-sm " href="/updateExam?row_id={{ row[1] }} ">Edit</a></td>
                   </tr>
                   {% endfor %}
                 </tbody>
+              </form>
               </table>
               
               

@@ -1,5 +1,3 @@
-2023-07-01 11:07:39,541 - WARNING -  * Debugger is active!
-2023-07-01 11:07:39,582 - INFO -  * Debugger PIN: 789-558-955
-2023-07-01 11:08:07,109 - INFO - 127.0.0.1 - - [01/Jul/2023 11:08:07] "GET / HTTP/1.1" 200 -
-2023-07-01 11:08:08,438 - INFO - 127.0.0.1 - - [01/Jul/2023 11:08:08] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
-2023-07-01 11:08:08,623 - INFO - 127.0.0.1 - - [01/Jul/2023 11:08:08] "[36mGET /static/images/health.jpg HTTP/1.1[0m" 304 -
+2023-07-02 10:14:40,906 - WARNING -  * Debugger is active!
+2023-07-02 10:14:40,959 - INFO -  * Debugger PIN: 789-558-955
+2023-07-02 10:14:41,149 - INFO - 127.0.0.1 - - [02/Jul/2023 10:14:41] "GET /updateExam?row_id=HNDIT12142 HTTP/1.1" 200 -

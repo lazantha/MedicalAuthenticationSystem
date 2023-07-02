@@ -167,7 +167,7 @@ def adminlog():
     return render_template('login/admin.html',form=form)
 
 
-#super admins panels
+#super admins panel
 #...............................................................................
 def clean_values(values):
     cleaned_values = []
@@ -728,6 +728,7 @@ def exams():
         values=new_data.getValues(data)
         cleaned_values=heavyClean(values)
         
+    
 
     if form.validate_on_submit():
         
@@ -753,8 +754,68 @@ def exams():
         main_query="INSERT INTO exams(subject_id,syllabus_id,super_admin_id,held_date,start_time,end_time,location)VALUES(%s,%s,%s,%s,%s,%s,%s);"
         main_data=(sub_id,syll_id,super_id,date,start_time,end_time,location)
         new_data.table(main_query,main_data)
-        return redirect(url_for('exams'))   
+        return redirect(url_for('exams')) 
+    
+            
+    
+        
 
     return render_template('interfaces/superAdmin/exams.html', form=form,form_data=cleaned_values,department=dep)
 
-   
+from flask import request
+@app.route('/updateExam', methods=['POST', 'GET'])
+def updateExam():
+    form = TimeSchedule()
+    new_sql = MySql(host, database, user)
+    
+    if 'super_name' in session and 'super_password' in session:
+        name = session['super_name']
+        password = session['super_password']
+        
+        query = "SELECT dep.calling_name FROM super_admins AS sa INNER JOIN departments AS dep ON dep.id=sa.dep_id WHERE sa.first_name=%s AND sa.password=%s;"
+        data = (name, password)
+        dep = new_sql.fetchOneForeing(query, data).decode().strip()
+        
+        subject_query = "SELECT s.subject_name FROM subjects AS s INNER JOIN departments AS dep ON dep.id=s.department_id WHERE dep.calling_name=%s;"
+        data = (dep,)
+        subjects = new_sql.fetchAllMulForeing(subject_query, data)
+        cleaned_subjects = [item[0].decode() for item in subjects]
+        
+        form.subject_name.choices = [(subject, subject) for subject in cleaned_subjects]
+        
+        if request.method == 'GET':
+            row_id = request.args.get('row_id')
+            session['subject_code'] = row_id
+        
+        if 'subject_code' in session:
+            subject_code = session['subject_code']
+            
+            if form.validate_on_submit():
+                subject_name = form.subject_name.data
+                date = form.date.data
+                start_time = form.start_time.data
+                end_time = form.end_time.data
+                location = form.location.data
+                #get new subject id
+                new_query="SELECT subject_id FROM subjects WHERE subject_name =%s;"
+                new_data=(subject_name,)
+                new_subject_id=new_sql.fetchOneForeing(new_query,new_data)
+                #get old subject id
+                old_query="SELECT subject_id FROM subjects WHERE subject_code =%s;"
+                old_data=(subject_code,)
+                old_subject_id=new_sql.fetchOneForeing(old_query,old_data)
+                
+                print(new_subject_id)
+                print(old_subject_id)
+
+                
+                update_query = "UPDATE exams SET subject_id=%s, held_date=%s, start_time=%s, end_time=%s, location=%s WHERE subject_id=%s"
+                update_data = (new_subject_id, date, start_time, end_time, location, old_subject_id)
+                new_sql.update(update_query, update_data)
+
+
+                return redirect(url_for('exams'))
+                
+
+
+    return render_template('interfaces/superAdmin/edit_exams.html',form=form)
