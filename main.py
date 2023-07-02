@@ -183,15 +183,34 @@ def clean_values(values):
         cleaned_values.append(tuple(cleaned_value))
     return cleaned_values
 
+from PIL import Image
+from PIL.ExifTags import TAGS
+from PIL.ExifTags import TAGS as ExifTags
+import datetime
 
-@app.route('/super_admin',methods=['GET','POST'])
+# Rest of the code
+def metaData(path):
+    img = Image.open(path)
+    exif = {
+        TAGS[k]: v
+        for k, v in img._getexif().items()
+        if k in TAGS
+    }
+
+    date_time_str = exif['DateTime']
+    date_time_obj = datetime.datetime.strptime(date_time_str, '%Y:%m:%d %H:%M:%S')
+    date_value = date_time_obj.date()
+    return date_value
+
+
+@app.route('/superAdmin',methods=['GET','POST'])
 def superAdmin():
     form=SuperAdminInterface()
     new_data=MySql(host,database,user)
     if 'super_name' in session and 'super_password' in session:
         name=session['super_name']
         password=session['super_password']
-        print(f"{name} : {password}")
+        # print(f"{name} : {password}")
         query="SELECT dep.calling_name FROM departments AS dep INNER JOIN super_admins AS sa ON dep.id=sa.dep_id WHERE sa.first_name=%s AND sa.password=%s"
         data=(name,password)
         dep=new_data.fetchOneForeing(query,data).decode().strip()
@@ -200,26 +219,61 @@ def superAdmin():
             (item[0].decode(), item[1].decode(), item[2], item[3], item[4].decode())
             for item in result
             ]
-        
+
+        #should implement authentication process
+    if request.method == 'GET':
+
         action = request.args.get('action')
         if action=='itAuth':
             row_id = request.args.get('row_id')
+            print(row_id)
             user_query = "SELECT DISTINCT mi.user_id FROM medical_infor AS mi INNER JOIN students AS stu ON stu.user_id=mi.user_id WHERE stu.email=%s;"
             user_data = (row_id,)
             user_id = new_data.fetchOneForeing(user_query, user_data)
             print(f"ID: {user_id}")
-            my_sql = MySql('localhost', 'test_medical_db', 'root')
-            update_query = "UPDATE medical_infor SET is_authenticate = %s WHERE user_id = %s"
-            update_data = (1, user_id)
-            new_data.update(update_query, update_data)
-            subject="Medical Authenticatation System"
-            receiver=row_id
-            message_content="ALL Right !Your Medical Form Authenticated By The Medical Panel THANK YOU !"
-            email(receiver,subject,message_content)
+            #find a method for authenticat
+            data=(user_id,)
+            query_med="SELECT medical_sheet FROM medical_infor WHERE user_id=%s ORDER BY recorded_time DESC LIMIT 1;"
+            query_date="SELECT issued_date FROM medical_infor WHERE user_id=%s LIMIT 1;"
+            med_sheet=new_data.fetchOneForeing(query_med,data).decode('utf-8')
+            issued_date=new_data.fetchOneForeing(query_date,data)
+            path=f'static/images/{med_sheet}'
+            meta_date=metaData(path)
+            #checking with issued date
+            if issued_date==meta_date:
+                pass
+            else:
+                pass
+            
 
-        else:
-            row_id = request.args.get('row_id')
-            print(row_id)
+
+            
+            
+
+
+
+            
+            
+            #////
+
+
+
+
+
+
+
+
+
+            #else:
+            # update_query = "UPDATE medical_infor SET is_authenticate = %s WHERE user_id = %s"
+            # update_data = (1, user_id)
+            # new_data.update(update_query, update_data)
+            # subject="Medical Authenticatation System"
+            # receiver=row_id
+            # message_content="ALL Right !Your Medical Form Authenticated By The Medical Panel THANK YOU !"
+            # email(receiver,subject,message_content)
+            return redirect(url_for('superAdmin'))
+        
     return render_template('interfaces/superAdmin/super_admin.html',form=form,department=dep,name=name,results=cleaned_data)
 #.....................................................................
 
