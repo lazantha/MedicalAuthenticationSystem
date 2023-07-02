@@ -195,6 +195,12 @@ def superAdmin():
         query="SELECT dep.calling_name FROM departments AS dep INNER JOIN super_admins AS sa ON dep.id=sa.dep_id WHERE sa.first_name=%s AND sa.password=%s"
         data=(name,password)
         dep=new_data.fetchOneForeing(query,data).decode().strip()
+        result=new_data.getMainSuper(dep,1)
+        cleaned_data = [
+            (item[0].decode(), item[1].decode(), item[2], item[3], item[4].decode())
+            for item in result
+            ]
+        
         action = request.args.get('action')
         if action=='itAuth':
             row_id = request.args.get('row_id')
@@ -214,7 +220,7 @@ def superAdmin():
         else:
             row_id = request.args.get('row_id')
             print(row_id)
-    return render_template('interfaces/superAdmin/super_admin.html',form=form,department=dep,name=name)
+    return render_template('interfaces/superAdmin/super_admin.html',form=form,department=dep,name=name,results=cleaned_data)
 #.....................................................................
 
 
@@ -380,32 +386,22 @@ def userSign():
 #...............................................................
 @app.route('/user_home',methods=['GET','POST'])
 def user_home():
+    new_sql=MySql(host,database,user)
     if 'student_name' in session and 'student_password' in session:
         new_data=MySql(host,database,user)
         name=session['student_name']
         password=session['student_password']
         data=(name,password)
-        # main_query="SELECT s.year,semester,subject_name,mi.attempt FROM users AS u INNER JOIN medical_infor AS mi ON u.user_id=mi.user_id INNER JOIN subjects AS s ON s.medical_id=mi.id WHERE u.first_name=%s AND u.password=%s"
-        # result=new_data.fetchAllMulForeing(main_query,data)
-        # cleaned_values = [
-        #             tuple(value.decode('utf-8') if isinstance(value, bytearray) else value for value in row)
-        #             for row in result
-        #             ]
+        query="SELECT sub.subject_name,att.attempt,med.is_confirm,is_authenticate FROM medical_infor AS med INNER JOIN subjects AS sub ON sub.subject_id=med.subject_id INNER JOIN attempts AS att ON att.id = med.attempt_id INNER JOIN students AS stu ON stu.user_id=med.user_id WHERE stu.first_name=%s AND stu.password=%s;"
+        data=(name,password)
+        result=new_sql.fetchAllMulForeing(query,data)
         
-        query="SELECT s.saved_time FROM users AS u INNER JOIN medical_infor AS mi ON u.user_id=mi.user_id INNER JOIN subjects AS s ON mi.id=s.medical_id WHERE u.first_name=%s AND u.password=%s ORDER BY s.saved_time DESC LIMIT 1;"
-        # last_saved=new_data.fetchOneForeing(query,data,host,database,user)
-        last_saved=0
-        
-        # query="SELECT mi.year,semester,subject,attempt FROM  medical_infor AS mi INNER JOIN user AS u ON mi.user_id=u.user_id WHERE u.first_name=%s AND password=%s "
+        data = [(bytearray(b'Structured Programming'), 2, 0, 0)]
+        cleaned_data = [(item[0].decode(), item[1], item[2], item[3]) for item in result]
+    
 
-        # query_data=(name,password)
-        
-        # result=new_data.fetchAllMulForeing(query,query_data,host,database,user)
-        # cleaned_result = [ (str(year), str(semester), subject.decode('utf-8'),str(attempt)) for year,semester,subject,attempt in result]
-        #l
         return render_template('interfaces/user/user_account.html',name=name,
-                            #    last_update=last_saved,
-                            #    result=cleaned_values
+                            result=cleaned_data
 
                                )
     else:
@@ -498,12 +494,6 @@ def request():
             end_time=new_data.fetchOneForeing(e_time_query,med_data)
             location=new_data.fetchOneForeing(location_query,med_data).decode().strip()
             print(f"{exam_date}: {start_time}: {end_time}: {location}")
-
-
-            
-            
-            
-
 
             
             # Grab image name
@@ -805,9 +795,6 @@ def updateExam():
                 old_data=(subject_code,)
                 old_subject_id=new_sql.fetchOneForeing(old_query,old_data)
                 
-                print(new_subject_id)
-                print(old_subject_id)
-
                 
                 update_query = "UPDATE exams SET subject_id=%s, held_date=%s, start_time=%s, end_time=%s, location=%s WHERE subject_id=%s"
                 update_data = (new_subject_id, date, start_time, end_time, location, old_subject_id)

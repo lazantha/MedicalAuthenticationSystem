@@ -264,13 +264,13 @@ class MySql:
 				connection.close()
 				print("Connection Closed !")
 
-	def getMainSuper(self,confirm):
+	def getMainSuper(self,dep,confirm):
 		try:
 			connection=None
 			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=None)
 			cursor=connection.cursor(prepared=True)
-			query="SELECT stu.email,sub.subject_name ,att.attempt,mi.exam_date,exam_location FROM subjects AS sub INNER JOIN medical_infor AS mi ON sub.subject_id=mi.subject_id INNER JOIN attempts AS att ON att.id=mi.attempt_id INNER JOIN students AS stu ON stu.user_id=mi.user_id WHERE mi.is_confirm=%s"
-			cursor.execute(query,(confirm,))
+			query="SELECT st.email,  sub.subject_name ,att.attempt, mi.exam_date,mi.exam_location FROM medical_infor AS mi INNER JOIN subjects AS sub ON sub.subject_id=mi.subject_id INNER JOIN attempts AS att ON att.id=mi.attempt_id  INNER JOIN students AS st ON st.user_id=mi.user_id INNER JOIN departments AS dep ON dep.id=sub.department_id  WHERE dep.calling_name=%s AND mi.is_confirm=%s;"
+			cursor.execute(query,(dep,confirm))
 			result=cursor.fetchall()
 			return result
 			print("getting success !")
