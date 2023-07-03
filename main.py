@@ -240,11 +240,12 @@ def superAdmin():
             path=f'static/images/{med_sheet}'
             meta_date=metaData(path)
             #checking with issued date
+            #"The captured date of the medical sheet and the medical form must be uploaded on the same day."
             if issued_date==meta_date:
-                pass
+                print(True)
             else:
-                pass
-            
+                print(False)
+
 
 
             
@@ -528,6 +529,7 @@ def request():
             year=new_form.year.data
             semester=new_form.semester.data
             subject=new_form.subject.data
+
             med_query="SELECT id FROM medical_type WHERE type=%s;"
             med_data=(med_type,)
             med_id=new_data.fetchOneForeing(med_query,med_data)
@@ -537,34 +539,43 @@ def request():
             sub_query="SELECT subject_id FROM subjects WHERE subject_name =%s;"
             sub_data=(subject,)
             sub_id=new_data.fetchOneForeing(sub_query,sub_data)
-            #get values from exams acording to subject
-            exam_query="SELECT held_date FROM exams WHERE subject_id=%s;"
-            s_time_query="SELECT start_time FROM exams WHERE subject_id=%s;"
-            e_time_query="SELECT end_time FROM exams WHERE subject_id=%s;"
-            location_query="SELECT location FROM exams WHERE subject_id=%s;"
-            med_data=(sub_id,)
-            exam_date=new_data.fetchOneForeing(exam_query,med_data)
-            start_time=new_data.fetchOneForeing(s_time_query,med_data)
-            end_time=new_data.fetchOneForeing(e_time_query,med_data)
-            location=new_data.fetchOneForeing(location_query,med_data).decode().strip()
-            print(f"{exam_date}: {start_time}: {end_time}: {location}")
+            #checking if exist same subject in exam table
+            check_query="SELECT mi.subject_id FROM medical_infor AS mi INNER JOIN students AS st ON mi.user_id=st.user_id WHERE st.first_name=%s AND st.password=%s AND mi.subject_id=%s;"
+            sub_data=(name,password,sub_id)
+            result=new_data.fetchOneForeing(check_query,sub_data)
+            if result:
+                flash(f'You Have Already Submitted To This {subject} Subject !')
+                return redirect(url_for('request'))
+            else:
 
-            
-            # Grab image name
-            img_name = secure_filename(med_image.filename)
-            uniq_name = str(uuid.uuid1()) + '_' + img_name
-            # Save image
-            save_path = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'], uniq_name)
-            med_image.save(save_path)
-            # Save to db
-            med_image = uniq_name
-            
-            main_query="INSERT INTO medical_infor(user_id,med_type_id,subject_id,attempt_id,exam_date,started_time,end_time,exam_location,issued_date,from_date,to_date,doctor_name,hospital,medical_sheet)VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"
-            main_data=(user_id,med_id,sub_id,att_id,exam_date,start_time,end_time,location,date_issued,start_date,end_date,doc_name,hospital,med_image)
-            new_data.table(main_query,main_data)
-            
-            flash("Form Susscessfully Submited ! We will notify you once your form has been accepted.")
-            return redirect(url_for('user_home'))
+                #get values from exams acording to subject
+                exam_query="SELECT held_date FROM exams WHERE subject_id=%s;"
+                s_time_query="SELECT start_time FROM exams WHERE subject_id=%s;"
+                e_time_query="SELECT end_time FROM exams WHERE subject_id=%s;"
+                location_query="SELECT location FROM exams WHERE subject_id=%s;"
+                med_data=(sub_id,)
+                exam_date=new_data.fetchOneForeing(exam_query,med_data)
+                start_time=new_data.fetchOneForeing(s_time_query,med_data)
+                end_time=new_data.fetchOneForeing(e_time_query,med_data)
+                location=new_data.fetchOneForeing(location_query,med_data).decode().strip()
+                print(f"{exam_date}: {start_time}: {end_time}: {location}")
+
+                
+                # Grab image name
+                img_name = secure_filename(med_image.filename)
+                uniq_name = str(uuid.uuid1()) + '_' + img_name
+                # Save image
+                save_path = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'], uniq_name)
+                med_image.save(save_path)
+                # Save to db
+                med_image = uniq_name
+                
+                main_query="INSERT INTO medical_infor(user_id,med_type_id,subject_id,attempt_id,exam_date,started_time,end_time,exam_location,issued_date,from_date,to_date,doctor_name,hospital,medical_sheet)VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"
+                main_data=(user_id,med_id,sub_id,att_id,exam_date,start_time,end_time,location,date_issued,start_date,end_date,doc_name,hospital,med_image)
+                new_data.table(main_query,main_data)
+                
+                flash("Form Susscessfully Submited ! We will notify you once your form has been accepted.")
+                return redirect(url_for('user_home'))
         return render_template('interfaces/user/mainform.html',form=new_form)
 
 
@@ -772,18 +783,17 @@ def exams():
         values=new_data.getValues(data)
         cleaned_values=heavyClean(values)
         
-    
 
     if form.validate_on_submit():
         
-        subject=form.subject_name.data
+        new_subject=form.subject_name.data
         date=form.date.data
         start_time=form.start_time.data
         end_time=form.end_time.data
         location=form.location.data
         sub_query="SELECT subject_id FROM subjects WHERE subject_name=%s;"
-        sub_data=(subject,)
-        sub_id=new_data.fetchOneForeing(sub_query,sub_data)
+        sub_data=(new_subject,)
+        new_sub_id=new_data.fetchOneForeing(sub_query,sub_data)
         syll_query="SELECT id FROM syllabus WHERE syllabus_type=%s;"
         syll_data=('OLD',)
         syll_id=new_data.fetchOneForeing(syll_query,syll_data)
@@ -794,17 +804,46 @@ def exams():
             super_query="SELECT admin_id FROM super_admins WHERE first_name=%s AND password=%s;"
             super_data=(name,password)
             super_id=new_data.fetchOneForeing(super_query,super_data)
-        
-        main_query="INSERT INTO exams(subject_id,syllabus_id,super_admin_id,held_date,start_time,end_time,location)VALUES(%s,%s,%s,%s,%s,%s,%s);"
-        main_data=(sub_id,syll_id,super_id,date,start_time,end_time,location)
-        new_data.table(main_query,main_data)
-        return redirect(url_for('exams')) 
-    
-            
-    
-        
 
-    return render_template('interfaces/superAdmin/exams.html', form=form,form_data=cleaned_values,department=dep)
+            check_query="SELECT subject_id FROM exams WHERE subject_id=%s;"
+            check_data=(new_sub_id,)
+            subject_data=new_data.fetchAllMulForeing(check_query,check_data)
+            print(subject_data)
+            print(type(subject_data))
+            if subject_data:
+                print("Not empty")
+                flash("Already added ")
+                return redirect('exams')
+            else:
+                print(" empyt")
+                main_query = "INSERT INTO exams (subject_id, syllabus_id, super_admin_id, held_date, start_time, end_time, location) VALUES (%s, %s, %s, %s, %s, %s, %s);"
+                main_data = (new_sub_id, syll_id, super_id, date, start_time, end_time, location)
+                new_data.table(main_query, main_data)
+                return redirect(url_for('exams'))
+                print("added")
+
+            
+            
+        
+    if request.method == 'GET':
+            row_id = request.args.get('row_id')
+            session['subject_code'] = row_id
+            if 'subject_code' in session:
+                subject_code=session['subject_code']
+                query="SELECT subject_id FROM subjects WHERE subject_code=%s;"
+                data=(subject_code,)
+                subject_id=new_data.fetchAllMulForeing(query,data)
+                if subject_id:
+                    print(subject_id[0][0])
+                    delete_query = "DELETE FROM exams WHERE subject_id=%s;"
+                    delete_data = (subject_id[0][0],)
+                    new_data.deleteMulti(delete_query, delete_data)
+                    return redirect(url_for('exams'))
+
+
+
+
+    return render_template('interfaces/superAdmin/exams.html', form=form,form_data=cleaned_values,department=dep,user_name=name)
 
 from flask import request
 @app.route('/updateExam', methods=['POST', 'GET'])

@@ -59,7 +59,10 @@ class MySql:
 			cursor=connection.cursor(prepared=True)
 			cursor.execute(query,data)
 			result=cursor.fetchone()
-			return(result[0])
+			if result:
+				return(result[0])
+			else:
+				return "No value"
 			print("getting success !")
 		except mysql.connector.Error as error:
 			print("query failed {}".format(error))
@@ -142,19 +145,29 @@ class MySql:
 				print("Connection closed!")
 
 	
-	def deleteMulti(self,query):
+	
+
+	def deleteMulti(self, query, data):
+		connection = None
 		try:
-			connection=None
-			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=None)
-			cursor=connection.cursor(prepared=True)
-			cursor.execute(query)
-			print("Success !")
+			connection = mysql.connector.connect(
+				host=self.host,
+				database=self.database,
+				user=self.user,
+				password=None
+			)
+			cursor = connection.cursor(prepared=True)
+			cursor.execute(query, data)
+			connection.commit()  # Commit the changes to the database
+			print("Deletion successful!")
 		except mysql.connector.Error as error:
-			print("query failed {}".format(error))
+			print("Query failed: {}".format(error))
 		finally:
-			if connection != None and connection.is_connected():
-				connection.close()
-				print("Connection Closed !")
+			if connection is not None and connection.is_connected():
+				cursor.close()  # Close the cursor
+				connection.close()  # Close the connection
+				print("Connection closed!")
+
 		
 	#edit..
 	def getCount(self,department):
