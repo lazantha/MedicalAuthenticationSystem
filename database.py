@@ -11,7 +11,6 @@ class MySql:
 	host=''
 	database=''
 	user=''
-
 	def __init__(self,host,database,user):
 		self.host=host
 		self.database=database

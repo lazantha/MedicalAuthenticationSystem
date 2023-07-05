@@ -845,6 +845,62 @@ def exams():
 
     return render_template('interfaces/superAdmin/exams.html', form=form,form_data=cleaned_values,department=dep,user_name=name)
 
+from allForms import AddNewSubjects
+@app.route('/addSubjects', methods=['POST', 'GET'])
+def addSubjects():
+    form = AddNewSubjects()
+    new_data = MySql(host, database, user)
+    
+    if 'super_name' in session and 'super_password' in session:
+        name = session['super_name']
+        password = session['super_password']
+        query = "SELECT dep.calling_name FROM departments AS dep INNER JOIN super_admins as sa ON dep.id=sa.dep_id WHERE sa.first_name=%s AND sa.password=%s;"
+        data = (name, password)
+        dep = new_data.fetchOneForeing(query, data).decode().strip()
+        year = new_data.getUniqeCountYear(dep)
+        sem = new_data.getUniqeCountSem(dep)
+        cleaned_year = [value[0] for value in year]
+        cleaned_sem = [str(value).strip("()") for value in sem]
+        
+        form.year.choices = cleaned_year
+        form.semester.choices = cleaned_sem 
+    
+    if form.validate_on_submit():
+        subject_name = form.subject_name.data
+        subject_code = form.subject_code.data
+        year = form.year.data
+        semester = form.semester.data
+        print(subject_name)
+        
+        dep_query = "SELECT id FROM departments WHERE calling_name = %s;"
+        dep_data = (dep,)
+        dep_id = new_data.fetchOneForeing(dep_query, dep_data)
+        exist_query="SELECT subject_name FROM subjects WHERE subject_name =%s;"
+        exist_data=(subject_name,)
+        exist_=new_data.fetchAllMulForeing(exist_query,exist_data)
+        if exist_:
+                
+                print("Not empty")
+                flash("Already added ")
+                return redirect('addSubjects')
+        else:
+
+            query = "INSERT INTO subjects (department_id, subject_name, subject_code, year, semester) VALUES (%s, %s, %s, %s, %s);"
+            data=(dep_id,subject_name,subject_code,year,semester)
+            new_data.table(query,data)
+            return redirect(url_for('addSubjects'))
+                
+
+        
+        
+    else:
+        print("Form not validated")
+
+    return render_template('interfaces/superAdmin/new_subjects.html', form=form)
+
+
+
+
 from flask import request
 @app.route('/updateExam', methods=['POST', 'GET'])
 def updateExam():

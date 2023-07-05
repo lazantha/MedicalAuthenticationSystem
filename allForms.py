@@ -103,4 +103,12 @@ class TimeSchedule(FlaskForm):
     location=StringField(validators=[DataRequired(),Length(min=3, max=20)])
     update=SubmitField("Update")
 
-   
+
+class AddNewSubjects(FlaskForm):
+    subject_name=StringField('Subject Name',validators=[DataRequired()]) 
+    subject_code=StringField('Subject Code',validators=[DataRequired()]) 
+    year=SelectField('Year',validators=[DataRequired()]) 
+    semester=SelectField('Semester',validators=[DataRequired()]) 
+    update=SubmitField("Update")
+    
+    
