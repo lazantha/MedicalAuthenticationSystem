@@ -6,15 +6,7 @@
 
 
 {% block content%}
-{% with messages= get_flashed_messages(with_categories=True)%}
-  {% if messages %}
-    {% for categories, message in messages %}
-      <div class="alert alert-success" role="alert">
-        {{message}}
-      </div>
-    {% endfor %}
-  {% endif %}
-{% endwith %}
+
 <fieldset  class="container p-3 mb-2 bg-light text-dark pt-5 mt-5">
   <legend><span><i>Log In</i></span></legend>
   <form action="/userlog" method="POST" class="container pt-5">

@@ -1,8 +1,9 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField,validators,SelectField,TextAreaField,DateTimeField,DateField,RadioField,FileField,SubmitField,PasswordField,TimeField
 from wtforms import  widgets,SelectMultipleField
-from wtforms.validators import DataRequired, Length, EqualTo
+from wtforms.validators import DataRequired, Length, EqualTo, ValidationError, Regexp
 from email_validator import validate_email
+from flask_wtf.file import FileField, FileAllowed
 
 
 
@@ -28,14 +29,17 @@ class UserLog(FlaskForm):
 
 #user main form
 class UserForm(FlaskForm):
-    date_issued=DateField("Issued Date",validators=[DataRequired()])
-    start_date=DateField("From ",validators=[DataRequired()])
+    date_issued=DateField("Issued Date  OF The Medical",validators=[DataRequired()])
+    start_date=DateField("Affected From ",validators=[DataRequired()])
     end_date=DateField("To",validators=[DataRequired()])
     attempt=SelectField("Attemp",validators=[DataRequired()])
     doc_name=StringField('Doctors Name',validators=[DataRequired(),Length(min=3, max=20)])
     hospital=StringField('Hospital',validators=[DataRequired(),Length(min=3, max=50)])
     med_type=RadioField("Medical By",validators=[DataRequired()])
-    med_image=FileField("Upload picture of Medical Sheet",validators=[DataRequired()])
+    med_image = FileField("Upload picture of Medical Sheet", validators=[
+        DataRequired(message="Please upload a file."),
+        FileAllowed(['jpg', 'jpeg'], 'Only JPEG images are allowed.')
+    ])
     year=SelectField("Year",validators=[DataRequired()])
     semester=SelectField("Semester",validators=[DataRequired()])
     subject=SelectField("Subject",validators=[DataRequired()])
@@ -57,14 +61,22 @@ class AdminSignUp(FlaskForm):
 class UserSignUp(FlaskForm):
     first_name=StringField("First Name: ",validators=[DataRequired(),Length(min=3, max=10)])
     last_name=StringField("Last Name: ",validators=[DataRequired(),Length(min=3, max=10)])
-    index_number=StringField("Index Number",validators=[DataRequired(),Length(min=3, max=10)])
+    index_number = StringField("Index Number", validators=[
+        DataRequired(),
+        Length(min=18, max=25),
+        Regexp(r'^[A-Z]{3}/[A-Z]{2}/\d{4}/[A-Z]{1}/\d{4}$', message='Invalid index number format.')
+    ])
     mode=SelectField("Mode: ",validators=[DataRequired(),])
     gender=SelectField("Gender: ",choices=['MALE','FEMALE'],validators=[DataRequired()])
     department=SelectField("Department: ",validators=[DataRequired(),])
     email=StringField("Email: ",[validators.Email()])
     password=PasswordField("Password: ",validators=[DataRequired()])
     confirm_password=PasswordField("Confirm Password: ",validators=[DataRequired(),EqualTo('password')])
-    id_card=FileField("Red book/ID",validators=[DataRequired()])
+    id_card = FileField("Red book/ID", validators=[
+    DataRequired(message="Please upload a file."),
+    FileAllowed(['jpg', 'jpeg'], 'Only JPEG images are allowed.')
+])
+
     submit=SubmitField("Submit")
 
     
@@ -112,3 +124,6 @@ class AddNewSubjects(FlaskForm):
     update=SubmitField("Update")
     
     
+class MedicalClosingDate(FlaskForm):
+    closing_date=DateField("Closing Date",validators=[DataRequired()])
+    set=SubmitField("Set")

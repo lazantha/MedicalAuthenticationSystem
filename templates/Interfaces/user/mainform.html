@@ -5,15 +5,6 @@
 {% endblock %}
 {% block content %}
 
-{% with messages= get_flashed_messages(with_categories=True)%}
-  {% if messages %}
-    {% for categories, message in messages %}
-      <div class="alert alert-success" role="alert">
-        {{message}}
-      </div>
-    {% endfor %}
-  {% endif %}
-{% endwith %}
 
 <fieldset class="container p-3 mb-2 bg-light text-dark pt-5 mt-5">
   <legend><span><i>Request Medical</i></span></legend>
@@ -78,6 +69,13 @@
       <div class="mb-3">
         <label for="floatingInput" class="form-label">{{form.med_image.label}} <small><br><i style="color: red;">*The Captured Date Of The Medical Sheet And The Medical Form Must Be Uploaded On The Same Day !</i></small></label>
         {{form.med_image(class='form-control')}}
+        {% if form.med_image.errors %}
+            <ul>
+                {% for error in form.med_image.errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
       </div>
 
     <!-- year -->

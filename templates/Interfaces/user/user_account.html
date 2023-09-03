@@ -7,15 +7,6 @@
 
 {% block content %}
 
-{% with messages= get_flashed_messages(with_categories=True)%}
-  {% if messages %}
-    {% for categories, message in messages %}
-      <div class="alert alert-success" role="alert">
-        {{message}}
-      </div>
-    {% endfor %}
-  {% endif %}
-{% endwith %}
 
 <div class=" row" >
   
@@ -62,7 +53,7 @@
 
     <div class="card text-center">
       <div class="card-header">
-        <i>Welcome There !</i>
+        <i>CLOSING DATE FOR THE ALL SUBMISSION <h5 style="color: red;">{{closing_date}}</h5></i>
       </div>
       <div class="card-body">
         <h5 class="card-title">Submit Your Medical !</h5>
@@ -70,7 +61,7 @@
         <a href="/request_form" class="btn btn-primary" target="_self">Form</a>
       </div>
       <div class="card-footer text-body-secondary">
-        <i>Last Update: {{last_update}}</i>
+        <p> You Have <i style="color: red;" id="remain_days">{{remaining_days}}</i>:Days For Apply !</p>
       </div>
     </div>
 
@@ -116,7 +107,25 @@
   
 </div>
 
+<script>
+  var remain_day = document.getElementById('remain_days');
+  var remain_value = parseInt(remain_day.textContent); // Convert to an integer
+  var current_date = new Date(); // Get the current date and time
+  var target_date = new Date(current_date.getTime() + remain_value * 24 * 60 * 60 * 1000); // Add remaining days in milliseconds
 
+  // Function to check and disable the button if the target date is reached
+  function checkTargetDate() {
+      if (current_date >= target_date) {
+          var btnForm = document.getElementById('btnForm');
+          btnForm.disabled = true;
+      }
+  }
+
+  // Call the checkTargetDate function when the page loads
+  window.onload = function() {
+      checkTargetDate();
+  };
+</script>
 
 {% endblock %}
 

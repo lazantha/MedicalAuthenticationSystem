@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block head %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js" integrity="sha512-3gJwYpMe3QewGELv8k/BX9vcqhryRdzRMxVfq6ngyWXwo03GFEzjsUm8Q7RZcHPHksttq7/GFoxjCVUjkjvPdw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <title>Exams</title>
  <style>
   .my-custom-scrollbar {
@@ -14,15 +15,6 @@
 {% endblock %}
 
 {% block content %}
-{% with messages= get_flashed_messages(with_categories=True)%}
-  {% if messages %}
-    {% for categories, message in messages %}
-      <div class="alert alert-success" role="alert">
-        {{message}}
-      </div>
-    {% endfor %}
-  {% endif %}
-{% endwith %}
 
 <div class=" row" >
   {{form.hidden_tag()}}
@@ -82,6 +74,12 @@
     <!-- table -->
     <div class="card bg-body-tertiary pt-3">
       <center><b><h5 class="card-header"> DEPARTMENT OF {{department|upper}}</h5></b></center>
+      <div id="search">
+        <input type="text" id="subject">
+        <input type="date" id="date">
+        <button id="search">Search</button>
+        
+      </div>
       <center><span>Update Time table</span></center>
         <div class="card-body">
         
@@ -117,8 +115,10 @@
                   
                 </tbody>
               </table>
+              
               <hr style="color: blue;">
               <center><b><h5 class="card-header"> TIME TABLE</h5></b></center>
+              
               <div class="table-wrapper-scroll-y my-custom-scrollbar">
               <table class="table table-hover table table-bordered table-striped mb-0">
                 <thead>
@@ -173,7 +173,17 @@
 </div>
 
 
+<script>
+  $(document).ready(function(){
+    $('#search').click(function(){
+      var subject=$('#subject').val();
+      var date=$('#date').val();
+      console.log(subject)
+      console.log(date)
 
+    });
+  });
+</script>
 {% endblock %}
 
 

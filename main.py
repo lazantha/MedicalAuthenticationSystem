@@ -1,6 +1,6 @@
 from flask import Flask,render_template,url_for,redirect,flash,session
 from flask import jsonify,request
-from allForms import UserLog,AdminLog,AdminSignUp,UserSignUp,UserForm,AdminInterface,SuperAdminInterface,TimeSchedule
+from allForms import UserLog,AdminLog,AdminSignUp,UserSignUp,UserForm,AdminInterface,SuperAdminInterface,TimeSchedule,MedicalClosingDate
 from flask_bcrypt import Bcrypt
 from database import MySql
 from email_processor import email
@@ -134,32 +134,32 @@ def adminlog():
                 }
                 page_name=page_list.get(department)
                 if page_name:
-                    flash('Login successful! ','success')
+                    flash("success",'Login successful! ')
                     return redirect(url_for('superAdmin'))
                 else:
                     
                     return redirect('adminlog')
             else:
-                flash("Login failed. Please check your username and password and try again.",'warning')
+                flash("danger","Login failed. Please check your username and password and try again.")
                 return redirect('adminlog')
         
         else:
             
             #admin
             query="SELECT first_name,password FROM admins WHERE first_name=%s AND password=%s;"
-            data=(name,hashed_password)
-            print(data)
+            data=(name,hashed_password) 
             exist_data=new_data.fetchAllMulForeing(query,data)
+            print("Exist data")
             print(exist_data)
             if exist_data:
                 session['admin_name']=name
                 session['admin_password']=hashed_password
                 if 'admin_name' in session:
                     admin_name=session['admin_name']
-                    flash('Login successful! ','success')
+                    flash("success",'Login successful!')
                     return redirect(url_for('admin'))
             else:
-                flash("Login failed. Please check your username and password and try again.",'warning')
+                flash("danger","Login failed. Please check your username and password and try again.")
                 return redirect(url_for('adminlog'))
         
 
@@ -202,6 +202,18 @@ def metaData(path):
     date_value = date_time_obj.date()
     return date_value
 
+def authtMail(row_id):
+
+    subject="Medical Authenticatation System"
+    receiver=row_id
+    message_content="All Done !Your Medical Form Accepted By The Medical Panel Thank You !"
+    email(receiver,subject,message_content)
+
+def rejectMail(row_id):
+    subject="Medical Authenticatation System"
+    receiver=row_id
+    message_content="Your Medical Rejected By Medical Panal ! due To Invalid Information"
+    email(receiver,subject,message_content)
 
 @app.route('/superAdmin',methods=['GET','POST'])
 def superAdmin():
@@ -243,8 +255,13 @@ def superAdmin():
             #"The captured date of the medical sheet and the medical form must be uploaded on the same day."
             if issued_date==meta_date:
                 print(True)
+
+                flash("success","Medical Accepted !")
+                authtMail(row_id)
             else:
                 print(False)
+                flash("danger","Medical Rejected !")
+                rejectMail(row_id)
 
 
 
@@ -303,7 +320,7 @@ def adminSign():
             #password Checking
             if passwordCheck(hashed_password,"admins")==1:
                 # print(passwordCheck(hashed_password))
-                flash("Password Already Exist ! Try Different One ")
+                flash("danger","Password Already Exist ! Try Different One ")
                 return redirect(url_for('adminSign'))
             else:
 
@@ -311,12 +328,12 @@ def adminSign():
                 data=(first_name,last_name,gender,email,hashed_password)
                 new_data.table(query,data)
 
-                flash(f'Account Successfully created {first_name}!','success')
+                flash("success",f'Account Successfully created {first_name}!')
                 return redirect(url_for('adminlog'))
         else:
             if passwordCheck(hashed_password,"super_admins")==1:
                 # print(passwordCheck(hashed_password))
-                flash("Password Already Exist ! Try Different One ")
+                flash("danger","Password Already Exist ! Try Different One")
                 return redirect(url_for('adminSign'))
             else:
 
@@ -326,7 +343,7 @@ def adminSign():
                 query="INSERT INTO super_admins (dep_id,first_name,last_name,gender,email,password)VALUES(%s,%s,%s,%s,%s,%s);"
                 data=(dep_id,first_name,last_name,gender,email,hashed_password)
                 new_data.table(query,data)
-                flash(f'Account Successfully created {first_name}!','success')
+                flash("success",f'Account Successfully created {first_name}!')
                 return redirect(url_for('adminlog'))
 
         
@@ -357,11 +374,11 @@ def userlog():
         if exist:
             session['student_name'] = user_name
             session['student_password']=hashed_password
-            flash('Login successful! ','success')
+            flash("success",'Login successful! ')
             return redirect(url_for('user_home'))
             
         else:
-             flash("Login failed. Please check your username and password and try again.",'warning')
+             flash("danger","Login failed. Please check your username and password and try again.")
              return redirect(url_for('userlog'))
             # if 'name' in session:
             #     return redirect(url_for('user_home'))
@@ -412,7 +429,7 @@ def userSign():
                 data=(hashed_password,email)
                 result=new_sql.fetchAllMulForeing(pass_query,data)
                 if result:
-                    flash("Email or Password Already Exist ! ")
+                    flash("danger","Email or Password Already Exist ! ")
                     print(" Already Exist")
                     return redirect('userSign')
                 else:
@@ -430,6 +447,7 @@ def userSign():
                     main_query="INSERT INTO students(department_id,student_type_id,first_name,last_name,index_number,gender,email,password,id_card)VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s);"
                     main_data=(dep_id,mode_id,first_name,last_name,index_number,gender,email,hashed_password_confirm,id_card)
                     new_sql.table(main_query,main_data)
+                    flash("success","Your Account Successfully Created !")
                     return redirect('userlog')
 
         
@@ -441,8 +459,10 @@ def userSign():
 #...............................................................
 @app.route('/user_home',methods=['GET','POST'])
 def user_home():
+
     new_sql=MySql(host,database,user)
     if 'student_name' in session and 'student_password' in session:
+
         new_data=MySql(host,database,user)
         name=session['student_name']
         password=session['student_password']
@@ -453,14 +473,44 @@ def user_home():
         
         data = [(bytearray(b'Structured Programming'), 2, 0, 0)]
         cleaned_data = [(item[0].decode(), item[1], item[2], item[3]) for item in result]
-    
 
-        return render_template('interfaces/user/user_account.html',name=name,
-                            result=cleaned_data
+        if "date_list" in session:
+            from datetime import datetime, timedelta
+            current_datetime = datetime.today()
+            date_list = session["date_list"]
+            print("Date list in user Home route")
+            print(date_list)
+            if date_list:
+                
+                first_closing_date = date_list[-1]
+                
+                print("Closing Date in user page:", first_closing_date)
+                try:
+                    new_date = datetime.strptime(first_closing_date, '%Y-%m-%d')
+                    remaining_days = (new_date - current_datetime).days
+                    print("Remaining Days:", remaining_days)
+                except ValueError:
 
-                               )
+                    print("Error: Invalid date format in session 'date_list'")
+            else:
+                print("Error: 'date_list' is empty")
+        
+        else:
+             print("Error: 'date_list' does not exist in the session")
+
+            
+                    
+
     else:
         return redirect('userlog')
+    
+
+    return render_template('interfaces/user/user_account.html',name=name,
+                            result=cleaned_data,
+                            remaining_days=remaining_days,
+                            closing_date=first_closing_date
+                               )
+    
 
 
 
@@ -542,7 +592,7 @@ def request():
             #checking if exist same subject in exam table
             check_query="SELECT mi.subject_id FROM medical_infor AS mi INNER JOIN students AS st ON mi.user_id=st.user_id WHERE st.first_name=%s AND st.password=%s AND mi.subject_id=%s;"
             sub_data=(name,password,sub_id)
-            result=new_data.fetchOneForeing(check_query,sub_data)
+            result=new_data.fetchAllMulForeing(check_query,sub_data)
             if result:
                 flash(f'You Have Already Submitted To This {subject} Subject !')
                 return redirect(url_for('request'))
@@ -585,12 +635,23 @@ from datetime import date
 @app.route('/admin',methods=['GET','POST'])
 def admin():
     from flask import request
+    #almost done !
     if 'admin_name' in session:
+                closing_date=request.args.get('date')
+                date_list = session.get('date_list', [])  # Get the existing date_list or create an empty list if it doesn't exist in the session.
+                if closing_date:
+                    if closing_date not in date_list:
+                        date_list.append(closing_date)
+                        session['date_list'] = date_list
+                        flash('success', 'Closing date has been set !')
+                    else:
+                        flash('danger', 'Closing date already set !')
+
+
                 user_name=session['admin_name']
                 new_admin=AdminInterface()
                 new_super_admin=SuperAdminInterface()
                 new_data=MySql(host,database,user)
-                db=NewMySql(host,database,user)
                 query="SELECT COUNT(*) FROM medical_infor;"
                 total=new_data.fetchOne(query)
                 it=new_data.getCount('IT')
@@ -631,11 +692,7 @@ def admin():
                     tuple(value.decode('utf-8') if isinstance(value, bytearray) else value for value in row)
                     for row in result_thm
                     ]
-                
-                
-                
 
-                action = request.args.get('action')
                 user_query = "SELECT DISTINCT mi.user_id FROM medical_infor AS mi INNER JOIN students AS stu ON stu.user_id=mi.user_id WHERE stu.email=%s;"
                 update_query = "UPDATE medical_infor SET is_confirm = %s WHERE user_id = %s"
                 def injectAction(row_id,value,user_query,update_query):
@@ -643,7 +700,14 @@ def admin():
                         user_id = new_data.fetchOneForeing(user_query, user_data)
                         update_data = (value, user_id)
                         new_data.update(update_query, update_data)
-                        return redirect('admin')
+                        if value==1:
+                            flash("success","Medical Accepted !")
+                            return redirect('admin')
+                        else:
+                            flash("danger","Medical Rejected !")
+                            return redirect('admin')
+
+                        
                 #.....................................................................
                 def acceptMail(row_id):
                         
@@ -652,71 +716,38 @@ def admin():
                     message_content="Allmost Done !Your Medical Form Accepted By The Admin and We Let You Know When Authenticate You Medical By the Medical Panel"
                     email(receiver,subject,message_content)
 
-                def rejectMail(row_id):
+                def rejectMail(row_id,message):
                     subject="Medical Authenticatation System"
                     receiver=row_id
-                    message_content="Your Medical Rejected ! Please Provide Accurate Information"
-                    email(receiver,subject,message_content)
+                    # receiver="sglasanthapradeep@gmail.com"
+                    if message =="":    
+                        message_content=(f"Your Medical Rejected ! Please Provide Accurate Information")
+                        email(receiver,subject,message_content)
+                        
+                    else:
+                        message_content=(f"Your Medical Rejected ! Please Provide Accurate Information Causing::  {message}")
+                        email(receiver,subject,message_content)
+                        
+
+
+
                 #.....................................................................
-                if action=='itAccept':
-                        row_id = request.args.get('row_id')
-                        print(row_id)
-                        
-                        injectAction(row_id,1,user_query,update_query)
-                        acceptMail(row_id)
-                
-                elif action=='itReject':
-                        row_id = request.args.get('row_id')
-                        print(row_id)
-                        injectAction(row_id,-1,user_query,update_query)
-                        rejectMail(row_id)                
 
+                action=request.args.get("action")
+                row_id=request.args.get("row_id")
+                message=request.args.get("message")
+                print("Action restructuring......")
+                print(action)
+                print(row_id)
 
-                elif action=='accAccept':
-                    row_id = request.args.get('row_id')
+                if action=="itAccept":
                     injectAction(row_id,1,user_query,update_query)
                     acceptMail(row_id)
-                        
-
-                elif action=='accReject':
-
-                    row_id = request.args.get('row_id')
-                    print(row_id)
+                elif action=="itReject":
                     injectAction(row_id,-1,user_query,update_query)
-                    rejectMail(row_id)
-
-                elif action=='manaAccept':
-                    row_id = request.args.get('row_id')
-                    injectAction(row_id,1,user_query,update_query)
-                    acceptMail(row_id)
-                        
-
-                elif action=='manaReject':
-                    row_id = request.args.get('row_id')
-                    print(row_id)
-                    injectAction(row_id,-1,user_query,update_query)
-                    rejectMail(row_id)
-                elif action=='thmAccept':
-                    row_id = request.args.get('row_id')
-                    injectAction(row_id,1,user_query,update_query)    
-                    acceptMail(row_id)
-                elif action=='thmReject':
-                    row_id = request.args.get('row_id')
-                    print(row_id)
-                    injectAction(row_id,-1,user_query,update_query)
-                    rejectMail(row_id)
+                    rejectMail(row_id,message)
                     
-                elif action=='engAccept':
-                    row_id = request.args.get('row_id')
-                    injectAction(row_id,1,user_query,update_query)
-                    acceptMail(row_id)
-
-
-                elif action=='engReject':
-                    row_id = request.args.get('row_id')
-                    print(row_id)
-                    injectAction(row_id,-1,user_query,update_query)
-                    rejectMail(row_id)
+                #insert rest
 
                 
 
@@ -732,7 +763,8 @@ def admin():
                             result_thm=cleaned_values_thm,
                             result_en=cleaned_values_eng,
                             result_manage=cleaned_values_mng,
-                            result_account=cleaned_values_acc
+                            result_account=cleaned_values_acc,
+                            closing_date=closing_date
 
                            )
 
@@ -763,7 +795,7 @@ def heavyClean(values):
 @app.route('/exams', methods=['GET', 'POST'])
 def exams():
     form = TimeSchedule()
-    new_data = MySql(host, database, user)
+    new_data = MySql(host,database,user)
     if 'super_name' and 'super_password' in session:
         name=session['super_name']
         password=session['super_password']
@@ -849,7 +881,7 @@ from allForms import AddNewSubjects
 @app.route('/addSubjects', methods=['POST', 'GET'])
 def addSubjects():
     form = AddNewSubjects()
-    new_data = MySql(host, database, user)
+    new_data = MySql(host,database,user)
     
     if 'super_name' in session and 'super_password' in session:
         name = session['super_name']
@@ -905,7 +937,7 @@ from flask import request
 @app.route('/updateExam', methods=['POST', 'GET'])
 def updateExam():
     form = TimeSchedule()
-    new_sql = MySql(host, database, user)
+    new_sql = MySql(host,database,user)
     
     if 'super_name' in session and 'super_password' in session:
         name = session['super_name']
@@ -955,3 +987,106 @@ def updateExam():
 
 
     return render_template('interfaces/superAdmin/edit_exams.html',form=form)
+
+
+#reports
+from flask import make_response
+from fpdf import FPDF
+    
+
+@app.route('/adminReports',methods=['POST','GET'])
+def adminReports():
+    new_data=MySql(host,database,user)
+    #TOTAL REGISTRATION OF STUDENTS
+    query_student="SELECT COUNT(*) FROM students;"
+    reg_count=new_data.fetchOne(query_student)
+    #TOTAL COUNT OF MEDICAL SUBMITS
+    query_medicals="SELECT COUNT(*) FROM medical_infor;"
+    med_count=new_data.fetchOne(query_medicals)
+    #TOTAL COUNT OF ADMINS
+    query_admins="SELECT COUNT(*) FROM super_admins;"
+    admin_count=new_data.fetchOne(query_admins)
+    #CONFIRMED MEDICALS
+    query_is_confirmed="SELECT COUNT(*) FROM medical_infor WHERE is_confirm=1;"
+    confirmed=new_data.fetchOne(query_is_confirmed)
+    #UNCONFIRMED MEDICALS
+    query_unconfiremed="SELECT COUNT(*) FROM medical_infor WHERE is_confirm=-1;"
+    unconfirmed=new_data.fetchOne(query_unconfiremed)
+    
+    #printting
+    if request.method == 'GET':
+        action=request.args.get('action')
+        if action=='print':
+            pdf=FPDF()
+            pdf.add_page()
+            pdf.set_font('Arial','B')
+            # pdf.cell(50,40,"First PDF")
+            pdf.cell(0, 10, 'Registration Report', ln=True, align='C')
+            pdf.cell(0, 10, f'Total Students: {reg_count}', ln=True)
+            pdf.cell(0, 10, f'Total Medical Submits: {med_count}', ln=True)
+            pdf.cell(0, 10, f'Total Admins: {admin_count}', ln=True)
+            pdf.cell(0, 10, f'Confirmed Medicals: {confirmed}', ln=True)
+            pdf.cell(0, 10, f'Unconfirmed Medicals: {unconfirmed}', ln=True)
+             # Save the PDF to a file
+            pdf.output('templates/interfaces/admin/admin_report.pdf','F')
+            # Create a response with the PDF content and headers
+            with open('templates/interfaces/admin/admin_report.pdf', 'rb') as f:
+                response = make_response(f.read())
+                response.headers['Content-Type'] = 'application/pdf'
+                response.headers['Content-Disposition'] = 'attachment; filename=admin_report.pdf'
+            return response
+            # pdf.output('templates/interfaces/admin/admin_report.pdf','F')
+            return redirect(url_for('adminReports'))
+
+    return render_template('interfaces/admin/report.html',reg_count=reg_count,admin_count=admin_count,med_count=med_count,
+                           confirmed=confirmed,
+                           unconfirmed=unconfirmed
+                           
+                           
+                           
+                           )
+
+
+@app.route('/superAdminReports',methods=['POST','GET'])
+def superAdminReports():
+    new_data=MySql(host,database,user)
+    
+    if 'super_name' and 'super_password' in session:
+        name=session['super_name']
+        password=session['super_password']
+        dep_query="SELECT dep.calling_name FROM departments AS dep INNER JOIN super_admins AS sa ON dep.id =sa.dep_id WHERE sa.first_name=%s AND sa.password=%s;"
+        data=(name,password)
+        dep=new_data.fetchOneForeing(dep_query,data).decode().strip()
+        #number of students
+        query_count="SELECT COUNT(*) FROM students AS st INNER JOIN departments AS dep ON st.department_id=dep.id WHERE dep.calling_name=%s;"
+        dep_data=(dep,)
+        student_count=new_data.fetchOneForeing(query_count,dep_data)
+        #number of authenticators
+        query_auth="SELECT COUNT(*) FROM medical_infor AS mi INNER JOIN students AS s ON mi.user_id=s.user_id INNER JOIN departments AS dep ON dep.id=s.department_id WHERE mi.is_authenticate=1 AND dep.calling_name=%s;"
+        auth_count=new_data.fetchOneForeing(query_auth,dep_data)
+        query_non_auth="SELECT COUNT(*) FROM medical_infor AS mi INNER JOIN students AS s ON mi.user_id=s.user_id INNER JOIN departments AS dep ON dep.id=s.department_id WHERE mi.is_authenticate=-1 AND dep.calling_name=%s;"
+        nonauth_count=new_data.fetchOneForeing(query_non_auth,dep_data)
+        if request.method == 'GET':
+            action=request.args.get('action')
+            if action=='print':
+                pdf=FPDF()
+                pdf.add_page()
+                pdf.set_font('Arial','B')
+                pdf.cell(0, 10, 'Student Information', 0, 1)
+                pdf.cell(50, 10, 'Applied Students', 1)
+                pdf.cell(50, 10, 'Authenticated Students', 1)
+                pdf.cell(50, 10, 'Non Authenticated Students', 1)
+                pdf.output('templates/interfaces/superAdmin/admin_report.pdf','F')
+                pdf.ln()
+                pdf.cell(50, 10, str(student_count), 1)
+                pdf.cell(50, 10, str(auth_count), 1)
+                pdf.cell(50, 10, str(nonauth_count), 1)
+                pdf.output('templates/interfaces/superAdmin/admin_report.pdf', 'F')
+                return redirect(url_for('superAdminReports'))
+
+    return render_template('interfaces/superAdmin/report.html',student_count=student_count,authenticate=auth_count,non_authenticate=nonauth_count)
+
+
+if __name__=="__main__":
+    app.run(debug=True)
+

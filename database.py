@@ -4,28 +4,25 @@ import mysql.connector
 # database='test_medical_db'
 # user='root
 
-#medi_db
+
 
 class MySql:
-
-	host=''
-	database=''
-	user=''
 	def __init__(self,host,database,user):
 		self.host=host
 		self.database=database
 		self.user=user
-
-
+		self.password=None
 		
 	#for insertions
 	def table(self,query,data):
 		try:
-			connection=None
-			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=None)
+			
+			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=self.password)
 			cursor=connection.cursor(prepared=True)
+
 			cursor.execute(query,data)
 			connection.commit()
+
 			print("Success !")
 		except mysql.connector.Error as error:
 			print("query failed {}".format(error))
@@ -36,8 +33,7 @@ class MySql:
 	
 	def insertData(self,query):
 		try:
-			connection=None
-			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=None)
+			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=self.password)
 			cursor=connection.cursor(prepared=True)
 			cursor.execute(query)
 			connection.commit()
@@ -53,8 +49,7 @@ class MySql:
 	#use comma after created tuple when binding arguments if it has One Argument 
 	def fetchOneForeing(self,query,data):
 		try:
-			connection=None
-			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=None)
+			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=self.password)
 			cursor=connection.cursor(prepared=True)
 			cursor.execute(query,data)
 			result=cursor.fetchone()
@@ -71,11 +66,12 @@ class MySql:
 				print("Connection Closed !")
 
 	#For multiple foreing keys data bind
+	#executing admin login and super admin login and user login
 	def fetchAllMulForeing(self,query,data):
 		try:
-			connection=None
-			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=None)
+			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=self.password)
 			cursor=connection.cursor(prepared=True)
+			
 			cursor.execute(query,data)
 			result=cursor.fetchall()
 			return(result)
@@ -94,9 +90,9 @@ class MySql:
 	# FOR SINGLE QUERY
 	def fetchOne(self,query):
 		try:
-			connection=None
-			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=None)
+			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=self.password)
 			cursor=connection.cursor(prepared=True)
+			
 			cursor.execute(query)
 			result=cursor.fetchone()
 			return result[0]
@@ -111,9 +107,9 @@ class MySql:
 	#FOR SINGLE QUERY WITHOUT BINDING 
 	def fetchMultiVal(self,query):
 		try:
-			connection=None
-			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=None)
+			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=self.password)
 			cursor=connection.cursor(prepared=True)
+			
 			cursor.execute(query)
 			result=cursor.fetchall()
 			return result
@@ -129,9 +125,9 @@ class MySql:
 	def delete(self, query):
 
 		try:
-			connection = None
-			connection = mysql.connector.connect(host=self.host, database=self.database, user=self.user, password=None)
-			cursor = connection.cursor(prepared=True)
+			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=self.password)
+			cursor=connection.cursor(prepared=True)
+			
 			cursor.execute(query)
 			connection.commit()  # Commit the deletion operation
 			print("Deletion successful!")
@@ -172,9 +168,9 @@ class MySql:
 	def getCount(self,department):
 
 		try:
-			connection=None
-			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=None)
+			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=self.password)
 			cursor=connection.cursor(prepared=True)
+			
 			query="SELECT count(*) FROM subjects AS s INNER JOIN medical_infor AS mi ON s.subject_id=mi.subject_id INNER JOIN departments AS dep ON s.department_id=dep.id WHERE dep.calling_name=%s;"
 			cursor.execute(query,(department,))
 			result=cursor.fetchone()
@@ -190,9 +186,9 @@ class MySql:
 
 	def getMain(self,department):
 		try:
-			connection=None
-			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=None)
+			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=self.password)
 			cursor=connection.cursor(prepared=True)
+			
 			query="SELECT st.email,first_name,id_card,mi.medical_sheet FROM students AS st INNER JOIN medical_infor AS mi ON st.user_id =mi.user_id INNER JOIN departments AS dep ON st.department_id=dep.id WHERE dep.calling_name=%s ORDER BY mi.recorded_time DESC;"
 			cursor.execute(query,(department,))
 			result=cursor.fetchall()
@@ -209,9 +205,9 @@ class MySql:
 
 	def getUniqeCountYear(self,department):
 		try:
-			connection=None
-			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=None)
+			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=self.password)
 			cursor=connection.cursor(prepared=True)
+			
 			query="SELECT DISTINCT s.year FROM subjects AS s INNER JOIN departments AS dep ON s.department_id=dep.id WHERE dep.calling_name=%s;"
 			cursor.execute(query,(department,))
 			result=cursor.fetchall()
@@ -226,9 +222,9 @@ class MySql:
 
 	def getUniqeCountSem(self,department):
 		try:
-			connection=None
-			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=None)
+			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=self.password)
 			cursor=connection.cursor(prepared=True)
+			
 			query="SELECT DISTINCT s.semester FROM subjects AS s INNER JOIN departments AS dep ON s.department_id=dep.id WHERE dep.calling_name=%s;"
 			cursor.execute(query,(department,))
 			result=cursor.fetchall()
@@ -243,9 +239,9 @@ class MySql:
 	
 	def getUniqeCountSub(self,department):
 		try:
-			connection=None
-			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=None)
+			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=self.password)
 			cursor=connection.cursor(prepared=True)
+			
 			query="SELECT sub.subject_name FROM subjects AS sub INNER JOIN exams AS ex ON ex.subject_id=sub.subject_id INNER JOIN departments AS dep ON dep.id=sub.department_id WHERE dep.calling_name=%s;"
 			cursor.execute(query,(department,))
 			result=cursor.fetchall()
@@ -261,9 +257,9 @@ class MySql:
 	#time table data
 	def getValues(self,data):
 		try:
-			connection=None
-			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=None)
+			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=self.password)
 			cursor=connection.cursor(prepared=True)
+			
 			query="SELECT sub.subject_name,subject_code,ex.held_date,start_time,end_time,location FROM departments AS dep INNER JOIN subjects AS sub ON dep.id=sub.department_id INNER JOIN exams AS ex ON sub.subject_id=ex.subject_id WHERE dep.calling_name=%s;"
 			cursor.execute(query,data)
 			result=cursor.fetchall()
@@ -278,9 +274,9 @@ class MySql:
 
 	def getMainSuper(self,dep,confirm):
 		try:
-			connection=None
-			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=None)
+			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=self.password)
 			cursor=connection.cursor(prepared=True)
+			
 			query="SELECT st.email,  sub.subject_name ,att.attempt, mi.exam_date,mi.exam_location FROM medical_infor AS mi INNER JOIN subjects AS sub ON sub.subject_id=mi.subject_id INNER JOIN attempts AS att ON att.id=mi.attempt_id  INNER JOIN students AS st ON st.user_id=mi.user_id INNER JOIN departments AS dep ON dep.id=sub.department_id  WHERE dep.calling_name=%s AND mi.is_confirm=%s;"
 			cursor.execute(query,(dep,confirm))
 			result=cursor.fetchall()
@@ -296,8 +292,9 @@ class MySql:
 
 	def update(self, query, data):
 		try:
-			connection = mysql.connector.connect(host=self.host, database=self.database, user=self.user, password=None)
-			cursor = connection.cursor(prepared=True)
+			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=self.password)
+			cursor=connection.cursor(prepared=True)
+			
 			cursor.execute(query, data)
 			connection.commit()
 			print("Success!")
@@ -310,11 +307,10 @@ class MySql:
 	
 	def getDynamicRow(self,query,data):
 		try:
-			connection=None
-			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=None)
+			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=self.password)
 			cursor=connection.cursor(prepared=True)
 			cursor.execute(query,data)
-			result=cursor.fetchone()
+			result=self.cursor.fetchone()
 			return(result[0])
 			print("getting success !")
 		except mysql.connector.Error as error:
@@ -324,28 +320,6 @@ class MySql:
 				connection.close()
 				print("Connection Closed !")
 
-
-
-	
-
-
-	
-
-
-
-
-
-	
-
-
-
-
-
-
-
-
-
- 
 
 
 

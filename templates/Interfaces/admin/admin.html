@@ -60,7 +60,13 @@
     display: block;
 }
 /* color conversion */
+table th,tr{text-align: center;}
+table button{padding-top: 10px;}
 </style>
+
+
+
+
 <script>
 function confirmRow(rowId) {
   var row = document.getElementById(rowId);
@@ -78,6 +84,7 @@ function rejectRow(rowId) {
 
 
 {% block content %}
+
 <div class="row "  >
     {{form.hidden_tag()}}
     <!-- first Column -->
@@ -106,7 +113,7 @@ function rejectRow(rowId) {
             <hr>
             <li class="" style="list-style: none;">
               <i class="fa-solid fa-file-export" style="color: #f0c76f;"></i>
-            <a href="#" class="link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" style="text-decoration: none;">Reports</a>
+            <a href="/adminReports" class="link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" style="text-decoration: none;">Reports</a>
             
             </li>
                
@@ -120,6 +127,18 @@ function rejectRow(rowId) {
 
       <!-- first Card -->
       
+      <div class="card" style="width: 18rem;">
+        <div class="card-body">
+          <h6 class="card-title" style="text-align:center;font-weight: bolder;">Set Closing Date For Medical Submission</h6>
+            <form action="/admin" method="get" class="container pt-5">
+              <input type="date" name="date" id="date" class="form-control w-auto">
+              <input type="submit" value="Set" class="btn btn-primary btn-sm">
+            </form>
+            <strong style="color:blueviolet;">Medical Submission Form Valid Until: <i>{{closing_date}}</i></strong>
+        </div>
+      </div>
+
+      <br>
       <div class="card bg-body-tertiary pt-3">
         <h5 class="card-header">You Have <span><i>({{count}})</i></span> Request In Total</h5>
         <div class="card-body">
@@ -141,7 +160,6 @@ function rejectRow(rowId) {
       <div class="card bg-body-tertiary pt-3">
         <h5 class="card-header"> IT  </h5>
         <div class="card-body">
-          
           <div class="table-wrapper-scroll-y my-custom-scrollbar">
             <table class="table table-hover table table-bordered table-striped mb-0">
               <thead>
@@ -151,6 +169,7 @@ function rejectRow(rowId) {
                   <th>Red Book/ID</th>
                   <th>Medical</th>
                   <th>Confirmation</th>
+                  <th>Rejection</th>
                   
                   
                 </tr>
@@ -166,7 +185,27 @@ function rejectRow(rowId) {
                   <td><img class="small-photo" src="static/images/{{row[2]}}"></td>
                   <td><img class="small-photo" src="static/images/{{row[3]}}"></td>
                  </div>           
-                <td><a class="btn btn-secondary btn-sm " href="/admin?action=itAccept&row_id={{ row[0] }} " role="button" onclick="confirmRow('row_{{ loop.index }}')">Accept</a>|<a class="btn btn-danger btn-sm" href="/admin?action=itReject&row_id={{ row[0] }}" role="button" onclick="rejectRow('row_{{ loop.index }}')">Reject</a></td>
+                <td> 
+                  <!-- old anchor tag -->
+                  <!-- <a class="btn btn-secondary btn-sm " href="/admin?action=itAccept&row_id={{ row[0] }} " role="button" onclick="confirmRow('row_{{ loop.index }}')">Accept</a></td> -->
+                  <!-- new link tag -->
+                  <a href="/admin?action=itAccept&row_id={{row[0]}}" role="button" class="btn btn-success btn-sm">Confirm</a>
+              				
+                <td>
+                    <!-- old anchor tag -->
+                  <!-- <form action="/admin" method="get">
+                    <textarea class="form-control" id="rejectReason_{{ loop.index }}" cols="5" rows="3" placeholder="Optional.." name="message"></textarea>
+                    <a class="btn btn-danger btn-sm" href="#" role="button" onclick="rejectRow('{{ row[0] }}', '{{ loop.index }}')">Reject</a>
+                  </form>
+                   -->
+                   <!-- new link tag for multiple variable inlcude textarea -->
+                   <form action="/admin" method="get">
+                    <input type="hidden" name="row_id" value="{{row[0]}}">
+                     <input type="hidden" name="action" value="itReject">
+                    <textarea placeholder="Optional" name="message"></textarea>
+                    <input type="submit" value="Reject" class="btn btn-danger btn-sm">
+                  </form>
+                </td>
                 </tr>
                 
                 {% endfor %}
@@ -394,6 +433,13 @@ function rejectRow(rowId) {
   }
 
   // color changing
+
+  //date validation
+  // Get the current date in the format YYYY-MM-DD
+  var currentDate = new Date().toISOString().slice(0, 10);
+
+  // Set the min attribute to the current date
+  document.getElementById("date").min = currentDate;
 
   </script>
   
