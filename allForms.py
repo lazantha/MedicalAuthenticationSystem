@@ -127,3 +127,8 @@ class AddNewSubjects(FlaskForm):
 class MedicalClosingDate(FlaskForm):
     closing_date=DateField("Closing Date",validators=[DataRequired()])
     set=SubmitField("Set")
+
+class ReportDepartments(FlaskForm):
+    date=DateField("Date: ",validators=[DataRequired()])
+    departments=SelectField("Department: ",validators=[DataRequired()])
+    update=SubmitField("Update")

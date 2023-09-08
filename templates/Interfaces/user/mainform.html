@@ -146,6 +146,20 @@
       });
     });
   });
+
+
+
+  // Get the current date
+  var today = new Date();
+
+  // Format the date as YYYY-MM-DD
+  var formattedDate = today.toISOString().split('T')[0];
+
+  // Set the max attribute of the date input field
+  document.getElementById("start_date").max = formattedDate;
+  document.getElementById("end_date").max=formattedDate;
+
+
 </script>
 
 

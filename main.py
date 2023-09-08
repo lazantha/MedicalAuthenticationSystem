@@ -1,4 +1,4 @@
-from flask import Flask,render_template,url_for,redirect,flash,session
+from flask import Flask,render_template,url_for,redirect,flash,session,make_response
 from flask import jsonify,request
 from allForms import UserLog,AdminLog,AdminSignUp,UserSignUp,UserForm,AdminInterface,SuperAdminInterface,TimeSchedule,MedicalClosingDate
 from flask_bcrypt import Bcrypt
@@ -10,6 +10,7 @@ from logger import logging
 from flask_mail import Mail,Message
 import hashlib
 from werkzeug.utils import secure_filename
+import pdfkit
 import uuid
 import os
 import time
@@ -20,6 +21,8 @@ user='root'
 app=Flask(__name__)
 
 app.config['SECRET_KEY']="kEY"
+pdfkit_config = pdfkit.configuration(wkhtmltopdf='C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe')
+app.config['PDFKIT_CONFIG'] = pdfkit_config
 UPLOAD_FOLDER = 'static/images'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 bcrypt=Bcrypt(app)
@@ -231,6 +234,7 @@ def superAdmin():
             (item[0].decode(), item[1].decode(), item[2], item[3], item[4].decode())
             for item in result
             ]
+        print(cleaned_data)
 
         #should implement authentication process
     if request.method == 'GET':
@@ -243,7 +247,9 @@ def superAdmin():
             user_data = (row_id,)
             user_id = new_data.fetchOneForeing(user_query, user_data)
             print(f"ID: {user_id}")
-            #find a method for authenticat
+            #find a method for authenticate
+            #get date of exam in medical information
+            
             data=(user_id,)
             query_med="SELECT medical_sheet FROM medical_infor WHERE user_id=%s ORDER BY recorded_time DESC LIMIT 1;"
             query_date="SELECT issued_date FROM medical_infor WHERE user_id=%s LIMIT 1;"
@@ -254,7 +260,7 @@ def superAdmin():
             #checking with issued date
             #"The captured date of the medical sheet and the medical form must be uploaded on the same day."
             if issued_date==meta_date:
-                print(True)
+                #secondary condition to check
 
                 flash("success","Medical Accepted !")
                 authtMail(row_id)
@@ -992,59 +998,65 @@ def updateExam():
 #reports
 from flask import make_response
 from fpdf import FPDF
-    
+from allForms import ReportDepartments    
 
 @app.route('/adminReports',methods=['POST','GET'])
 def adminReports():
     new_data=MySql(host,database,user)
-    #TOTAL REGISTRATION OF STUDENTS
+    form=ReportDepartments()
+    dep_query="SELECT dep.calling_name FROM super_admins AS sa INNER JOIN departments AS dep ON sa.dep_id=dep.id;"
+    departments=new_data.fetchMultiVal(dep_query)
+    def bytearray_to_string(byte_arr):
+        return byte_arr.decode('utf-8')
+    departments = [(bytearray_to_string(item[0]), bytearray_to_string(item[0])) for item in departments]
+    form.departments.choices=departments
+    date=request.args.get('date')
+    department=request.args.get('departments')
+    print("Date",date)
+    year=None
+    month=None
+    day=None
+    date_parts = date.split('-')
+    year=(date_parts[0])
+    month=(date_parts[1])
+    day=(date_parts[2])
+
+    #queries
     query_student="SELECT COUNT(*) FROM students;"
-    reg_count=new_data.fetchOne(query_student)
+    reg_count=new_data.fetchOne(query_student)    
     #TOTAL COUNT OF MEDICAL SUBMITS
-    query_medicals="SELECT COUNT(*) FROM medical_infor;"
-    med_count=new_data.fetchOne(query_medicals)
+    query_medicals="SELECT COUNT(*) FROM medical_infor WHERE exam_date LIKE %s"
+    search_pattern = f'{year}%'
+    med_count=new_data.fetchOneForeing(query_medicals,(search_pattern,))
     #TOTAL COUNT OF ADMINS
     query_admins="SELECT COUNT(*) FROM super_admins;"
     admin_count=new_data.fetchOne(query_admins)
     #CONFIRMED MEDICALS
-    query_is_confirmed="SELECT COUNT(*) FROM medical_infor WHERE is_confirm=1;"
-    confirmed=new_data.fetchOne(query_is_confirmed)
+    query_is_confirmed="SELECT COUNT(*) FROM medical_infor WHERE is_confirm=1 AND exam_date LIKE %s;"        
+    confirmed=new_data.fetchOneForeing(query_is_confirmed,(search_pattern,))
     #UNCONFIRMED MEDICALS
-    query_unconfiremed="SELECT COUNT(*) FROM medical_infor WHERE is_confirm=-1;"
-    unconfirmed=new_data.fetchOne(query_unconfiremed)
+    query_unconfiremed="SELECT COUNT(*) FROM medical_infor WHERE is_confirm= -1 AND exam_date LIKE %s;"
+    unconfirmed=new_data.fetchOneForeing(query_unconfiremed,(search_pattern,))
     
-    #printting
-    if request.method == 'GET':
-        action=request.args.get('action')
-        if action=='print':
-            pdf=FPDF()
-            pdf.add_page()
-            pdf.set_font('Arial','B')
-            # pdf.cell(50,40,"First PDF")
-            pdf.cell(0, 10, 'Registration Report', ln=True, align='C')
-            pdf.cell(0, 10, f'Total Students: {reg_count}', ln=True)
-            pdf.cell(0, 10, f'Total Medical Submits: {med_count}', ln=True)
-            pdf.cell(0, 10, f'Total Admins: {admin_count}', ln=True)
-            pdf.cell(0, 10, f'Confirmed Medicals: {confirmed}', ln=True)
-            pdf.cell(0, 10, f'Unconfirmed Medicals: {unconfirmed}', ln=True)
-             # Save the PDF to a file
-            pdf.output('templates/interfaces/admin/admin_report.pdf','F')
-            # Create a response with the PDF content and headers
-            with open('templates/interfaces/admin/admin_report.pdf', 'rb') as f:
-                response = make_response(f.read())
-                response.headers['Content-Type'] = 'application/pdf'
-                response.headers['Content-Disposition'] = 'attachment; filename=admin_report.pdf'
-            return response
-            # pdf.output('templates/interfaces/admin/admin_report.pdf','F')
-            return redirect(url_for('adminReports'))
+    query_main="SELECT stu.index_number,stu.first_name,stu.last_name,mi.exam_date,mi.exam_location,sub.subject_name,sub.year,sub.semester FROM medical_infor AS mi INNER JOIN students AS stu ON mi.user_id=stu.user_id INNER JOIN subjects AS sub ON mi.subject_id=sub.subject_id INNER JOIN departments AS dep ON sub.department_id=dep.id WHERE mi.exam_date LIKE %s AND dep.calling_name=%s;"
+    data=(search_pattern,department)
+    data_main=new_data.fetchAllMulForeing(query_main,data)
+    cleaned_data = [
+    tuple(item.decode('utf-8') if isinstance(item, bytearray) else item if not isinstance(item, datetime.date) else item for item in row)
+    for row in data_main]
+    return  render_template('interfaces/admin/sample_report.html',form=form,
+                            year=year,
+                            department=department,
+                            reg_count=reg_count,
+                            med_count=med_count,
+                            admin_count=admin_count,
+                            confirmed=confirmed,
+                            unconfirmed=unconfirmed,
+                            cleaned_data=cleaned_data
+                            )
+    
 
-    return render_template('interfaces/admin/report.html',reg_count=reg_count,admin_count=admin_count,med_count=med_count,
-                           confirmed=confirmed,
-                           unconfirmed=unconfirmed
-                           
-                           
-                           
-                           )
+
 
 
 @app.route('/superAdminReports',methods=['POST','GET'])
