@@ -61,10 +61,10 @@ class AdminSignUp(FlaskForm):
 class UserSignUp(FlaskForm):
     first_name=StringField("First Name: ",validators=[DataRequired(),Length(min=3, max=10)])
     last_name=StringField("Last Name: ",validators=[DataRequired(),Length(min=3, max=10)])
-    index_number = StringField("Index Number", validators=[
+    index_number = StringField("Index Number(KAN/ X/ 202X / X/ XXXX)", validators=[
         DataRequired(),
         Length(min=18, max=25),
-        Regexp(r'^[A-Z]{3}/[A-Z]{2}/\d{4}/[A-Z]{1}/\d{4}$', message='Invalid index number format.')
+        Regexp(r'^[A-Z]{3}/[A-Z]{0,6}/\d{4}/(F|P)/\d{4}$', message='Invalid index number format.')
     ])
     mode=SelectField("Mode: ",validators=[DataRequired(),])
     gender=SelectField("Gender: ",choices=['MALE','FEMALE'],validators=[DataRequired()])
@@ -132,3 +132,7 @@ class ReportDepartments(FlaskForm):
     date=DateField("Date: ",validators=[DataRequired()])
     departments=SelectField("Department: ",validators=[DataRequired()])
     update=SubmitField("Update")
+    years=SelectField("Year: ",validators=[DataRequired()])
+    semesters=SelectField("Semester: ",validators=[DataRequired()])
+    student_type=SelectField("Type: ",choices=['FULL TIME','PART TIME'],validators=[DataRequired()])
+

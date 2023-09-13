@@ -22,8 +22,8 @@
 
     
     <div class="form-floating">
-      {{form.index_number(class="form-control",id="floatingInput",placeholder="Re")}}
-      <label for="floatingInput">{{form.index_number.label}}</label>
+      {{form.index_number(class="form-control",id="floatingInput",placeholder="")}}
+      <label for="floatingInput">{{form.index_number.label}}</label> 
       {% if form.index_number.errors %}
             <ul>
                 {% for error in form.index_number.errors %}

@@ -38,11 +38,65 @@
         .year{
             color: red;
         }
-        
+        hr{
+          color: slateblue;
+        }
+        .reject table tbody tr{
+          color: red;
+        }
+        .dep{
+          width: 100px;
+        }
+        .date{
+          height: 30px;
+        }
+        form{
+          padding-top: 1rem;
+        }
+        legend{
+          font-family: 'Times New Roman', Times, serif;
+          color: green;
+
+        }
+        .span-form{
+          font-size: 1.5em;
+          color: steelblue;
+        }
+        .sub_data td{
+          color: steelblue;
+        }
+        .confirmed td{
+          color: green;
+        }
+        .rejected td{
+          color: red;
+        }
+        .affected td{
+          color: brown;
+        }
+        .glance td{
+          color: darkblue;
+        }
+        .sub_data th{
+          color: darkgreen;
+        }
     </style>
 
 </head>
 <body>
+  <div class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for message,category in messages %}
+      <div class="alert alert-{{category}} alert-dismissible fade show border border-top-0 border border-white h-50 " role="alert">
+          <p class="text-center text-uppercase fs-5 ">{{message}}</p>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      {% endfor %}
+      
+    {% endif %}
+  {% endwith %}
+  </div>
     <div class="top-bar">
         <div class="topic">
             <h4>Medical Authentication System</h4>
@@ -50,15 +104,22 @@
      </div>
     </div>
     <fieldset >
-            <legend>Genaral Information For:{{year}} 
-                <form action="/adminReports" method="get">
+            <legend>Genaral Information For:{{year}} </legend>
+
+                <form action="/adminReports" method="post">
+                    <div class="form_frame">
                     {{form.hidden_tag()}}
-                    {{form.date}}
-                    {{form.departments()}}
-                    {{form.update()}}
+                    <span class="span-form">Year of Examination:</span>{{ form.date(class="date", placeholder="YYYY", maxlength=4, min=2020, max=2099) }}
+
+                    {{form.departments(class="dep")}}
+                    <span class="span-form">Academic Year:</span>:{{form.years(class="yrs")}}
+                    <span class="span-form">Semester:</span>{{form.semesters(class="sem")}}
+                    <span class="span-form">(FT / PT):</span>{{form.student_type()}}
+                    {{form.update(class="btn btn-primary btn-sm")}}
+                    </div>
                 </form>
 
-            </legend>
+            
             
         <div class="card w-75" >
             <div class="card-header fs-5 fw-bolder">
@@ -94,26 +155,134 @@
         <hr>
         <div class="card ">
             <div class="card-header fs-5 fw-bolder">
-              <div style="color: blue;">{{department}}</div>
+              <div style="color: blue;">
+                {% if department == "IT" %}
+                    Department Of Information Technology
+                {% endif %}
             </div>
-
+            
+            </div>
             <div class="card-body ">
-
-
-              
               <div class="card">
-                <h5 class="card-header">Featured</h5>
+                <h5 class="card-header">In {{semesters}} Semester Of {{dep_year}} Year </h5>
                 <div class="card-body">
-                  <h5 class="card-title">Special title treatment</h5>
-                  <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                  <a href="#" class="btn btn-primary">Go somewhere</a>
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th>Index Number</th>
+                        <th>First Name </th>
+                        <th>Last Name</th>
+                        <th>Subject Name</th>
+                        <th>Exam Held Date</th>
+                        <th>Confirmed</th>
+                        <th>Authenticated</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for row in cleaned_sub_data %}
+                      <tr class="sub_data">
+                          <th>{{ row[0] }}</th>
+                          <th>{{ row[1] }}</th>
+                          <th>{{ row[2] }}</th>
+                          <th>{{ row[3] }}</th>
+                          <th>{{ row[4] }}</th>
+                          <th>{% if row[5] == 1 %}Yes{% elif row[5]==-1 %}Rejected {%else%} Pending {% endif %}</th>
+                          <th>{% if row[6] == 1 %}Yes{% elif row[6]==-1 %}Rejected {% else %}Pending{% endif %}</th>
+                      </tr>
+                      {% endfor %}
+                  </tbody>
+                </table>
+                      
+                </div>
+              </div>
+              <br><hr>
+
+              <div class="card w-75 mb-3">
+                <div class="card-body">
+                  <h5 class="card-title">Rejected (Unconfirmed) Medicals</h5>
+                  <table class="table reject">
+                    <thead>
+                      <tr>
+                        <th>Index Number</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        
+                        
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for row in rejected_data %}
+                      <tr class="rejected">
+                        <td>{{row[0]}}</td>
+                        <td>{{row[1]}}</td>
+                        <td>{{row[2]}}</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <hr><br>
+              <!-- confirmed table -->
+              <div class="card w-75 mb-3">
+                <div class="card-body">
+                  <h5 class="card-title">Accepted (Confirmed) Medicals</h5>
+                  <table class="table confirmed">
+                    <thead>
+                      <tr>
+                        <th>Index Number</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        
+                        
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for row in confirmed_data %}
+                      <tr class="confirmed">
+                        <td>{{row[0]}}</td>
+                        <td>{{row[1]}}</td>
+                        <td>{{row[2]}}</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <hr><br>
+              <div class="card w-75 mb-3">
+                <div class="card-body">
+                  <h5 class="card-title">Most Affected Subjects</h5>
+                  <table class="table">
+                    <thead>
+                      <tr>
+                       <th>Subject Name</th>
+                       <th>Medical Counts</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for row in affected %}
+                          <tr class="affected">
+                            <td>{{row[0]}}</td>
+                            <td>{{row[1]}}</td>
+                            
+                          </tr>
+                      {%endfor  %}
+                    </tbody>
+                  </table>
+
                 </div>
               </div>
 
-
-
+              <hr><br>
                 <!-- cleaned_dep -->
-                <table class="table">
+
+              
+                <div class="card">
+                  <div class="card-header">
+                    Glance View
+                  </div>
+                  <table class="table">
                     <thead>
                       <tr>
                         <th scope="col">Index Number</th>
@@ -128,8 +297,8 @@
                       </tr>
                     </thead>
                     <tbody>
-                    {% for row in cleaned_data %}
-                        <tr>
+                    {% for row in glance_view_data %}
+                        <tr class="glance">
                           <td>{{row[0]}}</td>
                           <td>{{row[1]}}</td>
                           <td>{{row[2]}}</td>
@@ -145,6 +314,14 @@
                     {% endfor %}
                     </tbody>
                   </table>
+
+                </div>
+
+
+
+
+                
+                
             </div>
         </div>
         
@@ -152,6 +329,10 @@
           
 
     </fieldset>
+    <div>
+      <a class="btn btn-info" href="adminReports?action=print" role="button">Print</a>
+
+    </div>
     
     <script>
       $(document).ready(function(){

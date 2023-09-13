@@ -171,7 +171,7 @@ class MySql:
 			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=self.password)
 			cursor=connection.cursor(prepared=True)
 			
-			query="SELECT count(*) FROM subjects AS s INNER JOIN medical_infor AS mi ON s.subject_id=mi.subject_id INNER JOIN departments AS dep ON s.department_id=dep.id WHERE dep.calling_name=%s;"
+			query="SELECT count(*) FROM subjects AS s INNER JOIN medical_infor AS mi ON s.subject_id=mi.subject_id INNER JOIN departments AS dep ON s.department_id=dep.id WHERE dep.calling_name=%s AND mi.is_confirm=0 AND mi.is_authenticate=0 ;"
 			cursor.execute(query,(department,))
 			result=cursor.fetchone()
 			return result[0]
@@ -189,7 +189,7 @@ class MySql:
 			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=self.password)
 			cursor=connection.cursor(prepared=True)
 			
-			query="SELECT st.email,first_name,id_card,mi.medical_sheet FROM students AS st INNER JOIN medical_infor AS mi ON st.user_id =mi.user_id INNER JOIN departments AS dep ON st.department_id=dep.id WHERE dep.calling_name=%s ORDER BY mi.recorded_time DESC;"
+			query="SELECT st.user_id,st.email,first_name,id_card,mi.medical_sheet FROM students AS st INNER JOIN medical_infor AS mi ON st.user_id =mi.user_id INNER JOIN departments AS dep ON st.department_id=dep.id WHERE dep.calling_name=%s AND mi.is_confirm=0 AND mi.is_authenticate=0 ORDER BY mi.recorded_time DESC;"
 			cursor.execute(query,(department,))
 			result=cursor.fetchall()
 			return result

@@ -15,7 +15,7 @@
     <div class="card" style="width: 18rem;">
       <div class="card-body">
         <div id="date-picker-example" class="md-form md-outline input-with-post-icon datepicker" inline="true">    
-          <label for="example">{{form.date_issued.label}} <br><small><i style="color: red;">Referencing Your Medical Sheet ! </i></small></label>
+          <label for="example">{{form.date_issued.label}} <br><small><i style="color: red;">Cross-Checking with Your Medical Sheet!</i></small></label>
           {{form.date_issued(class="form-control",id="date_issued")}}
           <i class="fas fa-calendar input-prefix"></i>
         </div>
@@ -67,7 +67,7 @@
       </div>
       <!-- med_pic -->
       <div class="mb-3">
-        <label for="floatingInput" class="form-label">{{form.med_image.label}} <small><br><i style="color: red;">*The Captured Date Of The Medical Sheet And The Medical Form Must Be Uploaded On The Same Day !</i></small></label>
+        <label for="floatingInput" class="form-label">{{form.med_image.label}} <small><br><i style="color: red;">* The captured photo of the medical sheet must match the issued date of the medical sheet(Both tasks should be completed within a 24-hour timeframe.).</i></small></label>
         {{form.med_image(class='form-control')}}
         {% if form.med_image.errors %}
             <ul>
