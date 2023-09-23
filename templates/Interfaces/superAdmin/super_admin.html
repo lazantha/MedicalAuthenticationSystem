@@ -43,7 +43,7 @@
           <hr>
           <li class="pb-5" style="list-style: none;">
             <i class="fa-solid fa-file-export" style="color: #f0c76f;"></i>
-          <a href="/superAdminReports" class="link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" style="text-decoration: none;">Reports</a>
+          <a href="/superReport" class="link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" style="text-decoration: none;">Reports</a>
           
           </li>
           <hr>
@@ -74,7 +74,7 @@
           <table class="table table-hover table table-bordered table-striped mb-0">
             <thead>
               <tr>
-                
+                <th>Id</th>
                 <th>Subject</th>
                 <th>Attempt</th>
                 <th>Date of Exam</th>
@@ -86,18 +86,22 @@
               </tr>
             </thead>
             <tbody>
-              {% for row in results %}
-
-              <tr>
-              <td>{{ row[0+1] }}</td>  
-              <td>{{ row[1+1] }}</td>
-              <td>{{ row[2+1] }}</td>  
-              <td>{{ row[3+1] }}</td>     
-              <td><a class="btn btn-warning btn-sm " href="/superAdmin?action=itAuth&row_id={{ row[0] }} ">Authenticate</a></td>
-              </tr>
-              
-                             
+              {% for row in  results %}
+                <tr>
+                  <td>{{row[0]}}</td>
+                  <td>{{row[1]}}</td>
+                  <td>{{row[2]}}</td>
+                  <td>{{row[3]}}</td>
+                  <td>{{row[4]}}</td>
+                  <td>
+                    <a class="btn btn-warning btn-sm " href="/superAdmin?action=itAuth&row_id={{ row[0] }} ">Authenticate</a>
+                  </td>
+                  
+                  
+                  
+                </tr>
               {% endfor %}
+              
             </tbody>
         
           </table>

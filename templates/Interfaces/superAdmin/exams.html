@@ -74,11 +74,42 @@
     <!-- table -->
     <div class="card bg-body-tertiary pt-3">
       <center><b><h5 class="card-header"> DEPARTMENT OF {{department|upper}}</h5></b></center>
-      <div id="search">
-        <input type="text" id="subject">
-        <input type="date" id="date">
-        <button id="search">Search</button>
-        
+      <div class="card">
+        <div class="card-header">
+          Search Subjects
+        </div>
+        <div class="card-body">
+          <form action="/exams" method="get">
+            <input type="text" placeholder="Subject" name="subject">
+            <input type="text" placeholder="Code" name="code">
+            <input type="text" placeholder="Location" name="location">
+            <input type="date" name="date">
+            <input type="submit" value="Search">
+          </form>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Subject</th>
+                <th>Code</th>
+                <th>Location</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in result_set %}
+                <tr>
+                  <td>{{row[0]}}</td>
+                  <td>{{row[1]}}</td>
+                  <td>{{row[2]}}</td>
+                  <td>{{row[3]}}</td>
+                  
+                  
+                  
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
       </div>
       <center><span>Update Time table</span></center>
         <div class="card-body">

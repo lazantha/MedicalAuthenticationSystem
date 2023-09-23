@@ -272,13 +272,13 @@ class MySql:
 				connection.close()
 				print("Connection Closed !")
 
-	def getMainSuper(self,dep,confirm):
+	def getMainSuper(self,dep):
 		try:
 			connection=mysql.connector.connect(host=self.host,database=self.database,user=self.user,password=self.password)
 			cursor=connection.cursor(prepared=True)
 			
-			query="SELECT st.email,  sub.subject_name ,att.attempt, mi.exam_date,mi.exam_location FROM medical_infor AS mi INNER JOIN subjects AS sub ON sub.subject_id=mi.subject_id INNER JOIN attempts AS att ON att.id=mi.attempt_id  INNER JOIN students AS st ON st.user_id=mi.user_id INNER JOIN departments AS dep ON dep.id=sub.department_id  WHERE dep.calling_name=%s AND mi.is_confirm=%s;"
-			cursor.execute(query,(dep,confirm))
+			query="SELECT st.user_id,sub.subject_name ,att.attempt, mi.exam_date,mi.exam_location FROM medical_infor AS mi INNER JOIN subjects AS sub ON sub.subject_id=mi.subject_id INNER JOIN attempts AS att ON att.id=mi.attempt_id  INNER JOIN students AS st ON st.user_id=mi.user_id INNER JOIN departments AS dep ON dep.id=sub.department_id  WHERE dep.calling_name=%s AND mi.is_confirm=1 AND mi.is_authenticate=0;"
+			cursor.execute(query,(dep,))
 			result=cursor.fetchall()
 			return result
 			print("getting success !")

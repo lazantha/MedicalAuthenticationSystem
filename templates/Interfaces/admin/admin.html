@@ -113,7 +113,7 @@ function rejectRow(rowId) {
             <hr>
             <li class="" style="list-style: none;">
               <i class="fa-solid fa-file-export" style="color: #f0c76f;"></i>
-            <a href="/adminReports" class="link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" style="text-decoration: none;">Reports</a>
+            <a href="/adminReportsForm" class="link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" style="text-decoration: none;">Reports</a>
             
             </li>
                
@@ -130,10 +130,12 @@ function rejectRow(rowId) {
       <div class="card" style="width: 18rem;">
         <div class="card-body">
           <h6 class="card-title" style="text-align:center;font-weight: bolder;">Set Closing Date For Medical Submission</h6>
-            <form action="/admin" method="get" class="container pt-5">
+            
+          <form action="/admin" method="get" class="container pt-5">
               <input type="date" name="date" id="date" class="form-control w-auto">
               <input type="submit" value="Set" class="btn btn-primary btn-sm">
             </form>
+            
             <strong style="color:blueviolet;">Medical Submission Form Valid Until: <i>{{closing_date}}</i></strong>
         </div>
       </div>
@@ -237,27 +239,34 @@ function rejectRow(rowId) {
               </thead>
               <tbody>
                 {% for row in result_account %}
-  
-  
-                <tr id="row_{{ loop.index }}">
-                  <td>{{ row[0] }}</td>  
-                <td>{{ row[1] }}</td>
-                <div class="photo-container">
-                  <td><img class="small-photo" src="static/images/{{row[2]}}"></td>
-                  <td><img class="small-photo" src="static/images/{{row[3]}}"></td>
-                 </div>           
-                <td> 
-                  <a href="/admin?action=accAccept&row_id={{row[0]}}" role="button" class="btn btn-success btn-sm">Confirm</a>
-              				
-                <td>
-                   <form action="/admin" method="get">
-                    <input type="hidden" name="row_id" value="{{row[0]}}">
-                     <input type="hidden" name="action" value="accReject">
-                    <textarea placeholder="Optional" name="message"></textarea>
-                    <input type="submit" value="Reject" class="btn btn-danger btn-sm">
-                  </form>
-                </td>
-                </tr>
+                  <tr>
+                      <td>{{row[0]}}</td>
+                      <td>{{row[1]}}</td>
+                      <td>{{row[2]}}</td>
+                      
+                      <div class="photo-container">
+                        <td><img class="small-photo" src="static/images/{{row[3]}}"></td>
+                        <td><img class="small-photo" src="static/images/{{row[4]}}"></td>
+                      </div> 
+                      <td>
+                        <a href="/admin?action=accAccept&row_id={{row[0]}}" role="button" class="btn btn-success btn-sm">Confirm</a>
+                      </td>
+                      <td>
+                        <form action="/admin" method="get">
+                          <input type="hidden" name="row_id" value="{{row[0]}}">
+                           <input type="hidden" name="action" value="accReject">
+                          <textarea placeholder="Optional" name="message"></textarea>
+                          <input type="submit" value="Reject" class="btn btn-danger btn-sm">
+                        </form>
+                        
+                      </td>
+                      
+                      <td> 
+                
+                      
+                      
+
+                  </tr>
                 
                 {% endfor %}
               </tbody>
@@ -287,29 +296,33 @@ function rejectRow(rowId) {
             </thead>
             <tbody>
               {% for row in result_manage %}
+                  <tr>
+                      <td>{{row[0]}}</td>
+                      <td>{{row[1]}}</td>
+                      <td>{{row[2]}}</td>
+                      
+                      <div class="photo-container">
+                        <td><img class="small-photo" src="static/images/{{row[3]}}"></td>
+                        <td><img class="small-photo" src="static/images/{{row[4]}}"></td>
+                      </div> 
+                      <td>
+                        <a href="/admin?action=manaAccept&row_id={{row[0]}}" role="button" class="btn btn-success btn-sm">Confirm</a>
+                      </td>
+                      <td>
+                        <form action="/admin" method="get">
+                          <input type="hidden" name="row_id" value="{{row[0]}}">
+                           <input type="hidden" name="action" value="manaReject">
+                          <textarea placeholder="Optional" name="message"></textarea>
+                          <input type="submit" value="Reject" class="btn btn-danger btn-sm">
+                        </form>
+                        
+                      </td>
+                      
+                      <td>                 
 
-
-              <tr id="row_{{ loop.index }}">
-                <td>{{ row[0] }}</td>  
-              <td>{{ row[1] }}</td>
-              <div class="photo-container">
-                <td><img class="small-photo" src="static/images/{{row[2]}}"></td>
-                <td><img class="small-photo" src="static/images/{{row[3]}}"></td>
-               </div>           
-              <td> 
-                <a href="/admin?action=manaAccept&row_id={{row[0]}}" role="button" class="btn btn-success btn-sm">Confirm</a>
-                    
-              <td>
-                 <form action="/admin" method="get">
-                  <input type="hidden" name="row_id" value="{{row[0]}}">
-                   <input type="hidden" name="action" value="manaReject">
-                  <textarea placeholder="Optional" name="message"></textarea>
-                  <input type="submit" value="Reject" class="btn btn-danger btn-sm">
-                </form>
-              </td>
-              </tr>
-              
-              {% endfor %}
+                  </tr>
+                
+                {% endfor %}
             </tbody>
           </table>
          </div>
@@ -337,27 +350,31 @@ function rejectRow(rowId) {
               </thead>
               <tbody>
                 {% for row in result_thm %}
-  
-  
-                <tr id="row_{{ loop.index }}">
-                  <td>{{ row[0] }}</td>  
-                <td>{{ row[1] }}</td>
-                <div class="photo-container">
-                  <td><img class="small-photo" src="static/images/{{row[2]}}"></td>
-                  <td><img class="small-photo" src="static/images/{{row[3]}}"></td>
-                 </div>           
-                <td> 
-                  <a href="/admin?action=thmAccept&row_id={{row[0]}}" role="button" class="btn btn-success btn-sm">Confirm</a>
+                  <tr>
+                      <td>{{row[0]}}</td>
+                      <td>{{row[1]}}</td>
+                      <td>{{row[2]}}</td>
                       
-                <td>
-                   <form action="/admin" method="get">
-                    <input type="hidden" name="row_id" value="{{row[0]}}">
-                     <input type="hidden" name="action" value="thmReject">
-                    <textarea placeholder="Optional" name="message"></textarea>
-                    <input type="submit" value="Reject" class="btn btn-danger btn-sm">
-                  </form>
-                </td>
-                </tr>
+                      <div class="photo-container">
+                        <td><img class="small-photo" src="static/images/{{row[3]}}"></td>
+                        <td><img class="small-photo" src="static/images/{{row[4]}}"></td>
+                      </div> 
+                      <td>
+                        <a href="/admin?action=thmAccept&row_id={{row[0]}}" role="button" class="btn btn-success btn-sm">Confirm</a>
+                      </td>
+                      <td>
+                        <form action="/admin" method="get">
+                          <input type="hidden" name="row_id" value="{{row[0]}}">
+                           <input type="hidden" name="action" value="thmReject">
+                          <textarea placeholder="Optional" name="message"></textarea>
+                          <input type="submit" value="Reject" class="btn btn-danger btn-sm">
+                        </form>
+                        
+                      </td>
+                      
+                      <td>                 
+
+                  </tr>
                 
                 {% endfor %}
               </tbody>
@@ -383,27 +400,31 @@ function rejectRow(rowId) {
               </thead>
               <tbody>
                 {% for row in result_en %}
-  
-  
-                <tr id="row_{{ loop.index }}">
-                  <td>{{ row[0] }}</td>  
-                <td>{{ row[1] }}</td>
-                <div class="photo-container">
-                  <td><img class="small-photo" src="static/images/{{row[2]}}"></td>
-                  <td><img class="small-photo" src="static/images/{{row[3]}}"></td>
-                 </div>           
-                <td> 
-                  <a href="/admin?action=engAccept&row_id={{row[0]}}" role="button" class="btn btn-success btn-sm">Confirm</a>
+                  <tr>
+                      <td>{{row[0]}}</td>
+                      <td>{{row[1]}}</td>
+                      <td>{{row[2]}}</td>
                       
-                <td>
-                   <form action="/admin" method="get">
-                    <input type="hidden" name="row_id" value="{{row[0]}}">
-                     <input type="hidden" name="action" value="engReject">
-                    <textarea placeholder="Optional" name="message"></textarea>
-                    <input type="submit" value="Reject" class="btn btn-danger btn-sm">
-                  </form>
-                </td>
-                </tr>
+                      <div class="photo-container">
+                        <td><img class="small-photo" src="static/images/{{row[3]}}"></td>
+                        <td><img class="small-photo" src="static/images/{{row[4]}}"></td>
+                      </div> 
+                      <td>
+                        <a href="/admin?action=engAccept&row_id={{row[0]}}" role="button" class="btn btn-success btn-sm">Confirm</a>
+                      </td>
+                      <td>
+                        <form action="/admin" method="get">
+                          <input type="hidden" name="row_id" value="{{row[0]}}">
+                           <input type="hidden" name="action" value="engReject">
+                          <textarea placeholder="Optional" name="message"></textarea>
+                          <input type="submit" value="Reject" class="btn btn-danger btn-sm">
+                        </form>
+                        
+                      </td>
+                      
+                      <td>                 
+
+                  </tr>
                 
                 {% endfor %}
               </tbody>

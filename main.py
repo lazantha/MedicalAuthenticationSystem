@@ -205,90 +205,124 @@ def metaData(path):
     date_value = date_time_obj.date()
     return date_value
 
-def authtMail(row_id):
-
-    subject="Medical Authenticatation System"
-    receiver=row_id
-    message_content="All Done !Your Medical Form Accepted By The Medical Panel Thank You !"
-    email(receiver,subject,message_content)
-
-def rejectMail(row_id):
-    subject="Medical Authenticatation System"
-    receiver=row_id
-    message_content="Your Medical Rejected By Medical Panal ! due To Invalid Information"
-    email(receiver,subject,message_content)
 
 
+from datetime import datetime,timedelta
 
 @app.route('/superAdmin', methods=['GET', 'POST'])
 def superAdmin():
     form = SuperAdminInterface()
     new_data = MySql(host, database, user)
-    if 'date_list' in session and 'super_name' in session and 'super_password' in session :
-        date_list=session['date_list']
+    def authtMail(row_id):
+        subject="Medical Authenticatation System"
+        email_query="SELECT email FROM students WHERE user_id=%s LIMIT 1"
+        email=new_data.fetchOneForeing(email_query,(row_id,)).decode('utf-8')
+        receiver=email
+        message_content="ALL Right !Your Medical Form Authenticated By The Medical Panel THANK YOU !"
+        email(receiver,subject,message_content)
+
+    def rejectMail(row_id):
+        subject="Medical Authenticatation System"
+        email_query="SELECT email FROM students WHERE user_id=%s LIMIT 1;"
+        email=new_data.fetchOneForeing(email_query,(row_id,))
+        print("email",email)
+
+        # receiver=email
+        # message_content="Your Medical Rejected By Medical Panal ! due To Invalid Information"
+        # email(receiver,subject,message_content)
+
+
+    if 'super_name' in session and 'super_password' in session :
         name=session['super_name']
         password=session['super_password']
-        closing_date=date_list[-1]
-        print("Closing date_upper: ",closing_date)
+
         query="SELECT dep.calling_name FROM departments AS dep INNER JOIN super_admins AS sa ON dep.id=sa.dep_id WHERE sa.first_name=%s AND sa.password=%s"
         data=(name,password)
         dep=new_data.fetchOneForeing(query,data).decode().strip()
-        result=new_data.getMainSuper(dep,1)
-        cleaned_data = [
-            (item[0].decode(), item[1].decode(), item[2], item[3], item[4].decode())
-            for item in result
-            ]
+        result=new_data.getMainSuper(dep)
+        print(result)
+        import datetime
+        cleaned_data = []
+
+        for item in result:
+            cleaned_item = (
+                item[0],
+                item[1].decode('utf-8'),  # Convert bytearray to string using UTF-8 encoding
+                item[2],
+                item[3].isoformat(),  # Convert date to ISO format string
+                item[4].decode('utf-8')  # Convert bytearray to string using UTF-8 encoding
+            )
+            cleaned_data.append(cleaned_item)
+            
         
         if request.method == 'GET':
             if 'action' in request.args and 'row_id' in request.args:
                 action = request.args.get('action')
                 if action=='itAuth':
                     row_id = request.args.get('row_id')
-                print(row_id)
-                user_query = "SELECT DISTINCT mi.user_id FROM medical_infor AS mi INNER JOIN students AS stu ON stu.user_id=mi.user_id WHERE stu.email=%s;"
-                user_data = (row_id,)
-                user_id = new_data.fetchOneForeing(user_query, user_data)
-                print(f"ID: {user_id}")
+                    print(row_id)
                 #find a method for authenticate
                 #get date of exam in medical information
                 
-                data=(user_id,)
-                query_med="SELECT medical_sheet FROM medical_infor WHERE user_id=%s ORDER BY recorded_time DESC LIMIT 1;"
-                query_date="SELECT issued_date FROM medical_infor WHERE user_id=%s LIMIT 1;"
-                med_sheet=new_data.fetchOneForeing(query_med,data).decode('utf-8')
+                    data=(row_id,)
+                    query_med="SELECT medical_sheet FROM medical_infor WHERE user_id=%s ORDER BY recorded_time DESC LIMIT 1;"
+                    query_date="SELECT issued_date FROM medical_infor WHERE user_id=%s LIMIT 1;"
+                    med_sheet=new_data.fetchOneForeing(query_med,data).decode('utf-8')
 
-                #get medical issued date
-                issued_date=new_data.fetchOneForeing(query_date,data)
-                path=f'static/images/{med_sheet}'
-                #get captured date
-                meta_date=metaData(path)
-                #get exam held 
-                exm_held_query="SELECT ex.held_date FROM exams AS ex INNER JOIN subjects  AS sub ON ex.subject_id=sub.subject_id INNER JOIN medical_infor AS mi WHERE mi.user_id=%s LIMIT 1;"
-                held_date=new_data.fetchOneForeing(exm_held_query,data)
-                #get affected date(medical From date)
-                aff_query="SELECT from_date FROM medical_infor WHERE user_id=%s LIMIT 1"
-                aff_date=new_data.fetchOneForeing(aff_query,data)
-                print("Issued date: ",issued_date)
-                print("held date: ",held_date)
-                print("aff date: ",aff_date)
+                    #get medical issued date
+                    issued_date=new_data.fetchOneForeing(query_date,data)
+                    path=f'static/images/{med_sheet}'
+                    #get captured date
+                    # meta_date=metaData(path)
+                    #get exam held 
+                    exm_held_query="SELECT ex.held_date FROM exams AS ex INNER JOIN subjects  AS sub ON ex.subject_id=sub.subject_id INNER JOIN medical_infor AS mi WHERE mi.user_id=%s LIMIT 1;"
+                    held_date=new_data.fetchOneForeing(exm_held_query,data)
+                    #get affected date(medical From date)
+                    aff_query="SELECT from_date FROM medical_infor WHERE user_id=%s LIMIT 1"
+                    aff_date=new_data.fetchOneForeing(aff_query,data)
+                    query_date="SELECT closing_date FROM closing_dates_list WHERE id=1;"
+                    closing_date=new_data.fetchOne(query_date)
+                    
+                    #if medical_issued date==capured_date:
+                    if issued_date<closing_date:
+                        print("Issued date fine")
+                        if aff_date<=held_date:
+                            print("Affected date fine")
+                            print("Authenticated: ")
+                            update_query = "UPDATE medical_infor SET is_authenticate = 1 WHERE user_id = %s LIMIT 1"
+                            new_data.update(update_query,row_id)
+                            # authtMail(row_id)
+                            flash('success','Medical Authenticated !')
+                            return redirect('superAdmin')
 
-                #if medical_issued date==capured_date:
-                #   if medical_issued_date<closing_date:
-                    #   if exam_held_date==affected_date:
-                        #authenticated update table authenticated and flash it out
-
-                print("Closing Date: ",closing_date)
-
-    else:
-        print("Not set yet")
 
 
-    return render_template('interfaces/superAdmin/super_admin.html', form=form,
-                            department=dep,
-                            name=name,
+                        else:
+                            rejectMail(row_id)
+                            print("Affected date not fine")
+                            update_query = "UPDATE medical_infor SET is_authenticate = -1 WHERE user_id = %s LIMIT 1"
+                            new_data.update(update_query,data)
+                            flash('warning','Medical Rejected !')
+                            return redirect('superAdmin')
+
+                        
+                    else:
+                        rejectMail(row_id)
+                        print("Issued data not fine: ")
+                        update_query = "UPDATE medical_infor SET is_authenticate = -1 WHERE user_id = %s LIMI 1"
+                        print(data)
+                        new_data.update(update_query,data)
+                        flash('warning','Medical Rejected !')
+                        return redirect('superAdmin')
+
+                
+
+
+            
+
+    return render_template('interfaces/superAdmin/super_admin.html', form=form,department=dep,name=name,
                             results=cleaned_data
-
-                            )
+                           )
 
 #.....................................................................
 
@@ -466,31 +500,18 @@ def user_home():
         query="SELECT sub.subject_name,att.attempt,med.is_confirm,is_authenticate FROM medical_infor AS med INNER JOIN subjects AS sub ON sub.subject_id=med.subject_id INNER JOIN attempts AS att ON att.id = med.attempt_id INNER JOIN students AS stu ON stu.user_id=med.user_id WHERE stu.first_name=%s AND stu.password=%s;"
         data=(name,password)
         result=new_sql.fetchAllMulForeing(query,data)
-        
         data = [(bytearray(b'Structured Programming'), 2, 0, 0)]
         cleaned_data = [(item[0].decode(), item[1], item[2], item[3]) for item in result]
-
-        if "date_list" in session:
-            from datetime import datetime, timedelta
-            current_datetime = datetime.today()
-            date_list = session["date_list"]
-            print("Date list in user Home route")
-            print(date_list)
-            if date_list:
-                first_closing_date = date_list[-1]
-                print("Closing Date in user page:", first_closing_date)
-                try:
-                    new_date = datetime.strptime(first_closing_date, '%Y-%m-%d')
-                    remaining_days = (new_date - current_datetime).days
-                    print("Remaining Days:", remaining_days)
-                except ValueError:
-
-                    print("Error: Invalid date format in session 'date_list'")
-            else:
-                print("Error: 'date_list' is empty")
+        from datetime import datetime, timedelta,date
+        current_datetime = datetime.today()
+        query_date="SELECT closing_date FROM closing_dates_list ORDER BY  set_date ASC LIMIT 1;"
+        closing_date=new_sql.fetchOne(query_date)
+        print("Date: ",closing_date)
+        closing_date = date.fromisoformat(str(closing_date))
+        current_datetime = date.today()
+        remaining_days = (closing_date - current_datetime).days
         
-        else:
-             print("Error: 'date_list' does not exist in the session")
+        
 
             
                     
@@ -502,7 +523,7 @@ def user_home():
     return render_template('interfaces/user/user_account.html',name=name,
                             result=cleaned_data,
                             remaining_days=remaining_days,
-                            closing_date=first_closing_date
+                            closing_date=closing_date
 
                                )
     
@@ -625,11 +646,13 @@ def request():
 
 
 #office
-from refined_database import NewMySql
 from datetime import date
 @app.route('/admin',methods=['GET','POST'])
 def admin():
     from flask import request
+    new_data=MySql(host,database,user)
+    date_query="SELECT closing_date FROM closing_dates_list ORDER BY  set_date ASC LIMIT 1;"
+    date=new_data.fetchOne(date_query)
     #almost done !
     if 'admin_name' in session:
                 closing_date=None
@@ -639,13 +662,18 @@ def admin():
                     print(closing_date)
                     date_list = session.get('date_list', [])  # Get the existing date_list or create an empty list if it doesn't exist in the session.
                     if closing_date:
-                        if closing_date not in date_list:
-                            date_list.append(closing_date)
-                            session['date_list'] = date_list
-                            flash('success', 'Closing date has been set !')
-                            
+                        
+                        date_query="SELECT closing_date FROM closing_dates_list WHERE closing_date =%s;"
+                        date=new_data.fetchOneForeing(date_query,(closing_date,))
+                        if date:
+                            flash('warning','Already Added !')
                         else:
-                            flash('danger', 'Closing date already set !')
+                            query_date="INSERT INTO closing_dates_list (closing_date) VALUES(%s);"
+                            data=(closing_date,)
+                            new_data.table(query_date,data)
+                            flash('success','Closing date has been set ')
+                    else:
+                        flash('warning','Closing date not set yet !')
                             
 
                 user_name=session['admin_name']
@@ -706,9 +734,9 @@ def admin():
                     subject="Medical Authenticatation System"
                     email_query="SELECT email FROM students WHERE user_id=%s;"
                     email=new_data.fetchOneForeing(email_query,(row_id,)).decode('utf-8')
-                    # receiver=email
-                    # message_content="Allmost Done !Your Medical Form Accepted By The Admin and We Let You Know When Authenticate You Medical By the Medical Panel"
-                    # email(receiver,subject,message_content)
+                    receiver=email
+                    message_content="Allmost Done !Your Medical Form Accepted By The Admin and We Let You Know When Authenticate You Medical By the Medical Panel"
+                    email(receiver,subject,message_content)
 
                 def rejectMail(row_id,message):
                     subject="Medical Authenticatation System"
@@ -738,14 +766,44 @@ def admin():
                         injectAction(row_id,-1,update_query)
                         rejectMail(row_id,message)
                         return redirect('admin')
-                    
+                    #accoun
+                    elif action=='accAccept':
+                        injectAction(row_id,1,update_query)
+                        acceptMail(row_id)
+                        return redirect('admin')
+                    elif action=='accReject':
+                        injectAction(row_id,-1,update_query)
+                        rejectMail(row_id,message)
+                        return redirect('admin')
+                    #manage
 
+                    elif action=='manaAccept':
+                        injectAction(row_id,1,update_query)
+                        acceptMail(row_id)
+                        return redirect('admin')
+                    elif action=='manaReject':
+                        injectAction(row_id,-1,update_query)
+                        rejectMail(row_id,message)
+                        return redirect('admin')
+                    #thm
 
+                    elif action=='thmAccept':
+                        injectAction(row_id,1,update_query)
+                        acceptMail(row_id)
+                        return redirect('admin')
+                    elif action=='thmReject':
+                        injectAction(row_id,-1,update_query)
+                        rejectMail(row_id,message)
+                        return redirect('admin')
 
-
-
-
-                
+                    elif action=='engAccept':
+                        injectAction(row_id,1,update_query)
+                        acceptMail(row_id)
+                        return redirect('admin')
+                    elif action=='engReject':
+                        injectAction(row_id,-1,update_query)
+                        rejectMail(row_id,message)
+                        return redirect('admin')
 
 
     return render_template('interfaces/admin/admin.html',form=new_admin,
@@ -757,13 +815,11 @@ def admin():
                             thm_count=thm,
                             english_count=eng,
                             result_it=cleaned_values_it,
-                            # result_thm=cleaned_values_thm,
-                            # result_en=cleaned_values_eng,
-                            # result_manage=cleaned_values_mng,
-                            # result_account=cleaned_values_acc,
-                            # closing_date=closing_date
-
-
+                            result_thm=cleaned_values_thm,
+                            result_en=cleaned_values_eng,
+                            result_manage=cleaned_values_mng,
+                            result_account=cleaned_values_acc,
+                            closing_date=date
                            )
 
 
@@ -856,7 +912,28 @@ def exams():
             
         
     if request.method == 'GET':
+            import datetime
             row_id = request.args.get('row_id')
+            subject=request.args.get('subject')
+            code=request.args.get('code')
+            location=request.args.get('location')
+            date=request.args.get('date')
+
+            subject_pattern = f'%{subject}%'
+            code_pattern = f'%{code}%'
+            location_pattern = f'%{location}%'
+            date_pattern = f'%{date}%'
+            
+            
+
+            search_query="SELECT sub.subject_name,sub.subject_code ,ex.location,ex.held_date FROM exams AS ex INNER JOIN subjects AS sub ON ex.subject_id=sub.subject_id WHERE sub.subject_name LIKE %s OR sub.subject_code LIKE %s OR ex.location LIKE %s OR ex.held_date LIKE %s;"
+            data_set=(subject_pattern,code_pattern,location_pattern,date_pattern)
+            result_set=new_data.fetchAllMulForeing(search_query,data_set)
+            print(result_set)
+    
+
+            
+
             session['subject_code'] = row_id
             if 'subject_code' in session:
                 subject_code=session['subject_code']
@@ -873,7 +950,12 @@ def exams():
 
 
 
-    return render_template('interfaces/superAdmin/exams.html', form=form,form_data=cleaned_values,department=dep,user_name=name)
+    return render_template('interfaces/superAdmin/exams.html', form=form,
+                           form_data=cleaned_values,
+                           department=dep,
+                           user_name=name,
+                           result_set=result_set
+                           )
 
 from allForms import AddNewSubjects
 @app.route('/addSubjects', methods=['POST', 'GET'])
@@ -993,14 +1075,13 @@ from fpdf import FPDF
 from allForms import ReportDepartments    
 from flask import request, redirect, render_template
 
-@app.route('/adminReports', methods=["POST", "GET"])
-def adminReports():
-    # Assuming you have imported the necessary modules and set up your MySQL connection earlier in your code.
-    # Create an instance of the ReportDepartments form
+
+
+@app.route('/adminReportsForm', methods=["POST", "GET"])
+def adminReportsForm():
+    form=ReportDepartments()
     new_data = MySql(host, database, user)
-    form = ReportDepartments()
-    # Fetch department data for populating form choices
-    dep_query = "SELECT dep.calling_name FROM super_admins AS sa INNER JOIN departments AS dep ON sa.dep_id=dep.id;"
+    dep_query = "SELECT DISTINCT(dep.calling_name) FROM medical_infor AS mi INNER JOIN subjects AS sub ON mi.subject_id=sub.subject_id INNER JOIN departments AS dep ON sub.department_id=dep.id;"
     departments = new_data.fetchMultiVal(dep_query)
     # Convert byte arrays to strings
     departments = [(item[0].decode('utf-8'), item[0].decode('utf-8')) for item in departments]
@@ -1021,9 +1102,16 @@ def adminReports():
     form.semesters.choices = [(value, value) for value in cleaned_list_sems]
     form.years.choices = [(value, value) for value in cleaned_list_yrs]
     form.departments.choices = departments
-    #get student types
-    
 
+
+
+    return render_template('interfaces/admin/admin_report_form.html',form=form)
+
+@app.route('/adminReports', methods=["POST", "GET"])
+def adminReports():
+    new_data = MySql(host, database, user)
+    form = ReportDepartments()
+    
     # Set default values for variables
     year = None
     department = None
@@ -1032,58 +1120,60 @@ def adminReports():
     admin_count = None
     confirmed = None
     unconfirmed = None
-    dep_year=None
+    dep_year = None
     dep_semester = None
-    affected=None
-    glance_view_data = []
     cleaned_data = []
     cleaned_data_rejected = []
     cleaned_data_accepted = []
     cleaned_data_aff = []
+    glance_view_data = []
+    affected_data = []
 
-    if request.method == "POST" and form.validate_on_submit():
+    # Check if the form is submitted via POST and is valid
         # Get form data
-        date = form.date.data.strftime('%Y-%m-%d')  # Convert date to string in 'YYYY-MM-DD' format
-        department = form.departments.data
-        dep_year = form.years.data
-        dep_semester = form.semesters.data
+    date = form.date.data.strftime('%Y-%m-%d')
+    department = form.departments.data
+    dep_year = form.years.data
+    dep_semester = form.semesters.data
+    std_type = form.student_type.data
+
         # Split the date
-        date_parts = date.split('-')
-        year = date_parts[0]
-        month = date_parts[1]
-        day = date_parts[2]
-        search_pattern = f'{year}%'
-        query_student_count = "SELECT COUNT(*) FROM students;"
-        reg_count = new_data.fetchOne(query_student_count)
+    date_parts = date.split('-')
+    year = date_parts[0]
+    search_pattern = f'{year}%'
 
-        query_medicals = "SELECT COUNT(*) FROM medical_infor WHERE exam_date LIKE %s"
-        med_count = new_data.fetchOneForeing(query_medicals, (search_pattern,))
+        # Fetch data counts
+    query_student_count = "SELECT COUNT(*) FROM students;"
+    reg_count = new_data.fetchOne(query_student_count)
 
-        query_admins = "SELECT COUNT(*) FROM super_admins;"
-        admin_count = new_data.fetchOne(query_admins)
+    query_medicals = "SELECT COUNT(*) FROM medical_infor WHERE exam_date LIKE %s"
+    med_count = new_data.fetchOneForeing(query_medicals, (search_pattern,))
 
-        query_is_confirmed = "SELECT COUNT(*) FROM medical_infor WHERE is_confirm=1 AND exam_date LIKE %s;"
-        confirmed = new_data.fetchOneForeing(query_is_confirmed, (search_pattern,))
+    query_admins = "SELECT COUNT(*) FROM super_admins;"
+    admin_count = new_data.fetchOne(query_admins)
 
-        # UNCONFIRMED MEDICALS
-        query_unconfirmed = "SELECT COUNT(*) FROM medical_infor WHERE is_confirm=-1 AND exam_date LIKE %s;"
-        unconfirmed = new_data.fetchOneForeing(query_unconfirmed, (search_pattern,))
+    query_is_confirmed = "SELECT COUNT(*) FROM medical_infor WHERE is_confirm=1 AND exam_date LIKE %s;"
+    confirmed = new_data.fetchOneForeing(query_is_confirmed, (search_pattern,))
 
-        query_main = "SELECT stu.index_number, stu.first_name, stu.last_name, mi.exam_date, mi.exam_location, sub.subject_name, sub.year, sub.semester FROM medical_infor AS mi INNER JOIN students AS stu ON mi.user_id=stu.user_id INNER JOIN subjects AS sub ON mi.subject_id=sub.subject_id INNER JOIN departments AS dep ON sub.department_id=dep.id WHERE mi.exam_date LIKE %s AND dep.calling_name=%s;"
-        data = (search_pattern, department)
-        data_main = new_data.fetchAllMulForeing(query_main, data)
-        glance_view_data = [
-            tuple(item.decode('utf-8') if isinstance(item, bytearray) else item if not isinstance(item, datetime.date) else item for item in row)
-            for row in data_main]
+    # UNCONFIRMED MEDICALS
+    query_unconfirmed = "SELECT COUNT(*) FROM medical_infor WHERE is_confirm=-1 AND exam_date LIKE %s;"
+    unconfirmed = new_data.fetchOneForeing(query_unconfirmed, (search_pattern,))
+    from datetime import datetime,date
+        # Fetch main data
+    query_main = "SELECT stu.index_number, stu.first_name, stu.last_name, mi.exam_date, mi.exam_location, sub.subject_name, sub.year, sub.semester FROM medical_infor AS mi INNER JOIN students AS stu ON mi.user_id=stu.user_id INNER JOIN subjects AS sub ON mi.subject_id=sub.subject_id INNER JOIN departments AS dep ON sub.department_id=dep.id INNER JOIN student_type as stt ON stu.student_type_id=stt.id WHERE mi.exam_date LIKE %s AND dep.calling_name=%s AND stt.type=%s;"
+    data = (search_pattern, department, std_type)
+    data_main = new_data.fetchAllMulForeing(query_main, data)
+    cleaned_data = [
+    tuple(item.decode('utf-8') if isinstance(item, bytearray) else item for item in row)
+    for row in data_main]
 
         # CATEGORIZED
-        categorized_query = "SELECT stu.index_number, stu.first_name, stu.last_name, sub.subject_name, mi.exam_date, mi.is_confirm, mi.is_authenticate FROM medical_infor AS mi INNER JOIN students AS stu ON mi.user_id=stu.user_id INNER JOIN subjects AS sub ON mi.subject_id=sub.subject_id INNER JOIN departments AS dep ON sub.department_id=sub.department_id WHERE dep.calling_name=%s AND sub.year=%s AND sub.semester=%s AND mi.exam_date LIKE %s;"
-        cat_data = (department, dep_year, dep_semester, search_pattern)
-        categorized_data = new_data.fetchAllMulForeing(categorized_query, cat_data)
+    categorized_query = "SELECT stu.index_number, stu.first_name, stu.last_name, sub.subject_name, mi.exam_date, mi.is_confirm, mi.is_authenticate FROM medical_infor AS mi INNER JOIN students AS stu ON mi.user_id=stu.user_id INNER JOIN subjects AS sub ON mi.subject_id=sub.subject_id INNER JOIN departments AS dep ON sub.department_id=sub.department_id INNER JOIN student_type as stt ON stu.student_type_id=stt.id  WHERE dep.calling_name=%s AND sub.year=%s AND sub.semester=%s AND mi.exam_date LIKE %s AND stt.type=%s ;"
+    cat_data = (department, dep_year, dep_semester, search_pattern, std_type)
+    categorized_data = new_data.fetchAllMulForeing(categorized_query, cat_data)
 
-        cleaned_data = []
-        for item in categorized_data:
-            cleaned_item = (
+    cleaned_data = [
+        (
                 item[0].decode('utf-8'),  # Convert bytearray to string
                 item[1].decode('utf-8'),
                 item[2].decode('utf-8'),
@@ -1091,34 +1181,25 @@ def adminReports():
                 item[4].strftime('%Y-%m-%d'),  # Format date as string
                 item[5],
                 item[6]
-            )
-            cleaned_data.append(cleaned_item)
+        )
+        for item in categorized_data
+        ]
 
         # REJECTED
-        rejected_query = "SELECT stu.index_number, stu.first_name, stu.last_name FROM medical_infor AS mi INNER JOIN students AS stu ON mi.user_id=stu.user_id INNER JOIN subjects AS sub ON mi.subject_id=sub.subject_id INNER JOIN departments AS dep ON sub.department_id=dep.id WHERE dep.calling_name=%s AND sub.year=%s AND sub.semester=%s AND mi.exam_date LIKE %s AND mi.is_confirm=-1;"
-        reject_data = new_data.fetchAllMulForeing(rejected_query, cat_data)
-        cleaned_data_rejected = []
-        for item in reject_data:
-            cleaned_item = tuple(b.decode('utf-8') for b in item)  # Convert bytearrays to strings
-            cleaned_data_rejected.append(cleaned_item)
+    rejected_query = "SELECT stu.index_number, stu.first_name, stu.last_name FROM medical_infor AS mi INNER JOIN students AS stu ON mi.user_id=stu.user_id INNER JOIN subjects AS sub ON mi.subject_id=sub.subject_id INNER JOIN departments AS dep ON sub.department_id=dep.id INNER JOIN student_type as stt ON stu.student_type_id=stt.id  WHERE dep.calling_name=%s AND sub.year=%s AND sub.semester=%s AND mi.exam_date LIKE %s AND mi.is_confirm=-1 AND stt.type=%s;"
+    reject_data = new_data.fetchAllMulForeing(rejected_query, cat_data)
+    cleaned_data_rejected = [tuple(b.decode('utf-8') for b in item) for item in reject_data]
 
-        accept_query = "SELECT stu.index_number, stu.first_name, stu.last_name FROM medical_infor AS mi INNER JOIN students AS stu ON mi.user_id=stu.user_id INNER JOIN subjects AS sub ON mi.subject_id=sub.subject_id INNER JOIN departments AS dep ON sub.department_id=dep.id WHERE dep.calling_name=%s AND sub.year=%s AND sub.semester=%s AND mi.exam_date LIKE %s AND mi.is_confirm= 1;"
-        accept_data = new_data.fetchAllMulForeing(accept_query, cat_data)
-        cleaned_data_accepted = []
-        for item in accept_data:
-            cleaned_item = tuple(b.decode('utf-8') for b in item)  # Convert bytearrays to strings
-            cleaned_data_accepted.append(cleaned_item)
-        
+    accept_query = "SELECT stu.index_number, stu.first_name, stu.last_name FROM medical_infor AS mi INNER JOIN students AS stu ON mi.user_id=stu.user_id INNER JOIN subjects AS sub ON mi.subject_id=sub.subject_id INNER JOIN departments AS dep ON sub.department_id=dep.id INNER JOIN student_type as stt ON stu.student_type_id=stt.id WHERE dep.calling_name=%s AND sub.year=%s AND sub.semester=%s AND mi.exam_date LIKE %s AND mi.is_confirm= 1 AND stt.type=%s;"
+    accept_data = new_data.fetchAllMulForeing(accept_query, cat_data)
+    cleaned_data_accepted = [tuple(b.decode('utf-8') for b in item) for item in accept_data]
 
-        #affected subjects
-        most_affected_query="SELECT sub.subject_name,COUNT(*) AS count FROM medical_infor AS mi INNER JOIN subjects AS sub ON mi.subject_id=sub.subject_id INNER JOIN departments AS dep ON sub.department_id=dep.id WHERE dep.calling_name=%s AND sub.year=%s AND sub.semester=%s AND mi.exam_date LIKE %s GROUP BY mi.subject_id ORDER BY count DESC;"
-        affected_data=new_data.fetchAllMulForeing(most_affected_query,cat_data)
-        cleaned_data_aff = [(str(entry[0], 'utf-8').strip(), entry[1]) for entry in affected_data]
-        
-        action=request.args.get('action')
-        print("Action",action)
-        if action:
-            rendered = render_template('interfaces/admin/sample_report.html', form=form, year=year, department=department,
+        # Affected subjects
+    most_affected_query = "SELECT sub.subject_name,COUNT(*) AS count FROM medical_infor AS mi INNER JOIN subjects AS sub ON mi.subject_id=sub.subject_id INNER JOIN departments AS dep ON sub.department_id=dep.id INNER JOIN students AS stu ON mi.user_id=stu.user_id INNER JOIN student_type AS stt ON stu.student_type_id=stt.id  WHERE dep.calling_name=%s AND sub.year=%s AND sub.semester=%s AND mi.exam_date LIKE %s  AND stt.type=%s GROUP BY mi.subject_id ORDER BY count DESC;"
+    affected_data = new_data.fetchAllMulForeing(most_affected_query, cat_data)
+    cleaned_data_aff = [(entry[0].decode('utf-8'), entry[1]) for entry in affected_data]
+     
+    rendered = render_template('interfaces/admin/sample_report.html', form=form, year=year, department=department,
                            reg_count=reg_count,
                            med_count=med_count,
                            admin_count=admin_count,
@@ -1132,11 +1213,11 @@ def adminReports():
                            semesters=dep_semester,
                            affected=cleaned_data_aff
                            )
-            pdf = pdfkit.from_string(rendered, False)
-            response = make_response(pdf)
-            response.headers['Content-Type'] = 'application/pdf'
-            response.headers['Content-Disposition'] = 'inline; filename=output.pdf'
-            return response
+    pdf = pdfkit.from_string(rendered, False)
+    response = make_response(pdf)
+    response.headers['Content-Type'] = 'application/pdf'
+    response.headers['Content-Disposition'] = 'inline; filename=output.pdf'
+    return response
 
     return render_template('interfaces/admin/sample_report.html', form=form, year=year, department=department,
                            reg_count=reg_count,
@@ -1154,46 +1235,121 @@ def adminReports():
                            )
 
 
-@app.route('/superAdminReports',methods=['POST','GET'])
-def superAdminReports():
+from allForms import SuperAdminReport
+from datetime import datetime,date
+
+@app.route('/superReport',methods=['POST','GET'])
+def superReport():
+    form=SuperAdminReport()
     new_data=MySql(host,database,user)
-    
     if 'super_name' and 'super_password' in session:
         name=session['super_name']
         password=session['super_password']
         dep_query="SELECT dep.calling_name FROM departments AS dep INNER JOIN super_admins AS sa ON dep.id =sa.dep_id WHERE sa.first_name=%s AND sa.password=%s;"
         data=(name,password)
         dep=new_data.fetchOneForeing(dep_query,data).decode().strip()
-        #number of students
-        query_count="SELECT COUNT(*) FROM students AS st INNER JOIN departments AS dep ON st.department_id=dep.id WHERE dep.calling_name=%s;"
-        dep_data=(dep,)
-        student_count=new_data.fetchOneForeing(query_count,dep_data)
+        query_yrs="SELECT DISTINCT(sub.year) FROM subjects AS sub INNER JOIN departments AS dep ON sub.department_id=dep.id WHERE DEP.calling_name=%s;"
+        data_dep=(dep,)
+        query_semester="SELECT DISTINCT(sub.semester) FROM subjects AS sub INNER JOIN departments AS dep ON sub.department_id=dep.id WHERE DEP.calling_name=%s;"
+        sem=new_data.fetchAllMulForeing(query_semester,data_dep)
+        yrs=new_data.fetchAllMulForeing(query_yrs,data_dep)
+        cleaned_yrs = [item[0] for item in yrs]
+        cleaned_sem = [item[0] for item in sem]
+        form.years.choices=cleaned_yrs
+        form.semesters.choices=cleaned_sem
+
+    return render_template('interfaces/superAdmin/superReport.html',form=form)
+
+
+
+@app.route('/getPostValues',methods=['GET','POST'])
+def getPostValues():
+    form=ReportDepartments()
+    date = form.date.data.strftime('%Y-%m-%d')
+    department = form.departments.data
+    dep_year = form.years.data
+    dep_semester = form.semesters.data
+    std_type = form.student_type.data
+    print("date: ",date)
+    print("department: ",department)
+    print("dep_year: ",dep_year)
+    print("semester: ",dep_semester)
+    print("std type: ",std_type)
+
+    
+    
+    
+    
+
+    return "From method" 
+
+@app.route('/superAdminReports',methods=['POST','GET'])
+def superAdminReports():
+    new_data=MySql(host,database,user)
+    form=SuperAdminReport()
+    from datetime import datetime,date
+
+    student_count=None
+    auth_count=None
+    nonauth_count=None
+    auth_count=None
+    non_auth_count=None
+    dep=None
+    year=None
+    cleaned_data_auth=[]
+    cleaned_data_un_auth=[]        
+    if 'super_name' and 'super_password' in session:
+        name=session['super_name']
+        password=session['super_password']
+        print("name",name)
+
+        exm_year=form.date.data.strftime('%Y-%m-%d')
+        academic_yre=form.years.data
+        semester=form.semesters.data
+        student_type=form.student_type.data
+        date_parts = exm_year.split('-')
+        year = date_parts[0]
+        search_pattern = f'{year}%'
+        print("Student_type: ",student_type)
+        dep_query="SELECT dep.calling_name FROM departments AS dep INNER JOIN super_admins AS sa ON dep.id =sa.dep_id WHERE sa.first_name=%s AND sa.password=%s;"
+        data=(name,password)
+        dep=new_data.fetchOneForeing(dep_query,data).decode().strip()
+        query_count="SELECT COUNT(*) FROM medical_infor AS mi INNER JOIN subjects AS sub ON mi.subject_id=sub.subject_id INNER JOIN students AS stu ON mi.user_id =stu.user_id INNER JOIN student_type AS stt ON stu.student_type_id=stt.id INNER JOIN exams AS ex ON ex.subject_id=sub.subject_id INNER JOIN departments AS dep ON sub.department_id=dep.id  WHERE dep.calling_name=%s  AND sub.year=%s AND sub.semester=%s AND  ex.held_date LIKE %s AND stt.type=%s"
+        data_set=(dep,academic_yre,semester,search_pattern,student_type)
+        student_count=new_data.fetchOneForeing(query_count,data_set)
         #number of authenticators
-        query_auth="SELECT COUNT(*) FROM medical_infor AS mi INNER JOIN students AS s ON mi.user_id=s.user_id INNER JOIN departments AS dep ON dep.id=s.department_id WHERE mi.is_authenticate=1 AND dep.calling_name=%s;"
-        auth_count=new_data.fetchOneForeing(query_auth,dep_data)
-        query_non_auth="SELECT COUNT(*) FROM medical_infor AS mi INNER JOIN students AS s ON mi.user_id=s.user_id INNER JOIN departments AS dep ON dep.id=s.department_id WHERE mi.is_authenticate=-1 AND dep.calling_name=%s;"
-        nonauth_count=new_data.fetchOneForeing(query_non_auth,dep_data)
-        if request.method == 'GET':
-            action=request.args.get('action')
-            if action=='print':
-                pdf=FPDF()
-                pdf.add_page()
-                pdf.set_font('Arial','B')
-                pdf.cell(0, 10, 'Student Information', 0, 1)
-                pdf.cell(50, 10, 'Applied Students', 1)
-                pdf.cell(50, 10, 'Authenticated Students', 1)
-                pdf.cell(50, 10, 'Non Authenticated Students', 1)
-                pdf.output('templates/interfaces/superAdmin/admin_report.pdf','F')
-                pdf.ln()
-                pdf.cell(50, 10, str(student_count), 1)
-                pdf.cell(50, 10, str(auth_count), 1)
-                pdf.cell(50, 10, str(nonauth_count), 1)
-                pdf.output('templates/interfaces/superAdmin/admin_report.pdf', 'F')
-                return redirect(url_for('superAdminReports'))
+        auth_count_query="SELECT COUNT(*) FROM medical_infor AS mi INNER JOIN subjects AS sub ON mi.subject_id=sub.subject_id INNER JOIN students AS stu ON mi.user_id =stu.user_id INNER JOIN student_type AS stt ON stu.student_type_id=stt.id INNER JOIN exams AS ex ON ex.subject_id=sub.subject_id INNER JOIN departments AS dep ON sub.department_id=dep.id  WHERE dep.calling_name=%s  AND sub.year=%s AND sub.semester=%s AND  ex.held_date LIKE %s AND stt.type=%s  AND mi.is_authenticate=1;"
+        auth_count=new_data.fetchOneForeing(auth_count_query,data_set)
+        #Non auth count
+        non_auth_count_query="SELECT COUNT(*) FROM medical_infor AS mi INNER JOIN subjects AS sub ON mi.subject_id=sub.subject_id INNER JOIN students AS stu ON mi.user_id =stu.user_id INNER JOIN student_type AS stt ON stu.student_type_id=stt.id INNER JOIN exams AS ex ON ex.subject_id=sub.subject_id INNER JOIN departments AS dep ON sub.department_id=dep.id  WHERE dep.calling_name=%s  AND sub.year=%s AND sub.semester=%s AND  ex.held_date LIKE %s AND stt.type=%s  AND mi.is_authenticate=-1;"
+        non_auth_count=new_data.fetchOneForeing(non_auth_count_query,data_set)
+        #main queries
+        auth_query="SELECT st.index_number,st.first_name,st.last_name FROM students AS st INNER JOIN medical_infor AS mi ON mi.user_id=st.user_id INNER JOIN subjects AS sub ON mi.subject_id=sub.subject_id INNER JOIN exams AS ex ON sub.subject_id=ex.subject_id INNER JOIN student_type AS stt ON st.student_type_id=stt.id INNER JOIN departments AS dep ON sub.department_id=dep.id WHERE dep.calling_name=%s AND sub.year=%s AND sub.semester=%s AND ex.held_date LIKE %s AND stt.type=%s AND mi.is_authenticate=1;"                            
+        auth_data=new_data.fetchAllMulForeing(auth_query,data_set)
+        un_auth_query="SELECT st.index_number,st.first_name,st.last_name FROM students AS st INNER JOIN medical_infor AS mi ON mi.user_id=st.user_id INNER JOIN subjects AS sub ON mi.subject_id=sub.subject_id INNER JOIN exams AS ex ON sub.subject_id=ex.subject_id INNER JOIN student_type AS stt ON st.student_type_id=stt.id INNER JOIN departments AS dep ON sub.department_id=dep.id WHERE dep.calling_name=%s AND sub.year=%s AND sub.semester=%s AND ex.held_date LIKE %s AND stt.type=%s AND mi.is_authenticate=-1;"                            
+        un_auth_data=new_data.fetchAllMulForeing(un_auth_query,data_set)
+        cleaned_data_auth = [(item[0].decode('utf-8'), item[1].decode('utf-8'), item[2].decode('utf-8')) for item in auth_data]
+        cleaned_data_un_auth = [(item[0].decode('utf-8'), item[1].decode('utf-8'), item[2].decode('utf-8')) for item in un_auth_data]
+            
+            #print
+        rendered =render_template('super_sample_report.html',form=form,student_count=student_count,authenticate=auth_count,non_authenticate=non_auth_count,dep=dep,year=year,auth=cleaned_data_auth,un_auth=cleaned_data_un_auth)
+        pdf = pdfkit.from_string(rendered, False)
+        response = make_response(pdf)
+        response.headers['Content-Type'] = 'application/pdf'
+        response.headers['Content-Disposition'] = 'inline; filename=output.pdf'
+        return response
 
-    return render_template('interfaces/superAdmin/report.html',student_count=student_count,authenticate=auth_count,non_authenticate=nonauth_count)
+    return render_template('super_sample_report.html',
+                           form=form,student_count=student_count,
+                           authenticate=auth_count,
+                           non_authenticate=non_auth_count,
+                           dep=dep,
+                           year=year,
+                           auth=cleaned_data_auth,
+                           un_auth=cleaned_data_un_auth
 
 
+                            )
 if __name__=="__main__":
     app.run(debug=True)
 

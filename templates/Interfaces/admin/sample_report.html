@@ -104,23 +104,7 @@
      </div>
     </div>
     <fieldset >
-            <legend>Genaral Information For:{{year}} </legend>
-
-                <form action="/adminReports" method="post">
-                    <div class="form_frame">
-                    {{form.hidden_tag()}}
-                    <span class="span-form">Year of Examination:</span>{{ form.date(class="date", placeholder="YYYY", maxlength=4, min=2020, max=2099) }}
-
-                    {{form.departments(class="dep")}}
-                    <span class="span-form">Academic Year:</span>:{{form.years(class="yrs")}}
-                    <span class="span-form">Semester:</span>{{form.semesters(class="sem")}}
-                    <span class="span-form">(FT / PT):</span>{{form.student_type()}}
-                    {{form.update(class="btn btn-primary btn-sm")}}
-                    </div>
-                </form>
-
-            
-            
+            <legend>Genaral Information For:{{year}} </legend>            
         <div class="card w-75" >
             <div class="card-header fs-5 fw-bolder">
                 Registrations

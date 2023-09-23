@@ -136,3 +136,10 @@ class ReportDepartments(FlaskForm):
     semesters=SelectField("Semester: ",validators=[DataRequired()])
     student_type=SelectField("Type: ",choices=['FULL TIME','PART TIME'],validators=[DataRequired()])
 
+class SuperAdminReport(FlaskForm):
+    date=DateField("Date: ",validators=[DataRequired()])
+    update=SubmitField("Update")
+    years=SelectField("Year: ",validators=[DataRequired()])
+    semesters=SelectField("Semester: ",validators=[DataRequired()])
+    student_type=SelectField("Type: ",choices=['FULL TIME','PART TIME'],validators=[DataRequired()])
+
