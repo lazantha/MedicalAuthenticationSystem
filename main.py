@@ -504,7 +504,7 @@ def user_home():
         cleaned_data = [(item[0].decode(), item[1], item[2], item[3]) for item in result]
         from datetime import datetime, timedelta,date
         current_datetime = datetime.today()
-        query_date="SELECT closing_date FROM closing_dates_list ORDER BY  set_date ASC LIMIT 1;"
+        query_date="SELECT closing_date FROM closing_dates_list ORDER BY  set_date DESC LIMIT 1;"
         closing_date=new_sql.fetchOne(query_date)
         print("Date: ",closing_date)
         closing_date = date.fromisoformat(str(closing_date))
@@ -651,7 +651,7 @@ from datetime import date
 def admin():
     from flask import request
     new_data=MySql(host,database,user)
-    date_query="SELECT closing_date FROM closing_dates_list ORDER BY  set_date ASC LIMIT 1;"
+    date_query="SELECT closing_date FROM closing_dates_list ORDER BY  set_date DESC LIMIT 1;"
     date=new_data.fetchOne(date_query)
     #almost done !
     if 'admin_name' in session:
@@ -659,19 +659,28 @@ def admin():
                 if request.method=='GET' and 'date' in request.args:
 
                     closing_date=request.args.get('date')
-                    print(closing_date)
-                    date_list = session.get('date_list', [])  # Get the existing date_list or create an empty list if it doesn't exist in the session.
                     if closing_date:
-                        
-                        date_query="SELECT closing_date FROM closing_dates_list WHERE closing_date =%s;"
-                        date=new_data.fetchOneForeing(date_query,(closing_date,))
-                        if date:
-                            flash('warning','Already Added !')
-                        else:
+                        date_pattern = f'%{closing_date}%'
+                        date_query="SELECT closing_date FROM closing_dates_list WHERE closing_date LIKE %s;"
+                        date=new_data.fetchOneForeing(date_query,(date_pattern,))
+                        print("date",date)
+
+                        if date =='No value':
+                            print("can insert here !")
                             query_date="INSERT INTO closing_dates_list (closing_date) VALUES(%s);"
                             data=(closing_date,)
                             new_data.table(query_date,data)
                             flash('success','Closing date has been set ')
+                            return redirect('admin')
+                        
+                        else:
+                            print("cant insert here !")
+                            flash('warning','Already Added !')
+                            return redirect('admin')
+
+                            
+                        print("Out of the both condition")                            
+
                     else:
                         flash('warning','Closing date not set yet !')
                             
@@ -929,11 +938,16 @@ def exams():
             search_query="SELECT sub.subject_name,sub.subject_code ,ex.location,ex.held_date FROM exams AS ex INNER JOIN subjects AS sub ON ex.subject_id=sub.subject_id WHERE sub.subject_name LIKE %s OR sub.subject_code LIKE %s OR ex.location LIKE %s OR ex.held_date LIKE %s;"
             data_set=(subject_pattern,code_pattern,location_pattern,date_pattern)
             result_set=new_data.fetchAllMulForeing(search_query,data_set)
-            print(result_set)
-    
-
-            
-
+            # print(result_set)
+            search_list=[]
+            if result_set and isinstance(result_set[0], tuple):
+                search = [
+                    item.decode('utf-8') if isinstance(item, bytearray) else item.strftime('%Y-%m-%d') if isinstance(item, datetime.date) else item
+                    for item in result_set[0]
+                ]
+                search_list.append(search)
+                
+                    
             session['subject_code'] = row_id
             if 'subject_code' in session:
                 subject_code=session['subject_code']
@@ -954,7 +968,7 @@ def exams():
                            form_data=cleaned_values,
                            department=dep,
                            user_name=name,
-                           result_set=result_set
+                           result_set=search_list
                            )
 
 from allForms import AddNewSubjects
