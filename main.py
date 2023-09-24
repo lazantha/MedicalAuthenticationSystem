@@ -194,16 +194,28 @@ import datetime
 # Rest of the code
 def metaData(path):
     img = Image.open(path)
-    exif = {
+    try:
+        exif = {
         TAGS[k]: v
-        for k, v in img._getexif().items()
-        if k in TAGS
-    }
 
-    date_time_str = exif['DateTime']
-    date_time_obj = datetime.datetime.strptime(date_time_str, '%Y:%m:%d %H:%M:%S')
-    date_value = date_time_obj.date()
-    return date_value
+        for k, v in img._getexif().items()
+        if k in TAGS}
+
+        if 'Flash'  in exif and 'Model' in exif:
+            date_time_str = exif['DateTime']
+            date_time_obj = datetime.strptime(date_time_str, '%Y:%m:%d %H:%M:%S')
+            date_value = date_time_obj.date()
+            return date_value
+
+        else:
+            return 0      
+        #"Not exist"
+
+    except Exception as e:
+        return -1
+    #("Refuced it not captured one")
+
+
 
 
 
@@ -260,64 +272,74 @@ def superAdmin():
                 action = request.args.get('action')
                 if action=='itAuth':
                     row_id = request.args.get('row_id')
-                    print(row_id)
                 #find a method for authenticate
                 #get date of exam in medical information
                 
                     data=(row_id,)
                     query_med="SELECT medical_sheet FROM medical_infor WHERE user_id=%s ORDER BY recorded_time DESC LIMIT 1;"
-                    query_date="SELECT issued_date FROM medical_infor WHERE user_id=%s LIMIT 1;"
+                    query_date="SELECT issued_date FROM medical_infor WHERE user_id=%s AND is_confirm=1 ORDER BY recorded_time DESC LIMIT 1;"
                     med_sheet=new_data.fetchOneForeing(query_med,data).decode('utf-8')
 
                     #get medical issued date
                     issued_date=new_data.fetchOneForeing(query_date,data)
                     path=f'static/images/{med_sheet}'
                     #get captured date
-                    # meta_date=metaData(path)
-                    #get exam held 
-                    exm_held_query="SELECT ex.held_date FROM exams AS ex INNER JOIN subjects  AS sub ON ex.subject_id=sub.subject_id INNER JOIN medical_infor AS mi WHERE mi.user_id=%s LIMIT 1;"
-                    held_date=new_data.fetchOneForeing(exm_held_query,data)
-                    #get affected date(medical From date)
-                    aff_query="SELECT from_date FROM medical_infor WHERE user_id=%s LIMIT 1"
-                    aff_date=new_data.fetchOneForeing(aff_query,data)
-                    query_date="SELECT closing_date FROM closing_dates_list WHERE id=1;"
-                    closing_date=new_data.fetchOne(query_date)
-                    
-                    #if medical_issued date==capured_date:
-                    if issued_date<closing_date:
-                        print("Issued date fine")
-                        if aff_date<=held_date:
-                            print("Affected date fine")
-                            print("Authenticated: ")
-                            update_query = "UPDATE medical_infor SET is_authenticate = 1 WHERE user_id = %s LIMIT 1"
-                            new_data.update(update_query,row_id)
-                            # authtMail(row_id)
-                            flash('success','Medical Authenticated !')
-                            return redirect('superAdmin')
-
-
-
-                        else:
-                            rejectMail(row_id)
-                            print("Affected date not fine")
-                            update_query = "UPDATE medical_infor SET is_authenticate = -1 WHERE user_id = %s LIMIT 1"
-                            new_data.update(update_query,data)
-                            flash('warning','Medical Rejected !')
-                            return redirect('superAdmin')
-
-                        
-                    else:
-                        rejectMail(row_id)
-                        print("Issued data not fine: ")
-                        update_query = "UPDATE medical_infor SET is_authenticate = -1 WHERE user_id = %s LIMI 1"
-                        print(data)
+                    meta_date=metaData(path)
+                    if meta_date==0:    
+                        update_query = "UPDATE medical_infor SET is_authenticate = -1 WHERE user_id = %s LIMIT 1"
                         new_data.update(update_query,data)
-                        flash('warning','Medical Rejected !')
+                        #rejectMail(row_id)
+                        flash('error','Rejected ! Error In Image ')
                         return redirect('superAdmin')
+                                    
+                    elif meta_date==-1:
+                        update_query = "UPDATE medical_infor SET is_authenticate = -1 WHERE user_id = %s LIMIT 1"
+                        new_data.update(update_query,data)
+                        #rejectMail(row_id)
+                        flash('error','Rejected ! Not Caputured Image')
+                        return redirect('superAdmin')
+                    else:
+                        print(meta_date)
+                        if meta_date==issued_date:
 
-                
+                            #-get exam held 
+                            exm_held_query="SELECT ex.held_date FROM exams AS ex INNER JOIN subjects  AS sub ON ex.subject_id=sub.subject_id INNER JOIN medical_infor AS mi WHERE mi.user_id=%s LIMIT 1;"
+                            held_date=new_data.fetchOneForeing(exm_held_query,data)
+                            #-get affected date(medical From date)
+                            aff_query="SELECT from_date FROM medical_infor WHERE user_id=%s LIMIT 1"
+                            aff_date=new_data.fetchOneForeing(aff_query,data)
+                            query_date="SELECT closing_date FROM closing_dates_list WHERE id=1;"
+                            closing_date=new_data.fetchOne(query_date)
 
+                            if issued_date<closing_date:
+                                print("Issued date fine")
+                                if aff_date<=held_date:
 
+                                    print("Affected date fine")
+                                    print("Authenticated: ")
+                                    update_query = "UPDATE medical_infor SET is_authenticate = 1 WHERE user_id = %s LIMIT 1"
+                                    new_data.update(update_query,row_id)
+                                    #-authtMail(row_id)
+                                    flash('success','Medical Authenticated !')
+                                    return redirect('superAdmin')
+                                else:
+
+                                    #rejectMail(row_id)
+                                    print("Affected date not fine")
+                                    update_query = "UPDATE medical_infor SET is_authenticate = -1 WHERE user_id = %s LIMIT 1"
+                                    new_data.update(update_query,data)
+                                    flash('warning','Medical Rejected !')
+                                    return redirect('superAdmin')
+                                
+                            else:
+
+                                #rejectMail(row_id)
+                                print("Issued data not fine: ")
+                                update_query = "UPDATE medical_infor SET is_authenticate = -1 WHERE user_id = %s LIMI 1"
+                                print(data)
+                                new_data.update(update_query,data)
+                                flash('warning','Medical Rejected !')
+                                return redirect('superAdmin')
             
 
     return render_template('interfaces/superAdmin/super_admin.html', form=form,department=dep,name=name,
@@ -744,8 +766,9 @@ def admin():
                     email_query="SELECT email FROM students WHERE user_id=%s;"
                     email=new_data.fetchOneForeing(email_query,(row_id,)).decode('utf-8')
                     receiver=email
+                    print("email",receiver)
                     message_content="Allmost Done !Your Medical Form Accepted By The Admin and We Let You Know When Authenticate You Medical By the Medical Panel"
-                    email(receiver,subject,message_content)
+                    # email(receiver,subject,message_content)
 
                 def rejectMail(row_id,message):
                     subject="Medical Authenticatation System"

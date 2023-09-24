@@ -38,7 +38,7 @@ class UserForm(FlaskForm):
     med_type=RadioField("Medical By",validators=[DataRequired()])
     med_image = FileField("Upload picture of Medical Sheet", validators=[
         DataRequired(message="Please upload a file."),
-        FileAllowed(['jpg', 'jpeg'], 'Only JPEG images are allowed.')
+        FileAllowed(['jpg'], 'Only jpg images are allowed.')
     ])
     year=SelectField("Year",validators=[DataRequired()])
     semester=SelectField("Semester",validators=[DataRequired()])
