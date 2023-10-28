@@ -15,13 +15,13 @@ import uuid
 import os
 import time
 host='localhost'
-database='test_medical_db'
+database='medical_database'
 user='root'
 
 app=Flask(__name__)
 
 app.config['SECRET_KEY']="kEY"
-pdfkit_config = pdfkit.configuration(wkhtmltopdf='C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe')
+pdfkit_config = pdfkit.configuration(wkhtmltopdf='/usr/bin/wkhtmltopdf')
 app.config['PDFKIT_CONFIG'] = pdfkit_config
 UPLOAD_FOLDER = 'static/images'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -72,20 +72,28 @@ def passwordCheck(hashed_password,table):
     if table=="admins":
         pass_query="SELECT password FROM admins WHERE password=%s;"
         data=(hashed_password,)
+        # print("hashed_password",hashed_password)
+
         result=new_data.fetchOneForeing(pass_query,data)
-        if result:
-            return 1
-        else:
+        # print("result",result)
+
+        if result=='No value':
             return 0
+        else:
+            return 1
+        
     else:
 
         pass_query="SELECT password FROM super_admins WHERE password=%s;"
         data=(hashed_password,)
+        print("data in super admin ",data)
         result=new_data.fetchOneForeing(pass_query,data)
-        if result:
-            return 1
-        else:
+        print("result in super admin ",result)
+        if result=='No value':
             return 0
+        else:
+            return 1
+        
 
 
 #home page
@@ -99,20 +107,24 @@ def index():
 
 @app.route('/adminlog',methods=['GET','POST'])
 def adminlog():
+    
     form=AdminLog()
     new_data=MySql(host,database,user)
     query="SELECT dep.calling_name FROM departments AS dep INNER JOIN super_admins AS sa ON dep.id=sa.dep_id;"
     department_list=new_data.fetchMultiVal(query)
-    cleaned_data = [value[0].decode() for value in department_list]
-    form.department.choices=cleaned_data
+    cleaned_values = [x[0] for x in department_list]
+    
+    form.department.choices=cleaned_values
+    print("above the validate")
     if form.validate_on_submit():
+        print("Below the validate")
         name=form.user_name.data
         password=form.password.data
         possition=form.possition.data
         department=form.department.data
         hashed_password=setHash(password)
+        print("possition",possition)
         if possition=='HOD':
-            
             query="SELECT sa.first_name,sa.password,dep.calling_name FROM super_admins AS sa INNER JOIN departments AS dep ON sa.dep_id=dep.id WHERE sa.first_name=%s AND sa.password=%s AND dep.calling_name=%s;"
             data=(name,hashed_password,department)
             exist_data=new_data.fetchAllMulForeing(query,data)
@@ -147,13 +159,15 @@ def adminlog():
                 return redirect('adminlog')
         
         else:
-            
+            print("Office")
             #admin
             query="SELECT first_name,password FROM admins WHERE first_name=%s AND password=%s;"
+            print("upper")
             data=(name,hashed_password) 
+            print("data",data)
             exist_data=new_data.fetchAllMulForeing(query,data)
             print("Exist data")
-            print(exist_data)
+            print("exist_data ",exist_data)
             if exist_data:
                 session['admin_name']=name
                 session['admin_password']=hashed_password
@@ -164,10 +178,12 @@ def adminlog():
             else:
                 flash("danger","Login failed. Please check your username and password and try again.")
                 return redirect(url_for('adminlog'))
-        
+    else:
+        print(form.errors) 
 
 
-    return render_template('login/admin.html',form=form)
+    return render_template('logIn/admin.html',form=form)
+
 
 
 #super admins panel
@@ -250,8 +266,10 @@ def superAdmin():
 
         query="SELECT dep.calling_name FROM departments AS dep INNER JOIN super_admins AS sa ON dep.id=sa.dep_id WHERE sa.first_name=%s AND sa.password=%s"
         data=(name,password)
-        dep=new_data.fetchOneForeing(query,data).decode().strip()
+        dep=new_data.fetchOneForeing(query,data)
+        print(dep)
         result=new_data.getMainSuper(dep)
+        
         print(result)
         import datetime
         cleaned_data = []
@@ -356,8 +374,8 @@ def adminSign():
     new_data=MySql(host,database,user)
     query="SELECT calling_name FROM departments;"
     department_list=new_data.fetchMultiVal(query)
-    cleaned_data = [value[0].decode() for value in department_list]
-    form.department.choices=cleaned_data
+    cleaned_values = [x[0] for x in department_list]
+    form.department.choices=cleaned_values
     
     if form.validate_on_submit():
         first_name=form.first_name.data
@@ -368,11 +386,13 @@ def adminSign():
         possition=form.possition.data
         department=form.department.data
         hashed_password=setHash(password)
+        print("hashed_password below",hashed_password)
            
         if possition=="OFFICE":
             #password Checking
-            if passwordCheck(hashed_password,"admins")==1:
-                # print(passwordCheck(hashed_password))
+            if passwordCheck(hashed_password,'admins')==1:
+                print(passwordCheck(hashed_password,'admins'))
+                
                 flash("danger","Password Already Exist ! Try Different One ")
                 return redirect(url_for('adminSign'))
             else:
@@ -385,7 +405,8 @@ def adminSign():
                 return redirect(url_for('adminlog'))
         else:
             if passwordCheck(hashed_password,"super_admins")==1:
-                # print(passwordCheck(hashed_password))
+                print(passwordCheck(hashed_password,"super_admins"))
+
                 flash("danger","Password Already Exist ! Try Different One")
                 return redirect(url_for('adminSign'))
             else:
@@ -438,7 +459,7 @@ def userlog():
             # return redirect(url_for('userlog'))
         
             # flash('Please recheck user name and password','warning')
-    return render_template('login/user.html',form=new_user)
+    return render_template('logIn/user.html',form=new_user)
 
 #user Sign
 @app.route('/userSign',methods=['GET','POST'])
@@ -448,12 +469,15 @@ def userSign():
     #department query
     query="SELECT calling_name FROM departments;"
     department_list=new_sql.fetchMultiVal(query)
-    cleaned_data = [value[0].decode() for value in department_list]
-    new_sign.department.choices=cleaned_data
+    cleaned_values = [x[0] for x in department_list]
+    # cleaned_data = [value[0].decode() for value in department_list]
+
+    new_sign.department.choices=cleaned_values
     query="SELECT type FROM student_type;"
     student_type=new_sql.fetchMultiVal(query)
-    cleaned_data = [value[0].decode() for value in student_type]
-    new_sign.mode.choices=cleaned_data
+    # cleaned_data = [value[0].decode() for value in student_type]
+    cleaned_values_types = [x[0] for x in student_type]
+    new_sign.mode.choices=cleaned_values_types
 
     
     if new_sign.validate_on_submit():
@@ -522,16 +546,19 @@ def user_home():
         query="SELECT sub.subject_name,att.attempt,med.is_confirm,is_authenticate FROM medical_infor AS med INNER JOIN subjects AS sub ON sub.subject_id=med.subject_id INNER JOIN attempts AS att ON att.id = med.attempt_id INNER JOIN students AS stu ON stu.user_id=med.user_id WHERE stu.first_name=%s AND stu.password=%s;"
         data=(name,password)
         result=new_sql.fetchAllMulForeing(query,data)
+        print("result",result)
         data = [(bytearray(b'Structured Programming'), 2, 0, 0)]
-        cleaned_data = [(item[0].decode(), item[1], item[2], item[3]) for item in result]
+        # cleaned_data = [(item[0].decode(), item[1], item[2], item[3]) for item in result]
+
+
         from datetime import datetime, timedelta,date
-        current_datetime = datetime.today()
-        query_date="SELECT closing_date FROM closing_dates_list ORDER BY  set_date DESC LIMIT 1;"
-        closing_date=new_sql.fetchOne(query_date)
-        print("Date: ",closing_date)
-        closing_date = date.fromisoformat(str(closing_date))
-        current_datetime = date.today()
-        remaining_days = (closing_date - current_datetime).days
+        # current_datetime = datetime.today()
+        # query_date="SELECT closing_date FROM closing_dates_list ORDER BY  set_date DESC LIMIT 1;"
+        # closing_date=new_sql.fetchOne(query_date)
+        # print("Date: ",closing_date)
+        # closing_date = date.fromisoformat(str(closing_date))
+        # current_datetime = date.today()
+        # remaining_days = (closing_date - current_datetime).days
         
         
 
@@ -542,10 +569,11 @@ def user_home():
         return redirect('userlog')
     
 
-    return render_template('interfaces/user/user_account.html',name=name,
-                            result=cleaned_data,
-                            remaining_days=remaining_days,
-                            closing_date=closing_date
+    return render_template('Interfaces/user/userHome.html',name=name,
+                            # result=cleaned_data,
+                            # remaining_days=remaining_days,
+                            # closing_date=closing_date
+
 
                                )
     
@@ -584,14 +612,18 @@ def request():
     new_form.attempt.choices=cleaned_data
     query="SELECT type FROM medical_type;"
     types=new_data.fetchMultiVal(query)
-    cleaned_data = [value[0].decode() for value in types]
+    
+    cleaned_data = [value[0].strip() for value in types]
+    
+
     new_form.med_type.choices=cleaned_data
     if 'student_name' in session and 'student_password' in session:
         name=session['student_name']
         password=session['student_password']
         query="SELECT dep.calling_name FROM departments AS dep INNER JOIN students AS s ON dep.id=s.department_id WHERE s.first_name=%s AND password=%s;"
         data=(name,password)
-        department=new_data.fetchOneForeing(query,data).decode().strip()
+        department=new_data.fetchOneForeing(query,data).strip()
+        print(department)
         user_query="SELECT user_id FROM students WHERE first_name=%s AND password=%s;"
         user_id=new_data.fetchOneForeing(user_query,data)
         
@@ -664,7 +696,7 @@ def request():
                 
                 flash("Form Susscessfully Submited ! We will notify you once your form has been accepted.")
                 return redirect(url_for('user_home'))
-        return render_template('interfaces/user/mainform.html',form=new_form)
+        return render_template('Interfaces/user/mainform.html',form=new_form)
 
 
 #office
@@ -725,31 +757,7 @@ def admin():
                 result_mng=new_data.getMain('MANAGEMENT')                
                 result_eng=new_data.getMain('ENGLISH')
                 result_thm=new_data.getMain('TOURISM')
-                cleaned_values_it = [
-                    tuple(value.decode('utf-8') if isinstance(value, bytearray) else value for value in row)
-                    for row in result_it
-                    ]
-                
-                cleaned_values_acc = [
-                    tuple(value.decode('utf-8') if isinstance(value, bytearray) else value for value in row)
-                    for row in result_acc
-                    ]
-                
-                cleaned_values_mng = [
-                    tuple(value.decode('utf-8') if isinstance(value, bytearray) else value for value in row)
-                    for row in result_mng
-                    ]
-                
-                
-                cleaned_values_eng = [
-                    tuple(value.decode('utf-8') if isinstance(value, bytearray) else value for value in row)
-                    for row in result_eng
-                    ]
-                
-                cleaned_values_thm = [
-                    tuple(value.decode('utf-8') if isinstance(value, bytearray) else value for value in row)
-                    for row in result_thm
-                    ]
+                print(result_it)
                 
                 update_query = "UPDATE medical_infor SET is_confirm = %s WHERE user_id = %s"
                 def injectAction(row_id,value,update_query):
@@ -838,7 +846,7 @@ def admin():
                         return redirect('admin')
 
 
-    return render_template('interfaces/admin/admin.html',form=new_admin,
+    return render_template('Interfaces/admin/admin.html',form=new_admin,
                             user_name=user_name,
                             count=total,
                             it_count=it,
@@ -846,11 +854,12 @@ def admin():
                             manage_count=mng,
                             thm_count=thm,
                             english_count=eng,
-                            result_it=cleaned_values_it,
-                            result_thm=cleaned_values_thm,
-                            result_en=cleaned_values_eng,
-                            result_manage=cleaned_values_mng,
-                            result_account=cleaned_values_acc,
+                            # result_it=cleaned_values_it,
+                            # result_thm=cleaned_values_thm,
+                            # result_en=cleaned_values_eng,
+                            # result_manage=cleaned_values_mng,
+                            # result_account=cleaned_values_acc,
+
                             closing_date=date
                            )
 
@@ -987,7 +996,7 @@ def exams():
 
 
 
-    return render_template('interfaces/superAdmin/exams.html', form=form,
+    return render_template('Interfaces/superAdmin/exams.html', form=form,
                            form_data=cleaned_values,
                            department=dep,
                            user_name=name,
@@ -1045,7 +1054,7 @@ def addSubjects():
     else:
         print("Form not validated")
 
-    return render_template('interfaces/superAdmin/new_subjects.html', form=form)
+    return render_template('Interfaces/superAdmin/new_subjects.html', form=form)
 
 
 
@@ -1103,7 +1112,7 @@ def updateExam():
                 
 
 
-    return render_template('interfaces/superAdmin/edit_exams.html',form=form)
+    return render_template('Interfaces/superAdmin/edit_exams.html',form=form)
 
 
 #reports
@@ -1140,9 +1149,8 @@ def adminReportsForm():
     form.years.choices = [(value, value) for value in cleaned_list_yrs]
     form.departments.choices = departments
 
+    return render_template('Interfaces/admin/admin_report_form.html',form=form)
 
-
-    return render_template('interfaces/admin/admin_report_form.html',form=form)
 
 @app.route('/adminReports', methods=["POST", "GET"])
 def adminReports():
@@ -1236,7 +1244,7 @@ def adminReports():
     affected_data = new_data.fetchAllMulForeing(most_affected_query, cat_data)
     cleaned_data_aff = [(entry[0].decode('utf-8'), entry[1]) for entry in affected_data]
      
-    rendered = render_template('interfaces/admin/sample_report.html', form=form, year=year, department=department,
+    rendered = render_template('Interfaces/admin/sample_report.html', form=form, year=year, department=department,
                            reg_count=reg_count,
                            med_count=med_count,
                            admin_count=admin_count,
@@ -1256,7 +1264,7 @@ def adminReports():
     response.headers['Content-Disposition'] = 'inline; filename=output.pdf'
     return response
 
-    return render_template('interfaces/admin/sample_report.html', form=form, year=year, department=department,
+    return render_template('Interfaces/admin/sample_report.html', form=form, year=year, department=department,
                            reg_count=reg_count,
                            med_count=med_count,
                            admin_count=admin_count,
@@ -1295,7 +1303,7 @@ def superReport():
         form.years.choices=cleaned_yrs
         form.semesters.choices=cleaned_sem
 
-    return render_template('interfaces/superAdmin/superReport.html',form=form)
+    return render_template('Interfaces/superAdmin/superReport.html',form=form)
 
 
 
